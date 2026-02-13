@@ -17,7 +17,7 @@ title: Alfredo Di Tillio
 email: alfredo.ditillio@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
   Notes on microeconomics for Bocconi first-year students
-baseurl: "/micro26_wip4" # the subpath of your site, e.g. /blog
+baseurl: "/micro26_wip5" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 
 # Build settings
