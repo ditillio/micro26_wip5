@@ -1,0 +1,550 @@
+
+schema: EconSchema
+
+params:
+
+- {name: disc, value: 0}
+- {name: mc, value: 2}
+
+- {name: Q, value: 12, min: 2, max: 25}
+- {name: QA, value: 4, min: 2, max: 18}
+- {name: QB, value: 4, min: 2, max: 10}
+
+
+calcs:
+
+  P: max( (20)-(params.Q) , (16)-(params.Q)/(2) ) # price with no discrimination
+
+  PA: " (params.disc == 0) ? (calcs.P) : ( (20)-(params.QA) ) "
+  PB: " (params.disc == 0) ? (calcs.P) : ( (12)-(params.QB) ) "
+
+  QA: " (params.disc == 1) ? (params.QA) : ( max((0),(20)-(calcs.PA)) ) "
+  QB: " (params.disc == 1) ? (params.QB) : ( max((0),(12)-(calcs.PB)) ) "
+
+  profit0: ( (calcs.P) - (params.mc) ) * (params.Q)
+
+  profitA: ( (calcs.PA) - (params.mc) ) * (params.QA)
+  profitB: ( (calcs.PB) - (params.mc) ) * (params.QB)
+  profit1: (calcs.profitA)+(calcs.profitB)
+
+
+aspectRatio: 1.8
+
+layout:
+  ThreeHorizontalGraphs:
+
+    leftGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 34
+        ticks: 0
+      yAxis:
+        orient: left
+        min: -(4)
+        max: 22
+        ticks: 0
+      objects:
+      - Label:
+              coordinates: [34, 0]
+              text: "` \\\\text{100km} `"
+              yPixelOffset: 9
+              position: c
+      - Label:
+              coordinates: [34, 0]
+              text: "` \\\\text{(millions)} `"
+              yPixelOffset: -9
+              position: c
+      - Label:
+            coordinates: [0, 22]
+            text: "` \\\\text{euro/100km}  `"
+
+# group B demand function
+      - Line:
+          yIntercept: (20)
+          slope: -(1)
+          color: Blue
+          max: (20)
+          strokeWidth: 1.5
+          position: b
+      - Point:
+          coordinates: [0, 20]
+          droplines:
+            horizontal: 20
+          color: Blue
+          r: 0
+      - Point:
+          coordinates: [20, 0]
+          color: Blue
+          droplines:
+            vertical: 20
+          r: 0
+
+# marginal revenue
+      - Line:
+          yIntercept: (20)
+          slope: -(2)
+          max: (32)
+          color: Green
+          strokeWidth: 1.5
+          label:
+            text: "` MR_A `"
+            y: -(4)
+          show: params.disc == 1
+
+
+# marginal cost
+      - Line:
+          yIntercept: (2)
+          color: Red
+          strokeWidth: 1.5
+          max: 28
+          position: b
+          label:
+            text: "` MC  `"
+            x: 28
+      - Point:
+          coordinates: [0, 2]
+          droplines:
+            horizontal: 2
+          color: Red
+          r: 0
+
+
+# chosen point
+      - Point:
+          coordinates: [calcs.QA, calcs.PA]
+          color: Blue
+          r: 3
+          droplines:
+            vertical: calcs.QA.toFixed(0)
+            horizontal: calcs.PA.toFixed(1)
+          strokeWidth: 0.2
+
+
+# monopolist profit/loss
+      - Rectangle:
+          x1: 0
+          y1: 2
+          x2: calcs.QA
+          y2: calcs.PA
+          fill: green
+          opacity: 0.1
+
+# evaluation
+      - Label:
+          coordinates: [22,15]
+          text: "` \\\\LARGE\\\\text{BINGO!} `" 
+          position: c
+          bgcolor: none
+          color: green
+          show: params.QA == 9 && params.disc == 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    middleGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 34
+        ticks: 0
+      yAxis:
+        orient: left
+        min: -(4)
+        max: 22
+        ticks: 0
+      objects:
+      - Label:
+              coordinates: [34, 0]
+              text: "` \\\\text{100km} `"
+              yPixelOffset: 9
+              position: c
+      - Label:
+              coordinates: [34, 0]
+              text: "` \\\\text{(millions)} `"
+              yPixelOffset: -9
+              position: c
+      - Label:
+            coordinates: [0, 22]
+            text: "` \\\\text{euro/100km}  `"
+
+
+# group B demand function
+      - Line:
+          yIntercept: (12)
+          slope: -(1)
+          color: Blue
+          max: (12)
+          strokeWidth: 1.5
+          position: b
+      - Point:
+          coordinates: [0, 12]
+          droplines:
+            horizontal: 12
+          color: Blue
+          r: 0
+      - Point:
+          coordinates: [12, 0]
+          color: Blue
+          droplines:
+            vertical: 12
+          r: 0
+
+# marginal revenue
+      - Line:
+          yIntercept: (12)
+          slope: -(2)
+          max: (32)
+          color: Green
+          strokeWidth: 1.5
+          label:
+            text: "` MR_B `"
+            y: -(4)
+          show: params.disc == 1
+
+
+# marginal cost
+      - Line:
+          yIntercept: (2)
+          color: Red
+          strokeWidth: 1.5
+          max: 28
+          position: b
+          label:
+            text: "` MC  `"
+            x: 28
+      - Point:
+          coordinates: [0, 2]
+          droplines:
+            horizontal: 2
+          color: Red
+          r: 0
+
+
+# chosen point
+      - Point:
+          coordinates: [calcs.QB, calcs.PB]
+          color: Blue
+          r: 3
+          droplines:
+            vertical: calcs.QB.toFixed(0)
+            horizontal: calcs.PB.toFixed(1)
+          strokeWidth: 0.2
+          show: calcs.QB > 0
+
+
+# monopolist profit/loss
+      - Rectangle:
+          x1: 0
+          y1: 2
+          x2: calcs.QB
+          y2: calcs.PB
+          fill: green
+          opacity: 0.1
+
+# evaluation
+      - Label:
+          coordinates: [22,15]
+          text: "` \\\\LARGE\\\\text{BINGO!} `" 
+          position: c
+          bgcolor: none
+          color: green
+          show: params.QB == 5 && params.disc == 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    rightGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 34
+        ticks: 0
+      yAxis:
+        orient: left
+        min: -(4)
+        max: 22
+        ticks: 0
+      objects:
+      - Label:
+              coordinates: [34, 0]
+              text: "` \\\\text{100km} `"
+              yPixelOffset: 9
+              position: l
+      - Label:
+              coordinates: [34, 0]
+              text: "` \\\\text{(millions)} `"
+              yPixelOffset: -9
+              position: l
+      - Label:
+            coordinates: [0, 22]
+            text: "` \\\\text{euro/100km}  `"
+
+
+# market demand function
+      - Line:
+          yIntercept: (20)
+          slope: -(1)
+          color: Blue
+          max: (8)
+          strokeWidth: 1.5
+          position: b
+      - Line:
+          yIntercept: (16)
+          slope: -(1)/(2)
+          color: Blue
+          min: (8)
+          max: (32)
+          strokeWidth: 1.5
+          position: b
+      - Point:
+          coordinates: [0, 20]
+          droplines:
+            horizontal: 20
+          color: Blue
+          r: 0
+      - Point:
+          coordinates: [32, 0]
+          color: Blue
+          droplines:
+            vertical: 32
+          r: 0
+
+# marginal revenue
+      - Line:
+          yIntercept: (20)
+          slope: -(2)
+          max: (8)
+          color: Green
+          strokeWidth: 1.5
+          position: l
+      - Line:
+          yIntercept: (16)
+          slope: -(1)
+          min: (8)
+          max: (32)
+          color: Green
+          strokeWidth: 1.5
+          label:
+            text: "` MR `"
+            y: -(4)
+
+
+# marginal cost
+      - Line:
+          yIntercept: (2)
+          color: Red
+          strokeWidth: 1.5
+          max: 33
+          position: b
+          label:
+            text: "` MC  `"
+            x: (33)
+      - Point:
+          coordinates: [0, 2]
+          droplines:
+            horizontal: 2
+          color: Red
+          r: 0
+
+# discontinuity point
+      - Point:
+          coordinates: [8, 12]
+          color: Black
+          r: 0
+          droplines:
+            vertical: 8
+            horizontal: 12
+          strokeWidth: 0.2
+
+
+# chosen point with no discrimination
+      - Point:
+          coordinates: [params.Q, calcs.P]
+          color: Blue
+          r: 3
+          droplines:
+            vertical: params.Q.toFixed(0)
+            horizontal: calcs.P.toFixed(1)
+          strokeWidth: 0.2
+          show: params.disc == 0
+
+
+# monopolist profit/loss
+      - Rectangle:
+          x1: 0
+          y1: 2
+          x2: params.Q
+          y2: calcs.P
+          fill: green
+          opacity: 0.1
+          show: params.disc == 0
+
+# evaluation
+      - Label:
+          coordinates: [25,15]
+          text: "` \\\\LARGE\\\\text{BINGO!} `" 
+          position: c
+          bgcolor: none
+          color: green
+          show: params.Q == 14 && params.disc == 0
+
+
+# reminder max profit with no discrimination
+      - Rectangle: {x1: 0, y1: params.mc, x2: 14, y2: 9, fill: green, opacity: 0.1, show: params.disc == 1}
+
+# reminder optimal choice with no discrimination
+      - Point:
+          coordinates: [14,9]
+          color: Darkgreen
+          r: 3
+          droplines:
+            vertical: 14
+            horizontal: 9
+          strokeWidth: 0.2
+          show: params.disc == 1
+
+      - Arrow:
+          begin: [28,13]
+          end: [11,7]
+          color: Darkgreen
+          strokeWidth: 1
+          bgcolor: none
+          show: params.disc == 1
+      - Label:
+          text: " \\text{maximum profit without} "
+          coordinates: [28,13]
+          yPixelOffset: 9
+          show: params.disc == 1
+      - Label:
+          text: " \\text{discrimination} = 98 "
+          coordinates: [28,13]
+          yPixelOffset: -9
+          show: params.disc == 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    leftControls:
+      title: " Type of discrimination: "
+      divs:
+      - html: "`  `"
+      checkboxes:
+      - param: disc
+        label: "\\text{Discriminate based on age}"
+
+
+    middleControls:
+      title: No discrimination
+      description: Select a quantity to sell at the same linear price for all.
+      divs:
+      - html: "`  `"
+      sliders:
+      - param: Q
+        label: Q
+      show: params.disc == 0
+
+    rightControls:
+      title: Discrimination based on age
+      description: Select a quantity to sell to young people and one to sell to adults.
+      divs:
+      - html: "`  `"
+      sliders:
+      - param: QA
+        label: Q_A
+      - param: QB
+        label: Q_B
+      show: params.disc == 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+    explanation:
+      divs:
+        - html: "` The market demand curve (right-hand graph) is a broken line.
+                  Indeed, at a price $P$ between 12 and 20 euros/100km, only adults
+                  are willing to buy, and the quantity demanded in the market is 
+                  therefore $Q=Q_A=20-P$. At a price $P$ below 12 euros/100km, instead,
+                  both groups are willing to buy, and the quantity demanded in the 
+                  market is $Q=Q_A+Q_B=32-2P$.   `"
+          show: params.disc == 0
+
+        - html: "` When the monopolist discriminates on the basis of age, it treats the two
+                  groups as if they were separate markets, maximizing profit in each 
+                  of them separately.  The curves $MR_A$ and $MR_B$ represent the marginal 
+                  revenue functions in market $A$ and market $B$, respectively. `"
+          show: params.disc == 1
+
+        - html: "` At the quantity $Q=${params.Q}$ the monopolist’s profit is
+                $$
+                   ( ${calcs.P.toFixed(1)} - 2 ) \\\\times ${params.Q} = ${calcs.profit0}
+                $$
+                 `"
+          show: params.disc == 0
+
+        - html: "` At the quantities $Q_A=${params.QA}$ and $Q_B=${params.QB}$
+                the monopolist’s profit is
+                $$
+                   ( ${calcs.PA.toFixed(1)} - 2 ) \\\\times ${params.QA}
+                   +
+                   ( ${calcs.PB.toFixed(1)} - 2 ) \\\\times ${params.QB}
+                   = ${calcs.profit1}
+                $$
+                 `"
+          show: params.disc == 1
+
+
+
+

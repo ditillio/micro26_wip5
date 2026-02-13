@@ -1,0 +1,227 @@
+---
+schema: EconSchema
+version: 1
+aspectRatio: 2
+params:
+- name: x
+  value: 5
+  min: 0
+  max: 9
+  round: 0.1
+- name: y
+  value: 6
+  min: 0.5
+  max: 9
+  round: 0.1
+
+calcs:
+  z: (((params.x)+1)^2)*((params.y)+1)
+  MUx: (2)*((params.x)+1)*((params.y)+1)
+  yy: (params.y)+1
+
+layout:
+  MathboxPlusGraphPlusSidebar:
+    mathbox:
+      xAxis:
+        min: 0
+        max: 9.5
+        step: 1
+        title: X
+      yAxis:
+        min: 0
+        max: 9.5
+        step: 1
+        title: Y
+      zAxis:
+        min: 0
+        max: 1000
+        step: 10
+        title: U
+
+      objects:
+
+# plane at Y = chosen level
+      - MathboxPlane:
+            y: params.y
+            fill: colors.orange
+            opacity: 0.2
+            shaded: false
+
+# intersection of plane with utility surface
+      - MathboxCurve:
+          fn:
+            fn: " params.y "
+            fnZ: "((x+1)^2)*((params.y)+1)"
+          strokeWidth: 5
+          stroke: colors.red
+          opacity: 0.4
+
+      - MathboxFunctionSurface:
+          fn:
+            fn: "((x+1)^2)*(y+1)"
+            samplePoints: 40
+          shaded: false
+          fill: colors.blue
+          opacity: 0.4
+      - MathboxPoint:
+          x: params.x
+          y: params.y
+          z: calcs.z
+          stroke: colors.blue
+      - MathboxLine:
+          x1: params.x
+          x2: params.x
+          y2: params.y
+          stroke: colors.black
+          strokeWidth: 10
+          lineStyle: dotted
+      - MathboxLine:
+          y1: params.y
+          x2: params.x
+          y2: params.y
+          stroke: colors.black
+          strokeWidth: 10
+          lineStyle: dotted
+      - MathboxLine:
+          x1: params.x
+          y1: params.y
+          x2: params.x
+          y2: params.y
+          z2: calcs.z
+          stroke: colors.black
+          strokeWidth: 10
+          lineStyle: dotted
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    graph: 
+      xAxis:
+        max: 9.5
+        ticks: 0
+      yAxis:
+        max: 1000
+        ticks: 0
+
+      objects:
+
+        - Curve:
+            fn: "(((x)+1)^2)*((params.y)+1)"
+            strokeWidth: 1.5
+            color: Red
+            opacity: 0.4
+            label:
+              text: "` U = ${calcs.yy.toFixed(1)} \\\\times (X+1)^2 `"
+              x: 9.5
+              position: c
+
+        - Label:
+              coordinates: [9, 0]
+              text: "` \\\\text{Units} `"
+              yPixelOffset: 10
+              position: l
+        - Label:
+              coordinates: [9, 0]
+              text: "` \\\\text{ of $X$} `"
+              yPixelOffset: -5
+              position: l
+        - Label:
+              coordinates: [0, 1000]
+              text: "` \\\\text{Utility}  `"
+
+
+
+
+
+
+
+        - Point:
+            coordinates: [params.x,calcs.z]
+            droplines:
+              vertical: params.x.toFixed(1)
+              horizontal:
+            strokeWidth: 0.5
+            color: Blue
+            r: 4
+
+# tangent
+        - Line:
+            point: [params.x,calcs.z]
+            slope: 2*((params.x)+1)*((params.y)+1)
+            color: Blue
+            min: (params.x)-3.5
+            max: (params.x)+3.5
+            strokeWidth: 0.8
+            lineStyle: dashed
+
+
+
+
+
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURE 2.8
+        description: Select a bundle to compute the marginal utility of good <i>X</i>
+                      at that bundle.
+        sliders:
+          - param: x
+            label: X
+          - param: y
+            label: Y
+
+        divs:
+          - html: "` `"
+          - html: "`The marginal utility of good $X$ at the bundle
+                     $(${params.x.toFixed(1)},${params.y.toFixed(1)})$
+                    is the slope of the red curve at
+                    $X=${params.x.toFixed(1)}$ (= slope of the dashed line 
+                    ):
+                    $$
+                    MU_X = ${calcs.MUx.toFixed(2)}
+                    $$ `"
+
+    explanation:
+
+        divs:
+          - html: "` `"
+          - html: "` The consumer's utility function is  $U(X,Y)=(X+1)^2(Y+1)$.
+                      Keeping the consumption of good $Y$ fixed
+                      at $Y=${params.y.toFixed(1)}$ units, utility becomes a function of good
+                       $X$ alone, namely
+                      $$
+                      U=(${params.y.toFixed(1)}+1) \\\\times (X+1)^2
+                      =${calcs.yy.toFixed(1)} \\\\times (X+1)^2
+                      $$
+                      represented by the red curve. The marginal utility 
+                      of good $X$ is the derivative of this function, namely
+                      $$
+                      MU_X=${2*calcs.yy.toFixed(1)}  X + ${2*calcs.yy.toFixed(1)}
+                      $$   `"
+
+
+
+
+
+
+
+

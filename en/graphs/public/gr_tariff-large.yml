@@ -1,0 +1,529 @@
+schema: EconSchema
+params:
+
+- {name: T, value: 0, min: 0, max: 6, round: 1}
+- {name: showPS, value: false}
+- {name: showCS, value: false}
+- {name: showTAXREV, value: false}
+
+- {name: nd, value: 20} # number of domestic firms
+- {name: nf, value: 20} # number of foreign firms
+
+- {name: dint, value: 12} # intercept of inverse demand (both national and world)
+- {name: dslope, value: 1} # abs value slope of inverse world demand
+
+
+- {name: nsslope, value: 2} # slope of inverse national supply
+
+- {name: wsslope, value: 0.5} # slope of inverse world supply
+
+
+calcs:
+  eqQ: ((params.dint)-(params.T))/((params.dslope)+(params.wsslope)) # equilibrium quantity
+  eqwP: (params.wsslope)*(calcs.eqQ) # equilibrium world price
+  eqwPT: ((params.wsslope)*(calcs.eqQ))+(params.T) # equilibrium world price plus tariff
+  eqQs: ((calcs.eqwP)+(params.T))/(params.nsslope) # equilibrium national supplied quantity
+  imp: calcs.eqQ - calcs.eqQs # imports 
+
+  eqQ0: (params.dint)/((params.dslope)+(params.wsslope)) # equilibrium quantity w/o tariff
+  eqwP0: (params.wsslope)*(calcs.eqQ0) # equilibrium world price w/o tariff
+  eqQ0s: (calcs.eqwP0)/(params.nsslope) # equilibrium national supplied quantity w/o tariff
+  imp0: calcs.eqQ0 - calcs.eqQ0s # imports w/o tariff
+
+  maxQ: (1.25)*(calcs.eqQ0) # max displayed world quantity
+  maxP: (1.1)*(params.dint) # max displayed price
+
+  CS: (((params.dint)-(calcs.eqwPT))*(calcs.eqQ))/2 # consumer surplus
+  PS: ((calcs.eqwPT)*(calcs.eqQs))/2 # producer surplus
+  rev: (params.T)*(calcs.imp) # tax revenues
+  TS: (calcs.CS)+(calcs.PS)+(calcs.rev) # total surplus
+
+layout:
+  ThreeHorizontalGraphs:
+
+    leftGraph:
+      xAxis:
+        max: calcs.maxQ
+        ticks: 0
+      yAxis:
+        max: calcs.maxP
+        ticks: 0
+
+      objects:
+      - Label:
+              coordinates: [calcs.maxQ, 0]
+              text: "` \\\\text{kt} `"
+              yPixelOffset: 0
+              xPixelOffset: 0
+      - Label:
+              coordinates: [0, calcs.maxP]
+              text: "` \\\\text{euro/kg}  `"
+              xPixelOffset: 0
+
+# national demand
+      - Line:
+          yIntercept: (params.dint)
+          slope: -(params.dslope)
+          color: Blue
+          strokeWidth: 2
+          max: (0.85)*(calcs.maxQ)
+          label:
+            text: D_N
+            x: (0.65)*(calcs.maxQ)
+            position: bl
+      - Point:
+          coordinates: [0, (params.dint)]
+          droplines: {horizontal: (params.dint)}
+          color: Blue
+          r: 0
+
+# national supply
+      - Line:
+          yIntercept: 0
+          slope: params.nsslope
+          color: Red
+          strokeWidth: 2
+          label:
+            text: S_N
+            y: calcs.maxP
+      - Point:
+          coordinates: [calcs.eqQ0s, (calcs.eqwP0)]
+          color: Red
+          droplines: {vertical: calcs.eqQ0s}
+          r: 3
+          xPixelOffset: 2
+          show: calcs.eqQ0s !== calcs.eqQ0
+
+# world price line
+      - Line:
+          yIntercept: (calcs.eqwP0)
+          slope: 0
+          color: Green
+          lineStyle: dotted
+          show: params.T == 0
+      - Point:
+          coordinates: [0, calcs.eqwP0]
+          droplines: {horizontal: "` P_W=${calcs.eqwP0} `"}
+          color: Green
+          r: 0
+          show: params.T == 0
+      - Line:
+          yIntercept: (calcs.eqwP0)
+          slope: 0
+          color: grey
+          lineStyle: dotted
+          show: params.T > 0
+      - Point:
+          coordinates: [0, calcs.eqwP0]
+          droplines: {horizontal: "` P_W=${calcs.eqwP0} `"}
+          color: grey
+          r: 0
+          show: params.T > 0
+
+
+# national equilibrium quantity
+      - Point:
+          coordinates: [calcs.eqQ0, calcs.eqwP0]
+          color: Green
+          r: 3
+      - Segment:
+          a: [calcs.eqQ0,(params.dint)-(params.dslope)*(calcs.eqQ0)]
+          b: [calcs.eqQ0,0]
+          color: Green
+          lineStyle: dotted
+      - Point:
+          coordinates: [calcs.eqQ0, 0]
+          droplines: {vertical: calcs.eqQ0}
+          color: Green
+          r: 0
+
+# national consumer surplus
+      - Area:
+          fn1: (params.dint) - (params.dslope)*(x)
+          fn2: (calcs.eqwP0)
+          max: calcs.eqQ0
+          fill: blue
+          above: false
+          show: params.showCS == true
+
+# national producer surplus
+      - Area:
+          fn1: (calcs.eqwP0)
+          fn2: (params.nsslope)*(x)
+          max: calcs.eqQ0s
+          fill: green
+          above: false
+          show: params.showPS == true
+
+# import
+      - Arrow:
+          begin: [calcs.eqQ0s,1]
+          end: [calcs.eqQ0,1]
+          double: true
+          color: black
+          strokeWidth: 1.5
+          show: calcs.eqQ0s < calcs.eqQ0
+      - Label:
+          coordinates: [(calcs.eqQ0s+calcs.eqQ0)/2, 1]
+          text: "` \\\\text{imp.} `"
+          yPixelOffset: 15
+          xPixelOffset: 0
+          show: calcs.eqQ0s < calcs.eqQ0
+
+
+    leftControls:
+      title: Domestic Market without Tariff
+      checkboxes:
+      - param: showCS
+        label: "\\text{Show cons. surplus}"
+      - param: showPS
+        label: "\\text{Show prod. surplus}"
+      - param: showTAXREV
+        label: "\\text{Show tax revenue}"
+      divs:
+        - html: "`  `"
+        - html: "`Total Surplus: 36.00 million `"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    middleGraph:
+      xAxis:
+        max: calcs.maxQ
+        ticks: 0
+      yAxis:
+        max: calcs.maxP
+        ticks: 0
+
+      objects:
+      - Label:
+              coordinates: [calcs.maxQ, 0]
+              text: "` \\\\text{kt} `"
+              yPixelOffset: 0
+              xPixelOffset: 0
+      - Label:
+              coordinates: [0, calcs.maxP]
+              text: "` \\\\text{euro/kg}  `"
+              xPixelOffset: 0
+
+# world equilibrium w/o tariff
+      - Point:
+          coordinates: [calcs.eqQ0, calcs.eqwP0]
+          droplines: {horizontal: , vertical: calcs.eqQ0}
+          color: Gray
+          r: 3
+          show: params.T > 0
+
+# national demand
+      - Line:
+          yIntercept: (params.dint)-(params.T)
+          slope: -(params.dslope)
+          color: Blue
+          strokeWidth: 2
+          max: (0.9)*(calcs.maxQ)
+          label:
+            text: D_N
+            x: (0.9)*(calcs.maxQ)
+      - Point:
+          coordinates: [0, params.dint]
+          droplines: {horizontal: params.dint}
+          color: Gray
+          r: 0
+          show: params.T > 0
+      - Point:
+          coordinates: [0, (params.dint)-(params.T)]
+          droplines: {horizontal: (params.dint)-(params.T)}
+          color: Blue
+          r: 0
+
+# shadow national demand
+      - Line:
+          yIntercept: (params.dint)
+          slope: -params.dslope
+          color: Blue
+          strokeWidth: 0.5
+          lineStyle: dashed
+          show: params.T > 0
+      - Point:
+          coordinates: [calcs.eqQ, (calcs.eqwP)+(params.T)]
+          color: Gray
+          r: 3
+          show: params.T > 0
+
+
+# national supply
+      - Line:
+          yIntercept: 0
+          slope: params.nsslope
+          color: Red
+          strokeWidth: 2
+          label:
+            text: S_N
+            y: calcs.maxP
+      - Point:
+          coordinates: [calcs.eqQs, (calcs.eqwP)+(params.T)]
+          color: Red
+          droplines: {vertical: calcs.eqQs.toFixed(2)}
+          r: 3
+          xPixelOffset: 4
+          show: calcs.eqQs !== calcs.eqQ
+      - Segment:
+          a: [0, (calcs.eqwP)+(params.T)]
+          b: [calcs.eqQ, (calcs.eqwP)+(params.T)]
+          color: Green
+          lineStyle: dotted
+          show: params.T > 0
+
+# shadow national supplied quantity
+      - Point:
+          coordinates: [calcs.eqQ0s, calcs.eqwP0]
+          droplines: {vertical: calcs.eqQ0s}
+          color: Gray
+          r: 0
+          xPixelOffset: -5
+          show: params.T > 0
+
+# world price line
+      - Line:
+          yIntercept: (calcs.eqwP)
+          slope: 0
+          color: Green
+          lineStyle: dotted
+      - Point:
+          coordinates: [0, calcs.eqwP]
+          droplines: {horizontal: "` P'_W=${calcs.eqwP.toFixed(2)} `"}
+          color: Green
+          r: 0
+          show: params.T > 0
+
+# national equilibrium price
+      - Point:
+          coordinates: [0, calcs.eqwP+params.T]
+          color: Green
+          r: 0
+          droplines: {horizontal: "` P'_W+T=${calcs.eqwPT.toFixed(2)} `"}
+          show: params.T > 0
+
+# national equilibrium quantity
+      - Point:
+          coordinates: [calcs.eqQ, calcs.eqwP]
+          color: Green
+          r: 3
+      - Segment:
+          a: [calcs.eqQ,(params.dint)-(params.dslope)*(calcs.eqQ)]
+          b: [calcs.eqQ,0]
+          color: Green
+          lineStyle: dotted
+      - Point:
+          coordinates: [calcs.eqQ, 0]
+          droplines: {vertical: calcs.eqQ.toFixed(2)}
+          color: Green
+          r: 0
+
+# national consumer surplus
+      - Area:
+          fn1: (params.dint) - (params.dslope)*(x)
+          fn2: (calcs.eqwP)+(params.T)
+          max: calcs.eqQ
+          fill: blue
+          above: false
+          show: params.showCS == true
+
+# national producer surplus
+      - Area:
+          fn1: (calcs.eqwP)+(params.T)
+          fn2: (params.nsslope)*(x)
+          max: calcs.eqQs
+          fill: green
+          above: false
+          show: params.showPS == true
+
+# national tax revenue
+      - Area:
+          fn1: (calcs.eqwP)+(params.T)
+          fn2: (calcs.eqwP)
+          min: calcs.eqQs
+          max: calcs.eqQ
+          fill: Yellow
+          above: false
+          show: params.showTAXREV == true
+
+# deadweight loss
+      - Area:
+          fn1: (params.nsslope)*(x)
+          fn2: (calcs.eqwP)
+          min: calcs.eqQ0s
+          max: calcs.eqQs
+          fill: grey
+          above: false
+          show: params.showDWL == true
+      - Area:
+          fn1: (params.dint)-(params.dslope)*(x)
+          fn2: (calcs.eqwP)
+          min: calcs.eqQ
+          max: calcs.eqQ0
+          fill: grey
+          above: false
+          show: params.showDWL == true
+
+# import
+      - Arrow:
+          begin: [calcs.eqQs,1]
+          end: [calcs.eqQ,1]
+          double: true
+          color: black
+          strokeWidth: 1.5
+          show: calcs.eqQs < calcs.eqQ
+      - Label:
+          coordinates: [(calcs.eqQs+calcs.eqQ)/2, 1]
+          text: "` \\\\text{imp.} `"
+          yPixelOffset: 15
+          xPixelOffset: 0
+          show: calcs.eqQs < calcs.eqQ
+
+    middleControls:
+      title: Domestic Market
+      sliders:
+      - param: T
+        label: T
+      divs:
+        - html: "`Total Surplus: ${calcs.TS.toFixed(2)} million `"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    rightGraph:
+      xAxis:
+        max: (calcs.maxQ)
+        ticks: 0
+      yAxis:
+        max: calcs.maxP
+        ticks: 0
+
+      objects:
+      - Label:
+              coordinates: [(calcs.maxQ), 0]
+              text: "` \\\\text{kt} `"
+              yPixelOffset: 0
+              xPixelOffset: 0
+      - Label:
+              coordinates: [0, calcs.maxP]
+              text: "` \\\\text{euro/kg}  `"
+              xPixelOffset: 0
+
+# world demand (= national demand)
+      - Line:
+          yIntercept: (params.dint)-(params.T)
+          slope: -(params.dslope)
+          color: Blue
+          strokeWidth: 2
+          label:
+            text: D_W
+            x: calcs.maxQ
+      - Point:
+          coordinates: [0, params.dint]
+          droplines: {horizontal: params.dint}
+          color: Blue
+          r: 0
+
+# shadow world demand (= shadow national demand)
+      - Line:
+          yIntercept: (params.dint)
+          slope: -params.dslope
+          color: Blue
+          strokeWidth: 0.5
+          lineStyle: dashed
+          show: params.T > 0
+
+# world supply
+      - Line:
+          yIntercept: 0
+          slope: params.wsslope
+          color: Red
+          strokeWidth: 2
+          label:
+            text: S_W
+            x: calcs.maxQ
+
+# world equilibrium 
+      - Point:
+          coordinates: [calcs.eqQ, calcs.eqwP]
+          droplines: {horizontal: , vertical: calcs.eqQ.toFixed(2)}
+          color: Green
+          r: 3
+
+# world equilibrium w/o tariff
+      - Point:
+          coordinates: [calcs.eqQ0, calcs.eqwP0]
+          droplines: {horizontal: , vertical: calcs.eqQ0}
+          color: Gray
+          r: 3
+          show: params.T > 0
+
+
+    rightControls:
+      title: World Market
+
+
+    explanation:
+
+      divs:
+        - html: "`National demand equals world demand, 
+                  while national supply is one-fourth of world supply. `"
+          show: params.T == 0
+
+        - html: "`In the absence of tariffs, the price paid
+                  by domestic consumers is the price determined at the world level, 
+                  $ P_W=${calcs.eqwP}$ €/kg.
+                  At this price, national demand is 
+                  ${calcs.eqQ0.toFixed(2)} thousand tons, while domestic production is 
+                  ${calcs.eqQ0s.toFixed(2)} thousand tons.
+                  Imports therefore amount to  
+                  $ ${calcs.eqQ0.toFixed(2)}-${calcs.eqQ0s.toFixed(2)}=
+                  ${calcs.imp0.toFixed(2)} $ thousand tons. `"
+          show: params.T == 0
+
+        - html: "` A tariff of $T=${params.T}$ €/kg reduces the world price from $P_W=${calcs.eqwP0.toFixed(2)}$
+                  to $P'_W=${calcs.eqwP.toFixed(2)}$. The price paid by consumers rises from
+                  $P_W=${calcs.eqwP0.toFixed(2)}$ to $ P'_W+T= ${calcs.eqwPT.toFixed(2)}$ €/kg.
+                  Domestic production increases to ${calcs.eqQs.toFixed(2)} tons.
+                  Imports fall to 
+                  $ ${calcs.imp.toFixed(2)} $ tons.
+                  Tax revenue is therefore equal to 
+                  $ ${params.T} * ${calcs.eqQ-calcs.eqQs} = ${(params.T)*(calcs.eqQ-calcs.eqQs)} $ 
+                  thousand euros. `"
+          show: params.T > 0 && calcs.eqQs !== calcs.eqQ
+
+        - html: "` A tariff of $T=${params.T}$ €/kg completely excludes foreign producers
+                  from the domestic market. Imports and thus tax revenue 
+                  from the tariff fall to zero.
+                  Total surplus in the country is at its minimum.
+                  A higher tariff would have exactly the same 
+                  effects. `"
+          show: calcs.eqQs == calcs.eqQ

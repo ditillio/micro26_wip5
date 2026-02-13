@@ -1,0 +1,194 @@
+
+schema: EconSchema
+params:
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: num, value: 1000, min: 500, max: 1500, round: 100}
+- {name: p, value: 3, min: 1, max: 5, round: 0.5}
+- {name: showCS, value: false}
+
+calcs:
+  d: (5)-(params.p)
+  D: (params.num)*((5)-(params.p))
+
+
+aspectRatio: 3.8
+
+layout:
+  ThreeHorizontalGraphs:
+    leftGraph:
+      xAxis:
+        ticks: 5
+        max: 6
+      yAxis:
+        max: 6
+        ticks: 10
+      objects:
+
+      - Label:
+              coordinates: [6, 0]
+              text: "` \\\\text{kg} `"
+              yPixelOffset: 0
+              position: l
+      - Label:
+              coordinates: [0, 6]
+              text: "` \\\\text{euro/kg}  `"
+              xPixelOffset: 0
+
+# individual demand
+      - Curve:
+          fn: 5-(x)
+          color: Blue
+          strokeWidth: 1.5
+          label:
+            text: D^i
+            x: 4.6
+            position: l
+
+# price line
+      - Line:
+          yIntercept: params.p
+          color: Green
+          label:
+            text: P
+            x: 6
+            position: l
+          drag:
+            - vertical: p
+          strokeWidth: 1
+
+# optimum
+      - Point:
+          coordinates: [calcs.d, params.p]
+          droplines:
+            vertical: calcs.d.toFixed(1)
+          color: Blue
+          r: 4
+          strokeWidth: 0.5
+
+
+
+
+
+    middleGraph:
+      xAxis:
+        max: 8000
+        ticks: 5
+      yAxis:
+        max: 6
+        ticks: 10
+      objects:
+
+      - Label:
+              coordinates: [8000, 0]
+              text: "` \\\\text{kg} `"
+              yPixelOffset: 0
+              position: l
+      - Label:
+              coordinates: [0, 6]
+              text: "` \\\\text{euro/kg}  `"
+              xPixelOffset: 0
+
+
+
+
+
+
+    rightGraph:
+      xAxis:
+        max: 8000
+        ticks: 5
+      yAxis:
+        max: 6
+        ticks: 10
+      objects:
+
+      - Label:
+              coordinates: [8000, 0]
+              text: "` \\\\text{kg} `"
+              yPixelOffset: 0
+              position: l
+      - Label:
+              coordinates: [0, 6]
+              text: "` \\\\text{euro/kg}  `"
+              xPixelOffset: 0
+
+# market demand
+      - Curve:
+          fn: (5)-(x)/(params.num)
+          color: Blue
+          strokeWidth: 1.5
+          label:
+            text: D
+            x: (params.num)*(4.6)
+            position: l
+
+# price line
+      - Line:
+          yIntercept: params.p
+          color: budget
+          label:
+            text: P
+            x: 8000
+            position: l
+          drag:
+            - vertical: p
+          strokeWidth: 1
+
+# optimum
+      - Point:
+          coordinates: [calcs.D, params.p]
+          droplines:
+            vertical: calcs.D.toFixed(1)
+          color: Blue
+          r: 4
+          strokeWidth: 0.5
+
+# consumer surplus blue
+      - Area: {fn1: (12-4*(x)/(params.num)), fn2: params.p, fill: Blue, opacity: params.ops, min: 0.001, max: calcs.D, show: params.showCS == true }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # explanation:
+    #   divs:
+    #     - html: "`
+    #             Nel mercato della pasta, popolato da ${params.num} consumatori,
+    #             la funzione di domanda individuale, uguale per tutti i consumatori, è
+    #             $Q=5-P$, dove $P$ indica il prezzo e $Q$ la quantità domandata (curva $D^i$ 
+    #             nel grafico di sinistra).
+    #             La quantità complessivamente domandata è pari a ${params.num} per la
+    #             quantità domandata da ciascun consumatore. La funzione di domanda di
+    #             mercato (curva $D$ nel grafico di destra) è quindi
+    #             $$
+    #             Q=${params.num}\\\\times (5-P)
+    #             =
+    #             ${(params.num)*5}-${params.num}P
+    #             \\\\qquad\\\\text{ovvero}\\\\qquad
+    #             P=5-Q/${params.num}
+    #             $$ 
+    #             `"
+
+
+
+
+
+
+
+
+
+

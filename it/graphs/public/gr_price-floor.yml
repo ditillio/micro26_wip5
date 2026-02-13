@@ -1,0 +1,256 @@
+  
+
+---
+schema: EconSchema
+version: 1
+params:
+
+- {name: floor, value: 4, min: 3, max: 10}
+
+- {name: dslope, value: 0.1} # abs value of slope of inverse demand
+- {name: dint, value: 12} # intercept of inverse demand
+
+- {name: sslope, value: 0.1} #  slope of inverse supply
+
+- {name: showCS, value: 0}
+- {name: showPS, value: 0}
+- {name: showDWL, value: 0}
+
+
+calcs:
+
+  eqQ: (params.dint)/((params.dslope)+(params.sslope))
+  eqP: (params.sslope)*(calcs.eqQ)
+
+  maxQ: (1.1)*(params.dint)/(params.dslope) # max displayed quantity
+  maxP: (1.1)*(params.dint) # max displayed price
+
+  Q0s: (params.floor)/(params.sslope) # quantity supplied at price floor
+  Q0d: ((params.dint)-(params.floor))/(params.dslope) # quantity demanded at price floor
+
+aspectRatio: 1.3
+
+layout:
+
+  type: OneGraphPlusSidebar
+
+  def:
+
+    graph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: calcs.maxQ
+        ticks: 0
+      yAxis:
+        orient: left
+        min: 0
+        max: calcs.maxP
+        ticks: 0
+
+
+      objects:
+
+      - Label:
+            coordinates: [calcs.maxQ, 0]
+            text: "` \\\\text{unità} `"
+            yPixelOffset: 0
+            position: l
+      - Label:
+            coordinates: [0, calcs.maxP]
+            text: "` \\\\text{euro/unità}  `"
+            xPixelOffset: -5
+
+
+# market demand function
+      - Line:
+          yIntercept: params.dint
+          slope: -params.dslope
+          color: Blue
+          max: (params.dint)/(params.dslope)
+          strokeWidth: 2
+          position: bl
+          label:
+            text: D
+            x: (params.dint)/(params.dslope)
+      - Point:
+          coordinates: [0, params.dint]
+          droplines:
+            horizontal: params.dint
+          color: Blue
+          r: 0
+
+# market supply function
+      - Line:
+          yIntercept: 0
+          slope: params.sslope
+          color: Red
+          max: (params.dint)/(params.dslope)
+          strokeWidth: 2
+          position: c
+          label:
+            text: S
+            x: (params.dint)/(params.dslope)
+
+# market equilibrium without intervention
+      - Point:
+          coordinates: [calcs.eqQ, calcs.eqP]
+          droplines:
+            vertical: calcs.eqQ
+            horizontal: calcs.eqP
+          color: Green
+          r: 4
+          show: params.floor <= calcs.eqP
+      - Point:
+          coordinates: [calcs.eqQ, calcs.eqP]
+          droplines:
+            vertical: calcs.eqQ
+            horizontal: calcs.eqP
+          color: grey
+          r: 4
+          show: params.floor > calcs.eqP
+
+# demand and supply with intervention
+      - Point:
+          coordinates: [calcs.Q0d, params.floor]
+          droplines:
+            vertical: calcs.Q0d
+          color: Green
+          r: 4
+          show: params.floor > calcs.eqP
+      - Point:
+          coordinates: [calcs.Q0s, params.floor]
+          droplines:
+            vertical: calcs.Q0s
+          color: Red
+          r: 4
+          show: params.floor > calcs.eqP
+
+# price floor
+      - Line:
+          yIntercept: params.floor
+          color: Purple
+          label:
+            text: P_\text{min}
+            x: calcs.maxQ
+            position: l
+          strokeWidth: 1
+          bgcolor: none
+          drag:
+            - vertical: floor
+      - Point:
+          coordinates: [0, params.floor]
+          droplines:
+            vertical: 
+            horizontal: params.floor
+          color: Purple
+          r: 0
+
+# excess supply
+      - Label:
+          coordinates: [(calcs.Q0s+calcs.Q0d)/2, 2.5]
+          text: "` \\\\text{eccesso} `"
+          show: params.floor > calcs.eqP
+      - Label:
+          coordinates: [(calcs.Q0s+calcs.Q0d)/2, 2]
+          text: "` \\\\text{di offerta} `"
+          show: params.floor > calcs.eqP
+      - Arrow:
+          begin: [calcs.Q0s,1.5]
+          end: [calcs.Q0d,1.5]
+          double: true
+          color: black
+          strokeWidth: 1.5
+          show: params.floor > calcs.eqP
+
+
+
+
+
+
+# consumer surplus
+      - Area:
+          fn1: (params.dint)-(params.dslope)*(x)
+          fn2: max(params.floor,calcs.eqP)
+          fill: blue
+          min: 0
+          max: min(calcs.Q0d,calcs.eqQ)
+          show: params.showCS == 1
+
+# producer surplus
+      - Area:
+          fn1: max(params.floor,calcs.eqP)
+          fn2: (params.sslope)*(x)
+          fill: green
+          min: 0
+          max: min(calcs.Q0d,calcs.eqQ)
+          show: params.showPS == 1
+
+# deadweight loss
+      - Area:
+          fn1: (params.dint) - (params.dslope)*(x)
+          fn2: (params.sslope)*(x)
+          fill: grey
+          min: calcs.Q0d
+          max: calcs.eqQ
+          show: params.showDWL == 1 && params.floor > calcs.eqP
+
+
+
+
+
+
+    sidebar:
+      controls:
+
+      - title: FIGURA 7.1
+        sliders:
+        - param: floor
+          label: P_\text{min}
+        checkboxes:
+        - param: showCS
+          label: "` \\\\text{Mostra surplus del consumatore} `"
+        - param: showPS
+          label: "` \\\\text{Mostra surplus del produttore} `"
+        - param: showDWL
+          label: "` \\\\text{Mostra perdita secca} `"
+
+        divs:
+        - html: "` `"
+        - html: "` `"
+        - html: "` `"
+        - html: "`
+                  L'introduzione di un prezzo minimo pari a $P_\\\\text{max}=${params.floor}$ non ha
+                  alcun effetto sul mercato.
+                `"
+          show: params.floor <= calcs.eqP
+        - html: "`
+                  L'introduzione di un prezzo minimo pari a $P_\\\\text{max}=${params.floor}$
+                  determina un eccesso di offerta. La quantità scambiata si riduce a ${calcs.Q0d} unità.
+                `"
+          show: params.floor > calcs.eqP
+
+    explanation:
+      divs:
+        - html: "`
+                La funzione di domanda di mercato è $ P=${params.dint}-${params.dslope}Q$. 
+                `"
+        - html: "`
+                  La funzione di offerta di mercato è $ P=${params.sslope}Q$.
+                `"
+        - html: "`
+                  In assenza di interventi, prezzo e quantità di equilibrio sono $P=${calcs.eqP}$
+                      e $Q=${calcs.eqQ}$.
+                `"
+
+
+
+
+
+
+
+
+
+
+
+

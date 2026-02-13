@@ -1,0 +1,216 @@
+---
+title:
+  en: Notes on Microeconomics
+  it: Note di Microeconomia
+author: Alfredo Di Tillio
+parts:
+  - folder: I
+    title: 
+      en: Markets and Competition
+      it: Mercati e concorrenza
+    chapters:
+      - folder: 1
+        title:
+          en: Introduction
+          it: Introduzione
+        sections:
+          - title:
+              en: Scarcity and Choice
+              it: Scarsità e scelta
+          - title:
+              en: Demand and Supply
+              it: Domanda e offerta
+      - folder: 2
+        title:
+          en: Preferences, Constraints and Consumer Choice  
+          it: Preferenze, vincoli e scelte dei consumatori
+        sections:
+          - title:
+              en: Preferences and Utility
+              it: Preferenze e utilità
+          - title:
+              en: Substitution between Goods
+              it: Sostituibilità tra i beni
+          - title:
+              en: Budget Constraint, Optimal Choice and Demand
+              it: Vincolo di bilancio, scelta ottima e domanda
+          - title:
+              en: Consumer Welfare and Surplus
+              it: Benessere e surplus del consumatore
+      - folder: 3
+        title:
+          en: Production, Costs and Firm Choice
+          it: Produzione, costi e scelte delle imprese concorrenziali
+        sections:
+
+          - title:
+              en: Production and Productivity
+              it: Produzione e produttività
+          - title:
+              en: Firm's Costs
+              it: Costi dell'impresa
+          - title:
+              en: Firm's Optimal Choice
+              it: Scelta ottima dell'impresa
+          - title:
+              en: Price-Taking Firm's Supply
+              it: Offerta dell'impresa price-taker
+      - folder: 4
+        title:
+          en: Equilibrium in Competitive Markets
+          it: Equilibrio nei mercati concorrenziali
+        sections:
+          - title:
+              en: Market Demand and Supply in Equilibrium
+              it: Domanda e offerta di mercato in equilibrio
+          - title:
+              en: Total Surplus and Market Efficiency
+              it: Surplus totale ed efficienza dei mercati
+          - title:
+              en: Elasticity and Changes in Welfare
+              it: Elasticità e variazioni di benessere
+  - folder: II
+    title: 
+      en: Market Power
+      it: Potere di mercato
+    chapters:
+      - folder: 5
+        title:
+          en: Monopoly
+          it: Monopolio
+        sections:
+          - title:
+              en: Monopolist's Costs and Revenues
+              it: Costi e ricavi del monopolista
+          - title:
+              en: Monopolist's Optimal Choice
+              it: Scelta ottima del monopolista
+          - title:
+              en: Price Discrimination
+              it: Discriminazione di prezzo
+      - folder: 6
+        title:
+          en: Oligopoly
+          it: Oligopolio
+        sections:
+          - title:
+              en: Basic Concepts of Game Theory
+              it: Concetti di base di teoria dei giochi
+          - title:
+              en: Competition on Quantity
+              it: Concorrenza sulle quantità
+          - title:
+              en: Competition on Price
+              it: Concorrenza sui prezzi  
+  - folder: III
+    title: 
+      en: Government Intervention, Externalities and Public Goods
+      it: Interventi statali, esternalità e beni pubblici
+    chapters:
+      - folder: 7
+        title:
+          en: Government Intervention
+          it: Interventi statali
+        sections:
+          - title:
+              en: Price Controls
+              it: Regolazione dei prezzi
+          - title:
+              en: Taxes and Subsidies
+              it: Tasse e sussidi
+          - title:
+              en: Import Tariffs
+              it: Dazi all'importazione
+      - folder: 8
+        title:
+          en: Externalities and Public Goods
+          it: Esternalità e beni pubblici
+        sections:
+          - title:
+              en: Externalities and Efficiency
+              it: Esternalità ed efficienza
+          - title:
+              en: Correcting Externalities
+              it: Correzione delle esternalità
+          - title:
+              en: Public Goods
+              it: Beni pubblici
+  - folder: IV
+    title: 
+      en: Labor Market and Savings Decisions
+      it: Mercato del lavoro e scelte di risparmio
+    chapters:
+      - folder: 9
+        title:
+          en: Labor Market
+          it: Mercato del lavoro
+        sections:
+          - title:
+              en: Labor Supply
+              it: Offerta di lavoro
+          - title:
+              en: Demand and Equilibrium in Perfectly Competitive Labor Markets
+              it: Domanda ed equilibrio nei mercati del lavoro concorrenziali
+          - title:
+              en: Monopsony in Labor Markets
+              it: Monopsonio nel mercato del lavoro
+      - folder: 10
+        title:
+          en: Saving Decisions
+          it: Scelte di risparmio
+        sections:
+          - title:
+              en: Interest Rate and Present Value
+              it: Tasso d'interesse e valore attuale
+          - title:
+              en: Saving and Borrowing
+              it: Risparmio e indebitamento
+  - folder: V
+    title: 
+      en: Uncertainty and Information Asymmetry
+      it: Incertezza e Asimmetrie informative
+    chapters:
+      - folder: 11
+        title:
+          en: Uncertainty and Insurance
+          it: Incertezza e assicurazione
+        sections:
+          - title:
+              en: Lotteries, Expected Value and Expected Utility
+              it: Lotterie, valore atteso e utilità attesa
+          - title:
+              en: Insurance Market
+              it: Mercato assicurativo
+      - folder: 12
+        title:
+          en: "Asymmetric Information: Adverse Selection"
+          it: "Informazione asimmetrica: selezione avversa"
+        sections:
+          - title:
+              en: Adverse Selection in the Insurance Market
+              it: Selezione avversa  nel mercato assicurativo
+          - title:
+              en: Adverse Selection in the Labor Market
+              it: Selezione avversa nel mercato del lavoro
+      - folder: 13
+        title:
+          en: "Asymmetric Information: Moral Hazard"
+          it: "Informazione asimmetrica: azzardo morale"
+        sections:
+          - title:
+              en: Observable Actions and Risk Neutrality
+              it: Azioni osservabili e neutralità al rischio
+          - title:
+              en: Limited Liability and Risk Aversion
+              it: Responsabilità limitata e avversione al rischio
+      - folder: 14
+        title:
+          en: Asymmetric Information in the Credit Market
+          it: Informazione asimmetrica nel mercato del credito
+        sections:
+          - title:
+              en: Adverse Selection in the Credit Market
+              it: Selezione avversa nel mercato del credito
+          - title:
+              en: Moral Hazard in the Credit Market
+              it: Azzardo morale nel mercato del credito 

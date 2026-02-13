@@ -1,0 +1,215 @@
+params:
+
+- {name: p, value: 2.5, min: 1, max: 4, round: 0.5}
+- {name: q, value: 2500, min: 1000, max: 4000, round: 500}
+- {name: split, value: 0}
+
+- {name: display, value: 0}
+
+calcs:
+
+  zz: max((5)-(params.q)/(1000),(params.q)/(1000))
+  zzmin: min((5)-(params.q)/(1000),(params.q)/(1000))
+
+  qA: (params.q)*((0.5)-(0.1)*(params.split)) # quota gruppo A
+  qB: (params.q)-(calcs.qA) # quota gruppo B
+
+  costA: (calcs.qA)*(calcs.qA)/(1000)
+  costB: (calcs.qB)*(calcs.qB)/(1000)
+
+aspectRatio: 2
+
+layout:
+
+  OneGraphPlusSidebar:
+
+    graph:
+      xAxis:
+        max: 5500
+        ticks: 0
+      yAxis:
+        max: 5.5
+        ticks: 0
+      label: a
+
+      objects:
+
+        - Label:
+                coordinates: [5500, 0]
+                text: "` \\\\text{kg} `"
+        - Label:
+                coordinates: [0, 5.5]
+                text: "` \\\\text{euro/kg}  `"
+
+# demand & social benefit
+        - Line:
+            point: [0,5]
+            slope: -(1)/(1000)
+            color: Blue
+            label:
+              text: D
+              x: 5000
+              position: b
+              bgcolor: none
+            strokeWidth: 2
+        - Area:
+            fn: (5)-(x)/(1000)
+            fill: blue
+            min: 0
+            max: params.q
+            show: params.display == 0
+
+# supply & social cost
+        - Line:
+            point: [0,0]
+            slope: (1)/(1000)
+            color: Red
+            label:
+              text: S_{SR}
+              x: 5300
+              position: c
+            strokeWidth: 2
+        - Area:
+            fn: (x)/(1000)
+            fill: red
+            min: 0
+            max: params.q
+            show: params.display == 1
+
+# total surplus
+        - Area:
+            fn1: (5)-(x)/(1000)
+            fn2: (x)/(1000)
+            fill: blue
+            min: 0
+            max: min((params.q),(2500))
+            show: params.display == 2
+        - Area:
+            fn1: (5)-(x)/(1000)
+            fn2: (x)/(1000)
+            fill: Gray
+            opacity: 0.8
+            min: 2500
+            max: params.q
+            show: params.display == 2 && params.q > 2500
+        - Area:
+            fn1: (5)-(x)/(1000)
+            fn2: (x)/(1000)
+            fill: Gray
+            opacity: 0.2
+            min: params.q
+            max: 2500
+            show: params.display == 2 && params.q < 2500
+
+
+# equilibrium
+        - Point:
+            coordinates: [2500, 2.50]
+            color: Green
+            r: 4
+            droplines:
+              horizontal: "` 2.50 `"
+              vertical: 2500
+            strokeWidth: 0.5
+            show: params.q == 2500 && params.p == 2.5 && params.split == 0
+
+        - Point:
+            coordinates: [2500, 2.50]
+            color: Green
+            r: 0
+            droplines:
+              horizontal: "` 2.50 `"
+              vertical: 2500
+            strokeWidth: 0.5
+            show: params.q !== 2500
+
+        - Point:
+            coordinates: [params.q, calcs.zz]
+            color: Black
+            r: 0
+            droplines:
+              vertical: params.q
+              horizontal: calcs.zz
+            strokeWidth: 0.5
+            show: params.q !== 2500 || params.p !== 2.5 || params.split !== 0
+
+        - Point:
+            coordinates: [params.q, calcs.zzmin]
+            color: Black
+            r: 0
+            droplines:
+              horizontal: calcs.zzmin
+            strokeWidth: 0.5
+            show: params.q !== 2500 || params.p !== 2.5 || params.split !== 0
+
+
+
+
+
+
+
+    sidebar:
+
+      controls:
+
+      - title: FIGURA 4.6
+
+        sliders:
+          - param: q
+            label: Q
+
+        radioGroup:
+          param: display
+          options:
+            - Mostra beneficio sociale
+            - Mostra costo sociale
+            - Mostra surplus totale
+
+        divs:
+        - html: "` `"
+        - html: "` `"
+
+        # checkboxes:
+        # - param: split
+        #   label: "` \\\\text{Aumenta quota a 60} \\\\% `"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    explanation:
+      divs:
+
+       - html: "`
+                La quantità di equilibrio è $Q=2500$. In corrispondenza di questa quantità,
+                il surplus totale (area azzurra) è massimo.
+                `"
+         show: params.q == 2500
+
+       - html: "`
+                La quantità di equilibrio è $Q=2500$. In corrispondenza di una quantità minore,
+                il surplus totale (area azzurra) non è massimizzato. Si ha una <b>perdita secca</b>
+                di benessere (area grigio chiaro).
+                `"
+         show: params.q < 2500
+
+       - html: "`
+                La quantità di equilibrio è $Q=2500$. In corrispondenza di una quantità maggiore,
+                il surplus totale (differenza tra area azzurra e area grigio scuro) non è massimizzato. 
+                Si ha una <b>perdita secca</b>
+                di benessere (area grigio scuro).
+                `"
+         show: params.q > 2500
+
+
+
+

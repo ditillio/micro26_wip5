@@ -1,0 +1,283 @@
+---
+schema: EconSchema
+version: 1
+params:
+
+- {name: a, value: 1, min: 1, max: 2}
+- {name: b, value: 2, min: 1, max: 2}
+
+- {name: P0, value: 10, min: 5, max: 15}
+- {name: P1, value: 10, min: 5, max: 15}
+
+- {name: M0, value: 1100, min: 800, max: 1400, round: 100}
+- {name: M1, value: 1100, min: 800, max: 1400, round: 100}
+
+- {name: R, value: 0.1, min: 0, max: 0.4, round: 0.01}
+
+calcs:
+
+  r0: (params.a) / ( (params.a) + (params.b) ) 
+  r1: (params.b) / ( (params.a) + (params.b) ) 
+
+  FV: ( 1 + (params.R) ) * (params.M0) + (params.M1)
+  PV: (params.M0) + (params.M1) / ( 1 + (params.R) )
+
+  endowment0: (params.M0) / (params.P0)
+  endowment1: (params.M1) / (params.P1)
+
+  maxC0: (calcs.PV) / (params.P0)
+  maxC1: (calcs.FV) / (params.P1)
+
+  IBCslope: ( ( 1 + params.R ) * (params.P0) ) / ( params.P1 )
+  zzz: ( (params.b) / (params.a) ) * (calcs.IBCslope)
+
+  optchoice0: (calcs.r0) * (calcs.FV) / ( ( 1 + params.R ) * (params.P0) )
+  optchoice1: (calcs.r1) * (calcs.FV) / (params.P1)
+
+  maxU: ( (calcs.optchoice0)^(params.a) ) * ( (calcs.optchoice1)^(params.b) )
+
+  S: (params.M0) - (params.P0) * (calcs.optchoice0)
+
+
+aspectRatio: 1.25
+
+layout:
+  type: OneGraphPlusSidebar
+  def:
+    graph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 250
+        ticks: 0
+      yAxis:
+        orient: left
+        min: 0
+        max: 280
+        ticks: 0
+      objects:
+
+
+      - Label:
+            coordinates: [245, 0]
+            text: "` \\\\text{consumo} `"
+            yPixelOffset: 10
+            position: l
+      - Label:
+            coordinates: [245, 0]
+            text: "` \\\\text{presente} `"
+            yPixelOffset: -5
+            position: l
+
+      - Label:
+            coordinates: [0, 280]
+            text: "` \\\\text{consumo}  `"
+            xPixelOffset: -5
+            yPixelOffset: 10
+      - Label:
+            coordinates: [0, 280]
+            text: "` \\\\text{futuro}  `"
+            xPixelOffset: -5
+            yPixelOffset: -5
+
+
+# budget line
+      - type: Segment
+        def:
+          a:
+          - 0
+          - calcs.maxC1
+          b:
+          - calcs.maxC0
+          - 0
+          color: Blue
+          strokeWidth: 2
+          label:
+            text: "`   `"
+            location: 0.5
+            yPixelOffset: 0
+
+# endowment point
+      - Point:
+          coordinates: [calcs.endowment0, calcs.endowment1]
+          droplines: {vertical: , horizontal: }
+          color: Black
+          r: 5
+
+# arrow pointing at endowment point
+      - Arrow:
+          begin: [calcs.endowment0+80, calcs.endowment1+80]
+          end: [calcs.endowment0, calcs.endowment1]
+          color: Black
+          strokeWidth: 1
+          trim: 0.02
+          label:
+            text: "` \\\\footnotesize \\\\text{situazione iniziale} `"
+            location: 0.94
+
+# shadow arrow pointing at endowment point
+      - Arrow:
+          begin: [calcs.endowment0+80, calcs.endowment1+80]
+          end: [calcs.endowment0, calcs.endowment1]
+          color: Black
+          strokeWidth: 0
+          trim: 0.02
+          label:
+            text: "` \\\\footnotesize \\\\qquad C_0=${calcs.endowment0.toFixed(2)} \\\\quad C_1 = ${calcs.endowment1.toFixed(2)} `"
+            location: 0.77
+
+# optimal bundle
+      - Point:
+          coordinates: [calcs.optchoice0, calcs.optchoice1]
+          droplines: {vertical: calcs.optchoice0.toFixed(2), horizontal: calcs.optchoice1.toFixed(2)}
+          color: Blue
+          r: 5
+
+# optimal bundle indiff curve
+      - Curve:
+          fn: ((calcs.maxU)/((x)^(params.a)))^(1/params.b)
+          color: Black
+          strokeWidth: 1
+
+# other indiff curve
+      - Curve:
+          fn: ((0.5*calcs.maxU)/((x)^(params.a)))^(1/params.b)
+          color: Black
+          strokeWidth: 1
+      - Curve:
+          fn: ((1.5*calcs.maxU)/((x)^(params.a)))^(1/params.b)
+          color: Black
+          strokeWidth: 1
+
+
+
+
+
+
+
+
+
+
+
+    sidebar:
+      controls:
+
+      - title: FIGURA 10.3
+
+        sliders:
+        - param: a
+          label: a
+        - param: b
+          label: b
+        - param: M0
+          label: M_0
+        - param: M1
+          label: M_1
+        - param: P0
+          label: P_0
+        - param: P1
+          label: P_1
+        - param: R
+          label: R
+
+
+    explanation:
+        divs:
+        - html: "` La funzione di utilità del consumatore è
+                  $ U(C_0,C_1) = C_0 C_1 $ `"
+          show: params.a == 1 && params.b == 1
+        - html: "` La funzione di utilità del consumatore è
+                  $ U(C_0,C_1) = C^2_0 C_1 $ `"
+          show: params.a == 2 && params.b == 1
+        - html: "` La funzione di utilità del consumatore è
+                  $ U(C_0,C_1) = C_0 C^2_1 $ `"
+          show: params.a == 1 && params.b == 2
+        - html: "` La funzione di utilità del consumatore è
+                  $ U(C_0,C_1) = C^2_0 C^2_1 $ `"
+          show: params.a == 2 && params.b == 2
+
+        - html: "` Il saggio marginale di sostituzione del consumo presente
+                col consumo futuro è quindi
+                $$ MRS_{C_0C_1} = \\\\frac{C_1}{C_0} $$ `"
+          show: params.a == params.b
+        - html: "` Il saggio marginale di sostituzione del consumo presente
+                col consumo futuro è quindi
+                $$ MRS_{C_0C_1} = \\\\frac{2C_1}{C_0} $$ `"
+          show: params.a > params.b
+        - html: "` Il saggio marginale di sostituzione del consumo presente
+                col consumo futuro è quindi
+                $$ MRS_{C_0C_1} = \\\\frac{C_1}{2C_0} $$ `"
+          show: params.a < params.b
+
+        - html: "` La scelta ottima, ottenuta risolvendo il sistema di equazioni dato dal vincolo di
+                bilancio e dalla condizione di tangenza
+                $$
+                C_1 = \\\\dfrac{(1+R)M_0+M_1}{P_1} - \\\\dfrac{(1+R)P_0}{P_1} C_0
+                \\\\qquad \\\\qquad
+                \\\\frac{2C_1}{C_0} = \\\\dfrac{(1+R)P_0}{P_1}
+                $$
+                `"
+          show: params.a > params.b
+
+        - html: "` La scelta ottima, ottenuta risolvendo il sistema di equazioni dato dal vincolo di
+                bilancio e dalla condizione di tangenza
+                $$
+                C_1 = \\\\dfrac{(1+R)M_0+M_1}{P_1} - \\\\dfrac{(1+R)P_0}{P_1} C_0
+                \\\\qquad \\\\qquad
+                \\\\frac{C_1}{2C_0} = \\\\dfrac{(1+R)P_0}{P_1}
+                $$
+                `"
+          show: params.a < params.b
+
+        - html: "` La scelta ottima, ottenuta risolvendo il sistema di equazioni dato dal vincolo di
+                bilancio e dalla condizione di tangenza
+                $$
+                C_1 = \\\\dfrac{(1+R)M_0+M_1}{P_1} - \\\\dfrac{(1+R)P_0}{P_1} C_0
+                \\\\qquad \\\\qquad
+                \\\\frac{C_1}{C_0} = \\\\dfrac{(1+R)P_0}{P_1}
+                $$
+                `"
+          show: params.a == params.b
+
+        - html: "` ovvero
+                $$
+                C_1 = ${calcs.maxC1.toFixed(2)} - ${calcs.IBCslope.toFixed(2)} C_0
+                \\\\qquad \\\\qquad
+                C_1 = ${calcs.zzz.toFixed(2)} C_0
+                $$
+                `"
+        - html: "` è data da
+                $$ C_0 = ${calcs.optchoice0.toFixed(2)} \\\\qquad C_1 = ${calcs.optchoice1.toFixed(2)} $$
+                `"
+        - html: "` L'individuo è un risparmiatore. Nel periodo 0 sta infatti consumando meno di quanto il suo reddito gli
+                  permetterebbe: $C_0=${calcs.optchoice0.toFixed(2)}$, mentre nella situazione 
+                  iniziale $C_0=${calcs.endowment0.toFixed(2)}$.
+                `"
+          show: calcs.S > 0
+
+        - html: "` L'individuo è un debitore. Nel periodo 0 sta infatti consumando più di quanto il suo reddito gli
+                  permetterebbe: $C_0=${calcs.optchoice0.toFixed(2)}$, mentre nella situazione 
+                  iniziale $C_0=${calcs.endowment0.toFixed(2)}$.
+                `"
+          show: calcs.S < 0
+
+        - html: "` Il risparmio è pari a 
+                  $S=${calcs.S.toFixed(2)}$ euro.
+                `"
+          show: calcs.S > 0
+
+        - html: "` Il risparmio è pari a $S=${calcs.S.toFixed(2)}$ euro,
+                  cioè l'individuo si indebita per ${-calcs.S.toFixed(2)} euro.
+                `"
+          show: calcs.S < 0
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,250 @@
+schema: EconSchema
+version: 1
+params:
+
+- {name: Q, value: 2000, min: 0, max: 4000, round: 100}
+
+- {name: tgl, value: 1000} #  half-length of tangent line
+
+- {name: rev, value: 0}
+
+calcs:
+
+  P: (5)-(params.Q)/(1000)
+  R: ((5)-(params.Q)/(1000))*(params.Q)
+  MR: (5)-(params.Q)/(500)
+  ED: -(calcs.P)/(5-calcs.P)
+
+aspectRatio: 0.75
+
+layout:
+
+  type: TwoVerticalGraphsPlusSidebar
+
+  def:
+
+    topGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 5500
+        ticks: 0
+      yAxis:
+        orient: left
+        min: 0
+        max: 8000
+        ticks: 0
+
+      objects:
+
+      - Label:
+            coordinates: [5500, 0]
+            text: "` \\\\text{kg} `"
+      - Label:
+            coordinates: [0, 8000]
+            text: "` \\\\text{euros}  `"
+
+# revenue
+      - Curve:
+          fn: ((5)-(x)/(1000))*(x)
+          color: Green
+          strokeWidth: 1.5
+          position: bl
+          label:
+            text: R
+            x: 4900
+      - Point:
+          coordinates: [params.Q, calcs.R]
+          color: Green
+          droplines:
+            vertical: params.Q
+            horizontal: calcs.R.toFixed(2)
+          strokeWidth: 0.5
+          r: 3
+      - Point:
+          coordinates: [0, 0]
+          color: Green
+          droplines:
+            horizontal: 0
+          r: 0
+      - Point:
+          coordinates: [5000, 0]
+          color: Green
+          droplines:
+            vertical: 5000
+          r: 0
+
+# tangent to R at chosen quantity
+      - Segment:
+          a: [(params.Q)-(params.tgl),((calcs.P)*(params.Q))-((5)-(2)*(params.Q)/(1000))*(params.tgl)]
+          b: [(params.Q)+(params.tgl),((calcs.P)*(params.Q))+((5)-(2)*(params.Q)/(1000))*(params.tgl)]
+          color: Green
+          lineStyle: dashed
+          strokeWidth: 0.8
+
+      - Label:
+            coordinates: [(params.Q)+(params.tgl),((calcs.P)*(params.Q))+((5)-(2)*(params.Q)/(1000))*(params.tgl)]
+            text: "` \\\\text{slope} = MR = ${calcs.MR.toFixed(2)} `"
+            color: Green
+            position: l
+
+    bottomGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 5500
+        ticks: 0
+      yAxis:
+        orient: left
+        min: -(3)
+        max: 6
+        ticks: 0
+      objects:
+      - Label:
+            coordinates: [5500, 0]
+            text: "` \\\\text{kg} `"
+      - Label:
+            coordinates: [0, 6]
+            text: "` \\\\text{euros/kg}  `"
+      - Point:
+          coordinates: [0, 0]
+          droplines:
+            horizontal: 0
+          color: black
+          r: 0
+
+# market demand function
+      - Line:
+          yIntercept: (5)
+          slope: -(1)/(1000)
+          color: Blue
+          max: (5000)
+          strokeWidth: 1.5
+          position: bl
+          label:
+            text: D
+            x: 4800
+      - Point:
+          coordinates: [0, 5]
+          droplines:
+            horizontal: 5
+          color: Blue
+          r: 0
+      - Point:
+          coordinates: [5000, 0]
+          color: Blue
+          droplines:
+            vertical: 5000
+          r: 0
+
+# marginal revenue
+      - Line:
+          yIntercept: (5)
+          slope: -(1)/(500)
+          color: Green
+          strokeWidth: 1.5
+          position: c
+          label:
+            text: MR
+            y: -(3)
+
+# chosen point
+      - Point:
+          coordinates: [params.Q, calcs.P]
+          color: Blue
+          r: 3
+          droplines:
+            vertical: params.Q
+            horizontal: calcs.P.toFixed(2)
+          strokeWidth: 0.5
+
+      - Point:
+          coordinates: [params.Q, calcs.MR]
+          color: Green
+          r: 3
+          droplines:
+            vertical: params.Q
+            horizontal: calcs.MR.toFixed(2)
+          strokeWidth: 0.5
+
+# monopolist revenue
+      - Rectangle:
+          x1: 0
+          x2: params.Q
+          y1: 0
+          y2: calcs.P
+          fill: green
+          show: params.rev == 0
+      - Area:
+          fn1: (5)-(x)/(500)
+          fn2: (0)
+          fill: green
+          min: 0
+          max: min(2500,(params.Q))
+          show: params.rev == 1
+      - Area:
+          fn1: (5)-(x)/(500)
+          fn2: (0)
+          fill: darkgray
+          opacity: 0.5
+          min: 2500
+          max: params.Q
+          show: params.rev == 1 && params.Q > 2500
+
+# label
+      - Label:
+          coordinates: [3500, 4]
+          text: "` E^D = ${calcs.ED.toFixed(2)} `"
+      - Arrow:
+          begin: [3500,4]
+          end: [params.Q,calcs.P]
+          color: blue
+          strokeWidth: 0.7
+          trim: 0.1
+
+    sidebar:
+      controls:
+
+      - title: FIGURE 5.4
+
+        sliders:
+        - param: Q
+          label: Q
+
+        radioGroup:
+          param: rev
+          options:
+            - Show revenue as price × quantity
+            - Show revenue as area under MR
+
+        divs:
+        - html: <br>
+        - html: "` The market demand curve is
+                    $$
+                    P = 5 - Q/1000
+                    $$
+                  The monopolist's total revenue is therefore 
+                    $$
+                    R = 5Q - Q^2/1000
+                    $$
+                  while marginal revenue is
+                    $$
+                    MR = 5 - Q/500
+                    $$
+                     `"
+
+        - html: "` At quantity $Q=${params.Q}$ demand is
+                    elastic: $E^D=${calcs.ED.toFixed(2)}$. Increasing output from this level raises revenue (and reducing it lowers revenue).
+                     `"
+          show: params.Q < 2500
+
+        - html: "` At quantity $Q=${params.Q}$ demand is
+                    inelastic: $E^D=${calcs.ED.toFixed(2)}$. Increasing output from this level lowers revenue (and reducing it raises revenue).
+                     `"
+          show: params.Q > 2500
+
+        - html: "` At quantity $Q=${params.Q}$ demand is
+                  neither elastic nor inelastic: $E^D=${calcs.ED.toFixed(2)}$. Revenue is maximized:
+                  increasing or decreasing output reduces revenue.
+                     `"
+          show: params.Q == 2500

@@ -1,0 +1,189 @@
+---
+schema: EconSchema
+version: 1
+aspectRatio: 1.8
+params:
+  - {name: x1, value: 4, min: 0, max: 9, round: 0.1}
+  - {name: x2, value: 4, min: 0, max: 9, round: 0.1}
+
+  - {name: p1, value: 40, min: 20, max: 80, round: 20}
+  - {name: p2, value: 40, min: 20, max: 80, round: 20}
+
+  - {name: m, value: 240, min: 120, max: 360, round: 40}
+
+  - {name: showAFFORDABLE, value: true}
+
+calcs:
+  e: (params.p1)*(params.x1)+(params.p2)*(params.x2)
+  xintercept: params.m/params.p1
+  yintercept: params.m/params.p2
+  r: params.p1/params.p2
+
+layout:
+  OneGraphPlusSidebar:
+    graph:
+      xAxis:
+        max: 9.5
+        ticks: 5
+      yAxis:
+        max: 9.5
+        ticks: 5
+      objects:
+
+      - Label:
+            coordinates: [9.3, 0]
+            text: "` \\\\text{Consumption (kg)} `"
+            position: l
+      - Label:
+            coordinates: [0, 9.5]
+            text: "` \\\\text{Housing (tens of m$^2$)}  `"
+
+
+      # BudgetLine
+      - Line:
+          point: [0,params.m/params.p2]
+          slope: -params.p1/params.p2
+          color: DarkGreen
+          strokeWidth: 2
+          max: params.m/params.p1
+      - Point:
+          coordinates: [params.m/params.p1, 0]
+          droplines: {vertical: calcs.xintercept.toFixed(2), horizontal: }
+          color: black
+          r: 0
+      - Point:
+          coordinates: [0, params.m/params.p2]
+          droplines: {vertical: , horizontal: calcs.yintercept.toFixed(2)}
+          color: black
+          r: 0
+
+      # Affordable bundles
+      - Area:
+          fn: (params.m) / (params.p2) - ((params.p1)*(x)) / (params.p2)
+          fill: green
+          above: false
+          show: params.showAFFORDABLE == true
+
+
+
+      # Bundle
+      - Point:
+          coordinates: [params.x1, params.x2]
+          droplines:
+            horizontal: params.x2.toFixed(1)
+            vertical: params.x1.toFixed(1)
+          color: Darkgreen
+          r: 4
+          draggable: true
+          show: calcs.e <= params.m
+          label:
+            text: "` \\\\large{A} `"
+
+      - Point:
+          coordinates: [params.x1, params.x2]
+          droplines:
+            horizontal: params.x2.toFixed(1)
+            vertical: params.x1.toFixed(1)
+          color: Red
+          r: 4
+          draggable: true
+          label:
+            text: "` \\\\large{A} `"
+          show: calcs.e > params.m
+
+
+    sidebar:
+      controls:
+      - title: FIGURE 2.11
+        description: The budget constraint is the dark green line. 
+                      Move the sliders to see how the budget constraint changes as its parameters
+                      (income and prices) change.
+                      Drag bundle <i>A</i> to compute the amount of money needed to buy it, and 
+                      check whether the bundle is affordable or not.
+        checkboxes:
+        - param: showAFFORDABLE
+          label: "\\text{Show all affordable bundles}"
+        sliders:
+        - param: m
+          label: M
+        - param: p1
+          label: P_X
+        - param: p2
+          label: P_Y
+        divs:
+          - html: <br>
+          - html: "` The budget constraint is
+                    $$ Y = ${calcs.yintercept} - ${calcs.r} X $$
+                     `"
+          - html: <br>
+          - html: "` Bundle $A=(${params.x1.toFixed(1)},${params.x2.toFixed(1)})$
+                      $\\\\color{${colors.red}} \\\\text{is not affordable}$ because
+                    $$ ${params.p1.toFixed(1)}*${params.x1.toFixed(1)}+${params.p2.toFixed(1)}*${params.x2.toFixed(1)}
+                          = ${calcs.e.toFixed(2)} > ${params.m} $$
+                     `"
+            show: calcs.e > params.m
+          - html: "` Bundle $A=(${params.x1.toFixed(1)},${params.x2.toFixed(1)})$ is affordable. It does not
+                      lie on the budget line, given that
+                    $$ ${params.p1.toFixed(1)}*${params.x1.toFixed(1)}+${params.p2.toFixed(1)}*${params.x2.toFixed(1)}
+                          = ${calcs.e.toFixed(2)} < ${params.m} .$$
+                     `"
+            show: calcs.e < params.m
+          - html: "` Bundle $A=(${params.x1.toFixed(1)},${params.x2.toFixed(1)})$ is affordable. It lies
+                      on the budget line, given that
+                    $$ ${params.p1.toFixed(1)}*${params.x1.toFixed(1)}+${params.p2.toFixed(1)}*${params.x2.toFixed(1)}
+                          = ${calcs.e.toFixed(2)} = ${params.m} .$$
+                     `"
+            show: calcs.e == params.m
+
+
+    explanation:
+      divs:
+        - html: "` The consumer has a weekly income of $M=${params.m}$ euros.
+                  The price of the generic consumption good is $P_X=${params.p1}$ euro/kg, 
+                  while housing has a weekly price of $P_Y=${params.p2}$ euro per ten m$^2$.  `"
+
+        - html: "`
+                <ul>
+                  <li>
+                    <p><small>
+                  The vertical intercept of the budget line (value of $Y$ corresponding to $X=0$) 
+                  equals $M/P_Y$, the maximum quantity of  $Y$
+                  that the consumer can afford.
+                  Analogously, the horizontal intercept (value of $X$ corresponding to $Y=0$)
+                  equals $M/P_X$, the maximum quantity of  $X$ that the consumer can afford.
+                    </small></p>
+                  </li>
+                  <li>
+                    <p><small>
+                  The absolute value of the slope of the budget line, $P_X/P_Y$,
+                  measures the value in terms of  $Y$ that the market gives to one 
+                  unit of $X$, i.e. the rate at which the market allows substituting $X$ with $Y$.
+                  Indeed, giving up one unit of $X$ allows spending $P_X$
+                  euros more in  $Y$, that is, buying $P_X/P_Y$ more units of $Y$.
+                  Analogously, buying one unit more of $X$ requires spending
+                  $P_X$ euros less in $Y$, i.e. buying  $P_X/P_Y$ units less of $Y$. 
+                    </small></p>
+                  </li>
+                  <li>
+                    <p><small>
+                  If income increases, the budget line moves away from the origin in a parallel fashion.
+                   A decrease of income instead moves the line inwards.
+                   The slope, which does not depend on income, does not change.
+                    </small></p>
+                  </li>
+                  <li>
+                    <p><small>
+                  An increase or decrease of $P_X$ makes the budget line rotate clockwise
+                  or counterclockwise, 
+                  respectively, around its vertical intercept.
+                  An increase or decrease of $P_Y$ makes the budget line rotate counterclockwise
+                  or clockwise, 
+                  respectively, around its horizontal intercept.
+                    </small></p>
+                  </li>
+                </ul>
+                `"
+
+
+
+

@@ -1,0 +1,234 @@
+---
+schema: EconSchema
+version: 1
+params:
+- {name: a, value: 1, min: 1, max: 2}
+- {name: b, value: 2, min: 1, max: 2}
+- {name: w, value: 35, min: 0, max: 70}
+- {name: M, value: 70, min: 40, max: 120, round: 10}
+- {name: p, value: 20, min: 15, max: 35}
+- {name: num, value: 1000, min: 500, max: 1500, round: 10}
+- {name: numimp, value: 10, min: 5, max: 15}
+- {name: pimp, value: 17.5, min: 10, max: 25, round: 0.05}
+- {name: k, value: 80, min: 60, max: 100, round: 10}
+- {name: minwage, value: 20, min: 0, max: 60}
+
+calcs:
+  wealth: ( 7 * (params.w) ) + params.M
+  consumptionEndowment: params.M / params.p
+  leisure: (7 - params.L)
+  consumption: (params.M + params.w*params.L) / params.p
+  maxconsumption: (params.M + params.w*7) / params.p
+  wageIncome: params.w*params.L
+  wageconsumption: (params.w*params.L)/params.p
+  rN: (params.a) / ( (params.a) + (params.b) ) 
+  rC: (params.b) / ( (params.a) + (params.b) ) 
+  optchoiceNinterior: calcs.wealth * calcs.rN / params.w
+  optchoiceLinterior: -(calcs.optchoiceNinterior)+7
+  optchoiceCinterior: calcs.wealth * calcs.rC / params.p
+  optchoiceNcorner: 7 * calcs.rN
+  optchoiceCcorner: calcs.consumptionEndowment
+  maxUinterior: ( (calcs.optchoiceNinterior)^(params.a) ) * ( (calcs.optchoiceCinterior)^(params.b) )
+  maxUcorner: ((calcs.optchoiceNcorner)^(params.a))*((calcs.optchoiceCcorner)^(params.b))
+  realwage: params.w / params.p
+  mrsEndowment: ((params.a)/(params.b)) * (calcs.consumptionEndowment) / 7
+  Ls: (params.num)*(1/3)*(14-params.M/params.w)
+  Lsminwage: (params.num)*(1/3)*(14-params.M/params.minwage)
+
+  Ld: (params.numimp) * ( ((params.pimp^2)*(params.k^2)) / (4*params.w^2) )
+  Ldminwage: (params.numimp) * ( ((params.pimp^2)*(params.k^2)) / (4*params.minwage^2) )
+
+
+
+  rr: params.num/params.numimp
+  cc: (0.75/calcs.rr)*(params.pimp^2)*(params.k^2)
+
+
+  Weq: ( params.M + ( (params.M^2) + 56 * calcs.cc )^0.5 ) / 28
+  Leq: (params.num)*(1/3)*(14-params.M/calcs.Weq)
+
+
+aspectRatio: 1.3
+
+layout:
+  type: OneGraphPlusSidebar
+  def:
+    graph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 7000
+        ticks: 0
+      yAxis:
+        orient: left
+        min: 0
+        max: 75
+        ticks: 0
+      objects:
+
+
+      - Label:
+            coordinates: [7000, 0]
+            text: "` \\\\text{gg} `"
+            yPixelOffset: 0
+            position: l
+
+      - Label:
+            coordinates: [0, 75]
+            text: "` \\\\text{Euro/gg}  `"
+            xPixelOffset: -5
+
+
+
+
+# mkt labor supply function
+      - Curve:
+          fn: calcs.rN * params.M / ( - (x)/params.num + 7*calcs.rC )  
+          color: Red
+          strokeWidth: 2.5
+          max: params.num * 4.666
+          position: b
+          label:
+            text: \text{offerta di lavoro}
+            x: params.num * ( calcs.rC * 7 - calcs.rN * params.M / 60 )
+      - Curve:
+          fn: calcs.rN * params.M / ( - (x)/params.num + 7*calcs.rC )  
+          color: Red
+          strokeWidth: 0
+          max: params.num * 3.5
+          position: c
+          label:
+            text: \text{di mercato}
+            x: params.num * ( calcs.rC * 7 - calcs.rN * params.M / 60 )
+      - Segment:
+          a: [30,0]
+          b: [30,calcs.rN * params.M / ( 7*calcs.rC )]
+          color: Red
+          strokeWidth: 2.5
+
+# mkt labor demand function
+      - Curve:
+          fn: ( (params.numimp)^(0.5) ) * ( (params.pimp) * (params.k) ) / ( 2 * (x)^(0.5) )
+          color: Blue
+          label:
+            text: \text{domanda di lavoro}
+            x: 1200
+            position: b
+          strokeWidth: 1.7
+      - Curve:
+          fn: ( (params.numimp)^(0.5) ) * ( (params.pimp) * (params.k) ) / ( 2 * (x)^(0.5) )
+          color: Blue
+          label:
+            text: \text{di mercato}
+            x: 1200
+            position: c
+          strokeWidth: 0
+
+# equilibrium point
+      - Point:
+          coordinates: [calcs.Leq, calcs.Weq]
+          droplines:
+            vertical: calcs.Leq.toFixed(2)
+            horizontal: calcs.Weq.toFixed(2)
+          color: Green
+          r: 4
+          show: params.minwage <= calcs.Weq
+# equilibrium point shadow
+      - Point:
+          coordinates: [calcs.Leq, calcs.Weq]
+          droplines:
+            vertical: calcs.Leq.toFixed(0)
+            horizontal: calcs.Weq.toFixed(2)
+          color: Gray
+          r: 1
+          show: params.minwage > calcs.Weq
+
+# minimum wage and excess demand
+      - Segment:
+          a: [calcs.Ldminwage,params.minwage+2]
+          b: [calcs.Lsminwage,params.minwage+2]
+          show: (params.minwage > calcs.Weq)
+          startArrow: true
+          endArrow: true
+          color: Purple
+          label:
+            text: "\\begin{matrix}\\text{ECCESSO} \\\\ \\text{DI OFFERTA}\\end{matrix}"
+            fontSize: 8
+            bgcolor: none
+            yPixelOffset: 14
+      - Line:
+          yIntercept: params.minwage
+          color: Purple
+          label:
+            text: W_\text{min}
+            x: 7000
+            position: l
+          strokeWidth: 1
+          bgcolor: none
+          drag:
+            - vertical: minwage
+      - Point:
+          coordinates: [calcs.Ldminwage, params.minwage]
+          droplines: {vertical: calcs.Ldminwage.toFixed(2), horizontal: params.minwage.toFixed(2)}
+          color: Green
+          r: 4
+          show: params.minwage > calcs.Weq
+      - Point:
+          coordinates: [calcs.Lsminwage, params.minwage]
+          droplines: {vertical: , horizontal: params.minwage.toFixed(2)}
+          color: Red
+          r: 4
+          show: params.minwage > calcs.Weq
+      - Point:
+          coordinates: [0, params.minwage]
+          droplines:
+            horizontal: params.minwage.toFixed(2)
+          color: Purple
+          r: 0
+          show: params.minwage < calcs.Weq
+      - Segment:
+          a: [5000,10]
+          b: [calcs.Lsminwage,0]
+          show: (params.minwage > calcs.Weq)
+          endArrow: true
+          color: Red
+          strokeWidth: 1
+      - Label:
+            coordinates: [5000, 10]
+            text: "` ${calcs.Lsminwage.toFixed(2)}   `"
+            fontSize: 10
+            color: Red
+            show: params.minwage > calcs.Weq
+      - Area:
+          fn1: ( (params.numimp)^(0.5) ) * ( (params.pimp) * (params.k) ) / ( 2 * (x)^(0.5) )
+          fn2: calcs.rN * params.M / ( - (x)/params.num + 7*calcs.rC )
+          fill: Gray
+          min: calcs.Ldminwage
+          max: calcs.Leq
+          show: params.minwage > calcs.Weq
+
+    sidebar:
+      controls:
+
+      - title: FIGURA 9.7
+#        description: The budget line for a worker who can choose how many hours to work at a constant wage
+        sliders:
+        - param: minwage
+          label: W_\text{min}
+        divs:
+        - html: "` In assenza di interventi statali, il salario è $W=${calcs.Weq.toFixed(2)} $
+                      e la quantità di lavoro scambiata è $L=${calcs.Leq.toFixed(2)} $. `"
+        - html: "` L'introduzione di un salario minimo pari a $W_\\\\text{min}=${params.minwage.toFixed(2)} $ non ha
+                    alcun effetto sul mercato. `"
+          show: params.minwage <= calcs.Weq
+        - html: "` L'introduzione di un salario minimo pari a $W_\\\\text{min}=${params.minwage} $ crea un eccesso di offerta di lavoro.
+                    La quantità di lavoro scambiata è pari alla quantità domandata, $L=${calcs.Ldminwage.toFixed(2)}$, mentre la quantità offerta
+                    è $L=${calcs.Lsminwage.toFixed(2)}$.  `"
+          show: params.minwage > calcs.Weq
+        - html: "` Il salario minimo ha ridotto la quantità di lavoro
+                    scambiata nel mercato, creando una perdita secca (area grigia). `"
+          show: params.minwage > calcs.Weq
+
+
+
+

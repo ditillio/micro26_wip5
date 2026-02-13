@@ -1,0 +1,197 @@
+params:
+
+- {name: A, value: 80, min: 40, max: 100, round: 10}
+- {name: w, value: 64, min: 40, max: 80}
+- {name: p, value: 3, min: 0.5, max: 5, round: 0.05}
+- {name: fc, value: 100, min: 50, max: 200, round: 10}
+- {name: numimp, value: 20, min: 10, max: 40, round: 5}
+
+calcs:
+  xopt: ( params.A * params.A / ( 2 * params.w ) ) * params.p
+  tr: params.p * calcs.xopt
+  vc: (calcs.xopt)^(2) / 100
+  tc: calcs.vc + (params.fc)
+  econprofit: calcs.tr - calcs.vc
+  accprofit: calcs.tr - calcs.tc
+  mc: calcs.xopt / 50
+  avc: (calcs.xopt) / 100
+  atc: calcs.xopt / 100 + (params.fc) / calcs.xopt
+  mktsupply: (params.numimp)*(calcs.xopt)
+  acmin: (2)*(sqrt((params.fc)*(params.w)))/(params.A)
+
+  mcslope: (2)*(params.w)/((params.A)*(params.A))
+  supplyslope: (1)/(calcs.mcslope)
+  mktsupplyslope: (params.numimp)*(calcs.supplyslope)
+
+aspectRatio: 2
+
+layout:
+  TwoHorizontalGraphsPlusSidebar:
+
+    leftGraph: 
+      xAxis:
+        max: 210
+        min: -3
+        ticks: 4
+      yAxis:
+        max: 6
+        ticks: 10
+      label: a
+
+      objects:
+
+        - Label:
+                coordinates: [210, 0]
+                text: "` \\\\text{kg} `"
+        - Label:
+                coordinates: [0, 6]
+                text: "` \\\\text{euro/kg}  `"
+
+# points
+        - Point:
+            coordinates: [calcs.xopt, params.p]
+            color: Red
+            r: 4
+            droplines:
+              vertical: calcs.xopt.toFixed(2)
+
+
+# price line
+        - Line:
+            yIntercept: params.p
+            color: Green
+            label:
+              text: P
+              x: 210
+              position: l
+            strokeWidth: 1
+            bgcolor: none
+            drag:
+              - vertical: p
+
+# individual supply curve
+        - Curve:
+            fn: ( 2 * params.w / ( params.A * params.A ) ) * (x)
+            color: Red
+            label:
+              text: S^i_{SR}
+              x: 210
+            strokeWidth: 2
+
+# average cost curve
+        - Curve:
+            fn: ( params.fc / (x) ) + ( params.w / ( params.A * params.A ) ) * (x)
+            color: Brown
+            label:
+              text: AC
+              x: 22
+            strokeWidth: 0.7
+            min: 0.5
+            lineStyle: dashed
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    rightGraph: 
+      xAxis:
+        max: 8000
+        min: -3
+        ticks: 4
+      yAxis:
+        max: 6
+        ticks: 10
+      label: a
+
+      objects:
+
+        - Label:
+                coordinates: [8000, 0]
+                text: "` \\\\text{kg} `"
+        - Label:
+                coordinates: [0, 6]
+                text: "` \\\\text{euro/kg}  `"
+
+# points
+        - Point:
+            coordinates: [calcs.mktsupply, params.p]
+            color: Red
+            r: 4
+            droplines:
+              vertical: calcs.mktsupply.toFixed(0)
+
+
+# price line
+        - Line:
+            yIntercept: params.p
+            color: Green
+            label:
+              text: P
+              x: 8000
+              position: l
+            strokeWidth: 1
+            bgcolor: none
+            drag:
+              - vertical: p
+
+# market supply curve
+        - Curve:
+            fn: ( 2 * params.w / ( params.A * params.A ) ) * ((x)/(params.numimp))
+            color: Red
+            label:
+              text: S_{SR}
+              x: min(8000,(300)*(params.numimp))  
+            strokeWidth: 2
+
+
+
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURE 4.2
+        sliders:
+        - param: A
+          label: A
+        - param: w
+          label: W
+        - param: fc
+          label: FC
+        - param: numimp
+          label: \text{num. firms}
+        - param: p
+          label: P
+        divs:
+        - html: "` When $P = ${params.p.toFixed(2)}$, the quantity supplied by each of the ${params.numimp}
+                  firms in the short-run market is ${calcs.xopt.toFixed(2)}.
+                  The total quantity supplied in the market is therefore ${calcs.mktsupply.toFixed(0)}. `"
+
+    explanation:
+      divs:
+        - html: "`
+                The pasta market is populated in the short run by ${params.numimp} identical firms.
+                The production function is $Q=${params.A}\\\\sqrt{L}$ and the wage is $W=${params.w}$.
+                The marginal cost function is therefore $MC=${calcs.mcslope.toFixed(2)}Q$.
+                From this, the individual supply function is
+                $Q=${calcs.supplyslope.toFixed(2)}P$ (curve $S^i_{SR}$ in the graph on the left).
+                The total quantity supplied is equal to ${params.numimp} times the
+                quantity supplied by each firm. The short-run market supply function
+                (curve $S_{SR}$ in the graph on the right) is therefore
+                $$
+                Q=${params.numimp}\\\\times ${calcs.supplyslope.toFixed(2)} P
+                =
+                ${calcs.mktsupplyslope.toFixed(2)} P
+                \\\\qquad\\\\text{that is}\\\\qquad
+                P=Q/${calcs.mktsupplyslope.toFixed(2)}
+                $$ 
+                `"

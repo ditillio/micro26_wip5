@@ -1,0 +1,349 @@
+params:
+
+- {name: p, value: 2.5, min: 1, max: 4, round: 0.5}
+- {name: q, value: 2500, min: 1000, max: 2500, round: 500}
+- {name: split, value: 50, min: 0, max: 100, round: 10}
+
+calcs:
+
+  zz: max((5)-(params.q)/(1000),(params.q)/(1000))
+  zzmin: min((5)-(params.q)/(1000),(params.q)/(1000))
+
+  qA: (params.q)*(params.split)/(100) # quota gruppo A
+  qB: (params.q)-(calcs.qA) # quota gruppo B
+
+  costA: (calcs.qA)*(calcs.qA)/(1000)
+  costB: (calcs.qB)*(calcs.qB)/(1000)
+
+aspectRatio: 2
+
+layout:
+  ThreeHorizontalGraphs:
+
+
+
+
+
+    leftGraph: 
+      xAxis:
+        max: 5500
+        ticks: 0
+      yAxis:
+        max: 6
+        ticks: 0
+      label: a
+
+      objects:
+
+        - Label:
+                coordinates: [5500, 0]
+                text: "` \\\\text{kg} `"
+        - Label:
+                coordinates: [0, 6]
+                text: "` \\\\text{euro/kg}  `"
+
+# demand
+        - Line:
+            point: [0,5]
+            slope: -(1)/(1000)
+            color: Blue
+            label:
+              text: D
+              x: 5000
+              position: b
+              bgcolor: none
+            strokeWidth: 2
+
+# supply
+        - Line:
+            point: [0,0]
+            slope: (1)/(1000)
+            color: Red
+            label:
+              text: S_{SR}
+              x: 5300
+              position: c
+            strokeWidth: 2
+
+# total surplus with 50/50 split
+        - Area:
+            fn1: (5)-(x)/(1000)
+            fn2: (x)/(1000)
+            fill: blue
+            min: 0
+            max: 2500
+
+# total cost with 50/50 split
+        - Area:
+            fn: (x)/(1000)
+            fill: red
+            min: 0
+            max: 2500
+
+# equilibrium
+        - Point:
+            coordinates: [2500, 2.50]
+            color: Green
+            r: 4
+            droplines:
+              horizontal: "` 2.50 `"
+              vertical: 2500
+            strokeWidth: 0.5
+            show: params.q == 2500 && params.p == 2.5 && params.split == 0
+
+        - Point:
+            coordinates: [2500, 2.50]
+            color: Green
+            r: 0
+            droplines:
+              horizontal: "` 2.50 `"
+              vertical: 2500
+            strokeWidth: 0.5
+            show: params.q !== 2500
+
+        - Point:
+            coordinates: [params.q, calcs.zz]
+            color: Black
+            r: 0
+            droplines:
+              vertical: params.q
+              horizontal: calcs.zz
+            strokeWidth: 0.5
+            show: params.q !== 2500 || params.p !== 2.5 || params.split !== 0
+
+        - Point:
+            coordinates: [params.q, calcs.zzmin]
+            color: Black
+            r: 0
+            droplines:
+              horizontal: calcs.zzmin
+            strokeWidth: 0.5
+            show: params.q !== 2500 || params.p !== 2.5 || params.split !== 0
+
+
+
+
+
+
+
+
+    middleGraph: 
+      xAxis:
+        max: 5500
+        ticks: 0
+      yAxis:
+        max: 6
+        ticks: 0
+      label: a
+
+      objects:
+
+        - Label:
+                coordinates: [5500, 0]
+                text: "` \\\\text{kg} `"
+        - Label:
+                coordinates: [0, 6]
+                text: "` \\\\text{euro/kg}  `"
+
+# supply group A
+        - Line:
+            point: [0,0]
+            slope: (1)/(500)
+            color: Red
+            label:
+              text: S^A_{SR}
+              x: 2900
+              position: c
+            strokeWidth: 2
+
+        - Point:
+            coordinates: [calcs.qA, (calcs.qA)/(500)]
+            color: Black
+            r: 0
+            droplines:
+              vertical: calcs.qA
+            strokeWidth: 0.5
+
+# group A cost
+        - Area:
+            fn: (x)/(500)
+            fill: red
+            min: 0
+            max: calcs.qA
+
+        - Label:
+            coordinates: [2500, 1.5]
+            text: "` VC^A=${calcs.costA} `"
+            color: Red
+            position: l
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    rightGraph: 
+      xAxis:
+        max: 5500
+        ticks: 0
+      yAxis:
+        max: 6
+        ticks: 0
+      label: a
+
+      objects:
+
+        - Label:
+                coordinates: [5500, 0]
+                text: "` \\\\text{kg} `"
+        - Label:
+                coordinates: [0, 6]
+                text: "` \\\\text{euro/kg}  `"
+
+# supply group B
+        - Line:
+            point: [0,0]
+            slope: (1)/(500)
+            color: Red
+            label:
+              text: S^B_{SR}
+              x: 2900
+              position: c
+            strokeWidth: 2
+
+        - Point:
+            coordinates: [calcs.qB, (calcs.qB)/(500)]
+            color: Black
+            r: 0
+            droplines:
+              vertical: calcs.qB
+            strokeWidth: 0.5
+
+# group B cost
+        - Area:
+            fn: (x)/(500)
+            fill: red
+            min: 0
+            max: calcs.qB
+
+        - Label:
+            coordinates: [2500, 1.5]
+            text: "` VC^B=${calcs.costB} `"
+            color: Red
+            position: l
+
+
+
+
+
+
+
+
+    leftControls:
+      title: Production Allocation
+      description: Select the percentage of the total quantity (2500) to be produced by group 𝐴 firms.
+
+      # divs:
+      # - html: "`  `"
+
+      sliders:
+        - param: split
+          label: "` \\\\% \\\\text{ gr. $A$} `"
+
+    middleControls:
+      title: Group A Production Share
+      divs:
+      - html: "` `"
+      - html: "` `"
+      - html: "` The 10 firms in group A produce $\\\\color{red} ${params.split} \\\\%$ 
+                of the total, that is, $ ${(params.split)*(params.q)/(100)} $ units. `"
+
+      # checkboxes:
+      # - param: split
+      #   label: "` \\\\text{Reduce share to 40} \\\\% `"
+
+    rightControls:
+      title: Group B Production Share
+      divs:
+      - html: "` `"
+      - html: "` `"
+      - html: "` The 10 firms in group B produce $\\\\color{red} ${(100)-(params.split)} \\\\%$
+                of the total, that is, $ ${((100)-(params.split))*(params.q)/(100)} $ units. `"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    explanation:
+
+      divs:
+
+       - html: "`
+                At the equilibrium quantity, $Q=2500$, social benefit equals the sum of the blue and red areas in the left-hand graph.
+                `"
+
+       - html: "`
+                The center graph shows the short-run supply curve of the 10 firms in group $A$
+                (the horizontal sum of 10 individual supply curves), denoted as $SR^A_{SR}$.
+                The area below the curve represents the total variable cost incurred by the group,
+                indicated as $VC^A$.
+                `"
+
+       - html: "`Similarly, the graph on the right shows the supply ($SR^B_{SR}$) and cost ($VC^B$) of the firms in group $B$.
+                `"
+
+       - html: "`The market supply curve in the left-hand graph, $S_{SR}$, is the horizontal sum
+                of the supply curves $SR^A_{SR}$ and $SR^B_{SR}$.
+                `"
+
+       - html: "`
+                <b>When the total quantity is equally divided between the two groups, as in equilibrium,
+                the sum of the red areas in the center and right graphs
+                (equal to $ ${calcs.costA} + ${calcs.costB} = ${(calcs.costA)+(calcs.costB)}$ euros)
+                matches the red area in the left-hand graph. Total surplus therefore corresponds
+                to the blue area in the left-hand graph.</b>
+                 `"
+         show: params.split == 50
+
+       - html: "`
+                <b>When the total quantity is not equally divided between the two groups,
+                the sum of the red areas in the center and right graphs
+                (equal to $ ${calcs.costA} + ${calcs.costB} = ${(calcs.costA)+(calcs.costB)}$ euros)
+                is greater than the red area in the left-hand graph (equal to $3125$ euros).
+                The allocation of production across firms is not efficient.
+                Total surplus is smaller than the blue area in the left-hand graph.</b>
+                `"
+         show: params.split !== 50
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

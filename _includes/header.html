@@ -1,0 +1,9 @@
+<div class="screen-only">
+  <div class="lang-switch">
+  {% if include.language == "it" %}
+    IT | <a href="{{ site.baseurl }}{{ page.url | replace_first: '/it/', '/en/' }}">EN</a>
+  {% else %}
+    <a href="{{ site.baseurl }}{{ page.url | replace_first: '/en/', '/it/' }}">IT</a> | EN
+  {% endif %}
+  </div>
+</div>

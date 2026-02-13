@@ -1,0 +1,155 @@
+---
+schema: EconSchema
+version: 1
+params:
+- {name: DWL, value: 0}
+- {name: welfare, value: 0}
+
+aspectRatio: 1.5
+
+layout:
+  type: OneGraphPlusSidebar
+  def:
+    graph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 4500
+        ticks: 0
+      yAxis:
+        orient: left
+        min: 0
+        max: 90
+        ticks: 0
+      objects:
+      - Label:
+            coordinates: [4500, 0]
+            text: "` \\\\text{dd} `"
+            yPixelOffset: 0
+            position: l
+      - Label:
+            coordinates: [0, 90]
+            text: "` \\\\text{Euro/dd}  `"
+            xPixelOffset: -5
+# mkt labor supply function
+      - Line:
+          yIntercept: 20
+          max: 
+          slope: 0.01
+          color: Red
+          strokeWidth: 2.5
+          position: c
+          label:
+            text: S
+            x: 4500
+      - Segment:
+          a: [20,0]
+          b: [20,20]
+          color: Red
+          strokeWidth: 2.5
+# marginal labor cost
+      - Line:
+          yIntercept: 20
+          max: 
+          slope: 0.02
+          color: Orange
+          strokeWidth: 2.5
+          position: c
+          label:
+            text: MLC
+            x: 3500
+# marginal labor revenue
+      - Line:
+          yIntercept: 80
+          max: 
+          slope: -0.01
+          color: Blue
+          strokeWidth: 2.5
+          position: c
+          label:
+            text: MLR
+            x: 4400
+      - Point:
+          coordinates: [3000, 50]
+          droplines:
+            vertical: 3000
+            horizontal: 50
+          color: Blue
+          r: 5
+      - Point:
+          coordinates: [2000, 40]
+          droplines:
+            vertical: L^M=2000
+            horizontal: W^M=40
+          color: Green
+          r: 5
+      - Point:
+          coordinates: [2000, 60]
+          droplines:
+            vertical: 
+          color: Green
+          r: 0
+      - Point:
+          coordinates: [0, 20]
+          droplines:
+            vertical: 
+            horizontal: 20
+          color: Black
+          r: 0
+# deadweight loss
+      - Area:
+          fn1: 80-(x)/100
+          fn2: 20+(x)/100
+          fill: Gray
+          min: 2000
+          max: 3000
+          show: params.DWL == 1
+# monopsonist's revenue and cost
+      - Area:
+          fn1: 80-(x)/100
+          fn2: (40)
+          fill: Lightgreen
+          min: 0
+          max: 2000
+          show: params.welfare == 1
+      - Area:
+          fn: (40)
+          fill: Red
+          opacity: 0.15
+          min: 0
+          max: 2000
+          show: params.welfare == 1
+# workers' surplus
+      - Area:
+          fn1: (40)
+          fn2: 20+(x)/100
+          fill: Lightgreen
+          min: 0
+          max: 2000
+          show: params.welfare == 2
+
+
+
+
+
+
+    sidebar:
+      controls:
+
+      - title: FIGURE 9.8
+#        description: The budget line for a worker who can choose how many hours to work at a constant wage
+        # sliders:
+        # - param: M
+        #   label: M_0
+        radioGroup:
+          param: welfare
+          options:
+            - Do not show surplus
+            - Show monopsonist's profits/costs
+            - Show worker's surplus
+        checkboxes:
+        - param: DWL
+          label: "` \\\\text{Show deadweight loss} `"
+
+        divs:
+        - html: "`  `"

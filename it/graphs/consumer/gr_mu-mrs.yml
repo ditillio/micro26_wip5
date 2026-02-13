@@ -1,0 +1,238 @@
+---
+schema: EconSchema
+version: 1
+aspectRatio: 1.3
+
+params:
+
+  - {name: x1, value: 3, min: 0, max: 9, round: 0.1}
+  - {name: x2, value: 3, min: 0, max: 9, round: 0.1}
+
+  - {name: s, value: 5, min: 0, max: 10}
+  - {name: a, value: 1, min: 1, max: 3}
+  - {name: b, value: 1, min: 1, max: 3}
+
+  - {name: showMORE, value: false}
+  - {name: showLESS, value: false}
+
+# consumption levels on 45° line
+  - {name: c1, value: 1}
+  - {name: c2, value: 2}
+  - {name: c3, value: 3}
+  - {name: c4, value: 4}
+  - {name: c5, value: 5}
+  - {name: c6, value: 6}
+  - {name: c7, value: 7}
+  - {name: c8, value: 8}
+  - {name: c9, value: 9}
+
+
+
+
+calcs:
+
+# utility at selected bundle
+  u: (((params.x1)+(params.s))^(params.a))*(((params.x2)+(params.s))^(params.b))
+
+# MU and MRS at selected bundle
+  MU1: (params.a)*(((params.x1)+(params.s))^((params.a)-1))*(((params.x2)+(params.s))^((params.b)))
+  MU2: (params.b)*(((params.x1)+(params.s))^((params.a)))*(((params.x2)+(params.s))^((params.b)-1))
+  MRS: (calcs.MU1)/(calcs.MU2)
+
+
+
+
+# utility levels
+  u1: (((params.c1)+(params.s))^(params.a))*(((params.c1)+(params.s))^(params.b))
+  u2: (((params.c2)+(params.s))^(params.a))*(((params.c2)+(params.s))^(params.b))
+  u3: (((params.c3)+(params.s))^(params.a))*(((params.c3)+(params.s))^(params.b))
+  u4: (((params.c4)+(params.s))^(params.a))*(((params.c4)+(params.s))^(params.b))
+  u5: (((params.c5)+(params.s))^(params.a))*(((params.c5)+(params.s))^(params.b))
+  u6: (((params.c6)+(params.s))^(params.a))*(((params.c6)+(params.s))^(params.b))
+  u7: (((params.c7)+(params.s))^(params.a))*(((params.c7)+(params.s))^(params.b))
+  u8: (((params.c8)+(params.s))^(params.a))*(((params.c8)+(params.s))^(params.b))
+  u9: (((params.c9)+(params.s))^(params.a))*(((params.c9)+(params.s))^(params.b))
+
+  xequiv: ((9)+(params.s)*(6))/(params.s)
+
+layout:
+  OneGraphPlusSidebar:
+    graph:
+
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 9.5
+        ticks: 0
+      yAxis:
+        orient: left
+        min: 0
+        max: 9.5
+        ticks: 0
+
+
+      objects:
+
+      - Label:
+            coordinates: [9.5, 0]
+            text: "` \\\\text{unità di $X$} `"
+            position: l
+      - Label:
+            coordinates: [0, 9.5]
+            text: "` \\\\text{unità di $Y$}  `"
+
+
+
+# Indifference Curve at bundle
+      # - Curve:
+      #     fn: -(params.s)+((calcs.u)/(((x)+(params.s))^(params.a)))^(1/(params.b))
+      #     color: Black
+      #     strokeWidth: 1.5
+      #     min: 0.01
+      #     show: params.s == 0
+      # - Curve:
+      #     fn: -(params.s)+((calcs.u)/(((x)+(params.s))^(params.a)))^(1/(params.b))
+      #     color: Black
+      #     strokeWidth: 1.5
+      #     show: params.s > 0
+
+
+      - ContourMap:
+          levels: [calcs.u]
+          yMax: 10
+          xMax: 10
+          fn: (((x)+(params.s))^(params.a))*(((y)+(params.s))^(params.b))
+          strokeWidth: 1.5
+
+
+# Indifference Map
+      - ContourMap:
+          levels: [calcs.u1, calcs.u2, calcs.u3, calcs.u4, calcs.u5, calcs.u6, calcs.u7, calcs.u8, calcs.u9]
+          yMax: 10
+          xMax: 10
+          fn: (((x)+(params.s))^(params.a))*(((y)+(params.s))^(params.b))
+          strokeWidth: 0.25
+
+# Bundle
+      - Point:
+          coordinates: [params.x1, params.x2]
+          droplines:
+            horizontal: params.x2.toFixed(1)
+            vertical: params.x1.toFixed(1)
+          color: Blue
+          strokeWidth: 0.5
+          r: 4
+          draggable: true
+
+# tangent at bundle
+      - Line:
+          point: [params.x1,params.x2]
+          slope: -(calcs.MRS)
+          color: Blue
+          min: params.x1-100
+          max: params.x1+100
+          strokeWidth: 0.7
+          lineStyle: dashed
+
+
+
+    sidebar:
+
+      controls:
+
+      - title: FIGURA 2.9
+        description: Selezionare valori dei parametri 𝛼, 𝛽 e 𝜎 per vedere come cambia la
+                   famiglia di curve di indifferenza
+                    al variare dei parametri. Selezionare poi un paniere
+                       per calcolare utilità marginali e 
+                    saggio marginale di sostituzione di 𝑋 con 𝑌 in quel paniere.
+
+        # checkboxes:
+        # - param: showMORE
+        #   label: "\\text{Mostra panieri preferiti ad $A$}"
+        # - param: showLESS
+        #   label: "\\text{Mostra panieri a cui $A$ è preferito}"
+
+        divs:
+          - html: "` Le utilità marginali sono
+                    $$
+                    MU_X = ${params.a} \\\\times (X + ${params.s})^{${params.a}-1}
+                                      \\\\times (Y + ${params.s})^{${params.b}} 
+                    $$
+                    $$
+                    MU_Y = ${params.b} \\\\times (X + ${params.s})^{${params.a}}
+                                      \\\\times (Y + ${params.s})^{${params.b}-1} 
+                    $$
+                    e quindi il saggio marginale di sostituzione di $X$ con $Y$ è
+                    $$
+                    MRS_{XY} = \\\\dfrac{MU_X}{MU_Y} =
+                               \\\\dfrac{${params.a}}{${params.b}} \\\\times
+                               \\\\dfrac{Y + ${params.s}}{X + ${params.s}}
+                    $$  `"
+            show: params.s > 0
+
+          - html: "` Le utilità marginali sono
+                    $$
+                    MU_X = Y 
+                          \\\\qquad 
+                    MU_Y = X 
+                    $$
+                    e quindi il saggio marginale di sostituzione di $X$ con $Y$ è
+                    $$
+                    MRS_{XY} = \\\\dfrac{Y}{X}
+                    $$  `"
+            show: params.s == 0
+
+        sliders:
+        - param: a
+          label: \alpha
+        - param: b
+          label: \beta
+        - param: s
+          label: \sigma
+        - param: x1
+          label: X
+        - param: x2
+          label: Y
+
+
+
+
+
+
+
+
+    explanation:
+      divs:
+        - html: "` Le preferenze del consumatore
+                  sono descritte dalla funzione di utilità 
+                  $$U(X,Y)=(X+${params.s})^{${params.a}} \\\\times (Y+${params.s})^{${params.b}} $$
+                    `"
+
+        - html: "` `"
+
+        - html: "` In corrispondenza del paniere $(${params.x1.toFixed(1)},${params.x2.toFixed(1)})$
+                    le utilità marginali sono
+                    $$
+                    MU_X=${params.a} \\\\times (X + ${params.s})^{${params.a}-1}
+                                      \\\\times (Y + ${params.s})^{${params.b}}=${calcs.MU1.toFixed(2)}
+                    $$
+                    $$
+                    MU_Y=${params.b} \\\\times (X + ${params.s})^{${params.a}}
+                                      \\\\times (Y + ${params.s})^{${params.b}-1}=${calcs.MU2.toFixed(2)}
+                    $$
+                   `"
+
+        - html: "` 
+                   Il saggio marginale di sostituzione di $X$ con $Y$ 
+                    (valore assoluto della pendenza della retta tratteggiata) è quindi
+                   $$
+                   MRS_{XY} = \\\\dfrac{${calcs.MU1.toFixed(2)}}{${calcs.MU2.toFixed(2)}}
+                      = ${calcs.MRS.toFixed(2)}
+                   $$
+                   `"
+
+
+
+
+

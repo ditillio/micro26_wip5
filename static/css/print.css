@@ -1,0 +1,192 @@
+/* static/css/print.css */
+
+/* Metti @page fuori */
+@page {
+  size: A4;
+  margin: 80mm 20mm 25mm 20mm; /* top right bottom left */
+}
+
+@media print {
+  .pagebreak, .print-pagebreak { break-before: page; }
+}
+
+@media print {
+  .print-vspace {
+    height: 15mm;       /* ← il tuo “\vspace{15mm}” */
+    display: block;
+  }
+}
+
+
+
+@media print {
+  .screen-only { display: none !important; }
+  .print-only  { display: block !important; }
+}
+
+@media screen {
+  .print-only { display: none !important; }
+}
+
+
+
+
+
+
+
+
+
+
+@media print {
+  .print-pageno{
+    display: block !important;
+
+    /* così non "sta a sinistra": occupa tutta la riga e si allinea a destra */
+    width: 100%;
+    box-sizing: border-box;
+    text-align: right;
+
+    /* dimensione */
+    font-size: 16pt;
+    color: #555;
+
+    /* posizione: spazio dall'alto e rientro da destra */
+    padding-top: 8mm;
+    padding-right: 16mm !important;
+
+    /* respiro prima del testo della pagina */
+    margin: 0 0 4mm 0;
+
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+
+@media screen {
+  .print-pageno { display: none !important; }
+}
+
+
+
+
+
+
+
+
+
+@media print {
+  /* riduce lo “spazio da titolo” SOLO quando la pagina inizia con quel blocco */
+  article > .subtitle {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  article > h1 {
+    margin-top: 8px !important;        /* oppure 4mm / 6mm se lo vuoi un filo staccato */
+  }
+
+  article > hr {
+    margin-top: 4mm !important;
+  }
+}
+
+@media print {
+  article, section {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+}
+
+
+
+
+
+
+
+
+@media print {
+
+  /* forza Firefox a usare la stessa larghezza del layout screen */
+  body {
+    width: 100% !important;
+  }
+
+  article {
+    width: 950px !important;   /* usa la stessa width effettiva del tuo layout */
+    margin: 0 !important;
+  }
+
+}
+
+
+
+
+
+
+
+@media print {
+
+  /* Aiuta la spezzatura delle parole (italiano incluso) */
+  html { -webkit-hyphens: auto; hyphens: auto; }
+  h1, h2, h3 { -webkit-hyphens: auto; hyphens: auto; }
+
+  /* Titolo sezione (H1) */
+  article h1 {
+    /* leggermente più piccolo: evita titoli “mostruosi” quando sono lunghi */
+    font-size: 42px;        /* prova 38–42px, in base al tuo layout */
+    line-height: 1.05;
+
+    /* wrapping robusto (Chrome/Firefox) */
+    overflow-wrap: break-word;
+    word-break: normal;
+
+    /* “bilancia” le righe quando supportato (Chrome recente) */
+    text-wrap: balance;
+  }
+
+  /* opzionale: un minimo di aria sotto al titolo */
+  article h1 + hr {
+    margin-top: 10px;
+  }
+}
+
+
+
+
+
+
+
+
+@media print {
+  /* Interlinea testo più stretta in stampa */
+  article p,
+  article ul,
+  article ol,
+  article blockquote,
+  article dl,
+  article li {
+    line-height: 1.2 !important;
+  }
+}
+
+
+
+
+
+
+
+@media print {
+
+  .watermark {
+    opacity: 0.5 !important;        /* aumenta rispetto a 0.2/0.3 */
+    color: #666 !important;         /* più scuro ma non nero pieno */
+  }
+
+}
+
+
+
+
+
+
+

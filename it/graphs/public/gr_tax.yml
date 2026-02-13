@@ -1,0 +1,386 @@
+  
+
+---
+schema: EconSchema
+version: 1
+params:
+
+- {name: T, value: 0, min: 0, max: 3}
+- {name: cap, value: 8, min: 3, max: 10}
+
+- {name: dslope, value: 0.1} # abs value of slope of inverse demand
+- {name: dint, value: 12} # intercept of inverse demand
+
+- {name: sslope, value: 0.1} #  slope of inverse supply
+
+- {name: showCS, value: 0}
+- {name: showPS, value: 0}
+- {name: showDWL, value: 0}
+- {name: showTAXREV, value: 0}
+
+- {name: who, value: 0} # who pays tax (0=nobody, 1=firm, 2=consumer)
+
+
+calcs:
+
+  eqQ0: (params.dint)/((params.dslope)+(params.sslope)) # eq qty w/o tax
+  eqP0: (params.dint)-(params.dslope)*(calcs.eqQ0) # eq price w/o tax
+
+  eqQ: ((params.dint)-(params.T))/((params.dslope)+(params.sslope))
+  eqPcons: (params.dint)-(params.dslope)*(calcs.eqQ) # price paid by consumers
+  eqPfirm: (params.sslope)*(calcs.eqQ) # price received by firms
+
+  maxQ: (1.1)*(params.dint)/(params.dslope) # max displayed quantity
+  maxP: (1.1)*(params.dint) # max displayed price
+
+  Q0s: (params.cap)/(params.sslope) # quantity supplied at price cap
+  Q0d: ((params.dint)-(params.cap))/(params.dslope) # quantity demanded at price cap
+
+aspectRatio: 1.3
+
+layout:
+
+  type: OneGraphPlusSidebar
+
+  def:
+
+    graph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: calcs.maxQ
+        ticks: 0
+      yAxis:
+        orient: left
+        min: 0
+        max: calcs.maxP
+        ticks: 0
+
+
+      objects:
+
+      - Label:
+            coordinates: [calcs.maxQ, 0]
+            text: "` \\\\text{unità} `"
+            yPixelOffset: 0
+            position: l
+      - Label:
+            coordinates: [0, calcs.maxP]
+            text: "` \\\\text{euro/unità}  `"
+            xPixelOffset: -5
+
+
+# market demand 
+      - Line:
+          yIntercept: params.dint
+          slope: -params.dslope
+          color: Blue
+          strokeWidth: 2
+          position: bl
+          label:
+            text: D
+            x: (params.dint)/(params.dslope)
+          show: params.who !== 2
+      - Point:
+          coordinates: [0, params.dint]
+          droplines:
+            horizontal: params.dint
+          color: Blue
+          r: 0
+          show: params.who !== 2
+      - Line:
+          yIntercept: (params.dint)-(params.T)
+          slope: -params.dslope
+          color: Blue
+          strokeWidth: 2
+          position: bl
+          label:
+            text: D
+            x: (params.dint)/(params.dslope)
+          show: params.who == 2
+      - Point:
+          coordinates: [0, (params.dint)-(params.T)]
+          droplines:
+            horizontal: (params.dint)-(params.T)
+          color: Blue
+          r: 0
+          show: params.who == 2
+
+# shadow market demand and arrow 
+      - Line:
+          yIntercept: params.dint
+          slope: -params.dslope
+          color: Blue
+          strokeWidth: 0.75
+          lineStyle: dashed
+          show: params.who == 2 && params.T > 0
+      - Arrow:
+          begin: [85,(params.dint)-(params.dslope)*(85)]
+          end: [85,(params.dint)-(params.dslope)*(85)-(params.T)]
+#          double: true
+          color: black
+          strokeWidth: 1
+          trim: 0.1
+          show: params.who == 2 && params.T > 0
+
+
+# market supply
+      - Line:
+          yIntercept: 0
+          slope: params.sslope
+          color: Red
+          max: (params.dint)/(params.dslope)
+          strokeWidth: 2
+          position: c
+          label:
+            text: S
+            x: (params.dint)/(params.dslope)
+          show: params.who !== 1
+      - Line:
+          yIntercept: params.T
+          slope: params.sslope
+          color: Red
+          max: (params.dint)/(params.dslope)
+          strokeWidth: 2
+          position: c
+          label:
+            text: S
+            x: min( (params.dint)/(params.dslope) , ((calcs.maxP)-(params.T))/(params.sslope) )
+          show: params.who == 1
+      - Point:
+          coordinates: [0, params.T]
+          droplines:
+            horizontal: params.T
+          color: Red
+          r: 0
+          show: params.who == 1
+
+# shadow market supply and arrow
+      - Line:
+          yIntercept: 0
+          slope: params.sslope
+          color: Red
+          max: (params.dint)/(params.dslope)
+          strokeWidth: 0.75
+          lineStyle: dashed
+          show: params.who == 1 && params.T > 0
+      - Arrow:
+          begin: [85,(85)*(params.sslope)]
+          end: [85,(85)*(params.sslope)+(params.T)]
+#          double: true
+          color: black
+          strokeWidth: 1
+          trim: 0.1
+          show: params.who == 1 && params.T > 0
+
+
+# market equilibrium without intervention
+      - Point:
+          coordinates: [calcs.eqQ0, calcs.eqP0]
+          droplines:
+            vertical: calcs.eqQ0
+            horizontal: calcs.eqP0
+          color: Green
+          r: 5
+          show: (params.who)*(params.T) == 0
+      - Point:
+          coordinates: [calcs.eqQ0, calcs.eqP0]
+          droplines:
+            vertical: calcs.eqQ0
+            horizontal: calcs.eqP0
+          color: grey
+          r: 3.5
+          show: params.who > 0 && params.T > 0
+
+# market equilibrium with tax on producer
+      - Point:
+          coordinates: [calcs.eqQ, calcs.eqPcons]
+          droplines:
+            vertical: calcs.eqQ
+            horizontal: calcs.eqPcons
+          color: Green
+          r: 5
+          show: (params.who) == 1 && (params.T) > 0
+      - Point:
+          coordinates: [calcs.eqQ, calcs.eqPfirm]
+          droplines:
+            horizontal: calcs.eqPfirm
+          color: grey
+          r: 3.5
+          show: (params.who) == 1 && (params.T) > 0
+
+# market equilibrium with tax on consumer
+      - Point:
+          coordinates: [calcs.eqQ, calcs.eqPfirm]
+          droplines:
+            vertical: calcs.eqQ
+            horizontal: calcs.eqPfirm
+          color: Green
+          r: 5
+          show: (params.who) == 2 && (params.T) > 0
+      - Point:
+          coordinates: [calcs.eqQ, calcs.eqPcons]
+          droplines:
+            horizontal: calcs.eqPcons
+          color: grey
+          r: 3.5
+          show: (params.who) == 2 && (params.T) > 0
+      - Segment:
+          a: [calcs.eqQ, calcs.eqPcons]
+          b: [calcs.eqQ, calcs.eqPfirm]
+          color: grey
+          lineStyle: dotted
+          show: (params.who) == 2 && (params.T) > 0
+
+
+
+
+# consumer surplus
+      - Area:
+          fn1: (params.dint)-(params.dslope)*(x)
+          fn2: calcs.eqPcons
+          fill: blue
+          min: 0
+          max: calcs.eqQ
+          show: params.showCS == 1 && params.who > 0
+
+# producer surplus
+      - Area:
+          fn1: calcs.eqPfirm
+          fn2: (params.sslope)*(x)
+          fill: green
+          min: 0
+          max: calcs.eqQ
+          show: params.showPS == 1 && params.who > 0
+
+# tax revenue
+      - Area:
+          fn1: calcs.eqPcons
+          fn2: calcs.eqPfirm
+          fill: Yellow
+          min: 0
+          max: calcs.eqQ
+          show: params.showTAXREV == 1 && params.who > 0
+
+# deadweight loss
+      - Area:
+          fn1: (params.dint) - (params.dslope)*(x)
+          fn2: (params.sslope)*(x)
+          fill: grey
+          min: calcs.eqQ
+          max: calcs.eqQ0
+          show: params.showDWL == 1 && params.who > 0
+
+#       - Segment:
+#           a: [calcs.Q0s,params.cap]
+#           b: [calcs.Q0s,(params.dint)-(params.dslope)*(calcs.Q0s)]
+#           color: grey
+#           lineStyle: dotted
+#           show: (params.showCS)+(params.showDWL) > 0 && params.cap < calcs.eqP
+
+
+
+
+
+
+    sidebar:
+      controls:
+
+      - title: FIGURA 7.4
+        description: Scegliere il tipo di tassa e poi la sua aliquota per vederne gli effetti
+                      su equilibrio e benessere.
+        radioGroup:
+          param: who
+          options:
+            - Nessuna tassa
+            - Accisa sulla produzione
+            - Accisa sul consumo
+
+      - title:
+        sliders:
+        - param: T
+          label: T
+
+        checkboxes:
+        - param: showCS
+          label: "` \\\\text{Mostra surplus del consumatore} `"
+        - param: showPS
+          label: "` \\\\text{Mostra surplus del produttore} `"
+        - param: showTAXREV
+          label: "` \\\\text{Mostra gettito fiscale} `"
+        - param: showDWL
+          label: "` \\\\text{Mostra perdita secca} `"
+        show: params.who > 0
+
+        divs:
+        - html: "` `"
+        - html: "` `"
+        - html: "` `"
+
+        - html: "`
+                  L'introduzione di un'accisa di aliquota $T=${params.T}$ sulla produzione 
+                  sposta la curva di offerta parallelamente in alto di ${params.T} euro.
+                `"
+          show: params.who == 1 && params.T > 0
+
+        - html: "`
+                  L'introduzione di un'accisa di aliquota $T=${params.T}$ sul consumo 
+                  sposta la curva di domanda parallelamente in basso di ${params.T} euro.
+                `"
+          show: params.who == 2 && params.T > 0
+
+        - html: "` `"
+        - html: "` `"
+
+        - html: "`
+                  Quantità di equilibrio: ${calcs.eqQ} unità
+                `"
+          show: params.who > 0 && params.T > 0
+
+
+        - html: "`
+                  Prezzo di equilibrio: € ${calcs.eqPcons}
+                `"
+          show: params.who == 1 && params.T > 0
+
+        - html: "`
+                  Prezzo di equilibrio: € ${calcs.eqPfirm}
+                `"
+          show: params.who == 2 && params.T > 0
+
+        - html: "`
+                  Prezzo pagato dai consumatori: € ${calcs.eqPcons}
+                `"
+          show: params.who > 0 && params.T > 0
+
+        - html: "`
+                  Prezzo ricevuto dalle imprese: € ${calcs.eqPfirm}
+                `"
+          show: params.who > 0 && params.T > 0
+
+
+
+    explanation:
+      divs:
+        - html: "`
+                La funzione di domanda di mercato è $ P=${params.dint}-${params.dslope}Q$. 
+                `"
+        - html: "`
+                  La funzione di offerta di mercato è $ P=${params.sslope}Q$.
+                `"
+        - html: "`
+                  In assenza di interventi, prezzo e quantità di equilibrio sono $P=${calcs.eqP0}$
+                      e $Q=${calcs.eqQ0}$.
+                `"
+
+
+
+
+
+
+
+
+
+
+
+

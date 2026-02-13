@@ -1,0 +1,263 @@
+schema: EconSchema
+version: 1
+params:
+
+- {name: Q, value: 2000, min: 0, max: 4000, round: 100}
+
+- {name: tgl, value: 1000} #  half-length of tangent line
+
+- {name: rev, value: 0}
+
+calcs:
+
+  P: (5)-(params.Q)/(1000)
+  R: ((5)-(params.Q)/(1000))*(params.Q)
+  MR: (5)-(params.Q)/(500)
+
+  ACmin: (2)
+
+aspectRatio: 0.75
+
+layout:
+
+  type: TwoVerticalGraphsPlusSidebar
+
+  def:
+
+    topGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 5500
+        ticks: 0
+      yAxis:
+        orient: left
+        min: 0
+        max: 8000
+        ticks: 0
+
+      objects:
+
+      - Label:
+            coordinates: [5500, 0]
+            text: "` \\\\text{kg} `"
+      - Label:
+            coordinates: [0, 8000]
+            text: "` \\\\text{euros}  `"
+
+# revenue
+      - Curve:
+          fn: ((5)-(x)/(1000))*(x)
+          color: Green
+          strokeWidth: 1.5
+          position: bl
+          label:
+            text: "` R = 5Q - Q^2/1000 `"
+            x: 4900
+      - Point:
+          coordinates: [params.Q, calcs.R]
+          color: Green
+          droplines:
+            vertical: params.Q
+            horizontal: calcs.R.toFixed(2)
+          strokeWidth: 0.5
+          r: 3
+      - Point:
+          coordinates: [0, 0]
+          color: Green
+          droplines:
+            horizontal: 0
+          r: 0
+      - Point:
+          coordinates: [5000, 0]
+          color: Green
+          droplines:
+            vertical: 5000
+          r: 0
+
+# tangent to R at chosen quantity
+      - Segment:
+          a: [(params.Q)-(params.tgl),((calcs.P)*(params.Q))-((5)-(2)*(params.Q)/(1000))*(params.tgl)]
+          b: [(params.Q)+(params.tgl),((calcs.P)*(params.Q))+((5)-(2)*(params.Q)/(1000))*(params.tgl)]
+          color: Green
+          lineStyle: dashed
+          strokeWidth: 0.8
+
+# cost
+      - Line:
+          yIntercept: 0
+          slope: calcs.ACmin
+          color: Red
+          strokeWidth: 1.5
+          position: c
+          label:
+            text: "` C = ${calcs.ACmin} Q `"
+            x: 4000
+
+    bottomGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 5500
+        ticks: 0
+      yAxis:
+        orient: left
+        min: -(3)
+        max: 6
+        ticks: 0
+      objects:
+      - Label:
+            coordinates: [5500, 0]
+            text: "` \\\\text{kg} `"
+      - Label:
+            coordinates: [0, 6]
+            text: "` \\\\text{euros/kg}  `"
+      - Point:
+          coordinates: [0, 0]
+          droplines:
+            horizontal: 0
+          color: black
+          r: 0
+
+# market demand function
+      - Line:
+          yIntercept: (5)
+          slope: -(1)/(1000)
+          color: Blue
+          max: (5000)
+          strokeWidth: 1.5
+          position: bl
+          label:
+            text: "` P = 5 - Q/1000 `"
+            x: 4200
+      - Point:
+          coordinates: [0, 5]
+          droplines:
+            horizontal: 5
+          color: Blue
+          r: 0
+      - Point:
+          coordinates: [5000, 0]
+          color: Blue
+          droplines:
+            vertical: 5000
+          r: 0
+
+# marginal revenue
+      - Line:
+          yIntercept: (5)
+          slope: -(1)/(500)
+          color: Green
+          strokeWidth: 1.5
+          position: c
+          label:
+            text: "` MR = 5 - Q/500 `"
+            y: -(3)
+
+# marginal cost
+      - Line:
+          yIntercept: (calcs.ACmin)
+          color: Red
+          strokeWidth: 1.5
+          position: c
+          label:
+            text: "` MC = 2 `"
+            x: (5400)
+
+# chosen point
+      - Point:
+          coordinates: [params.Q, calcs.P]
+          color: Blue
+          r: 3
+          droplines:
+            vertical: params.Q
+            horizontal: calcs.P.toFixed(2)
+          strokeWidth: 0.5
+
+      - Point:
+          coordinates: [params.Q, calcs.MR]
+          color: Green
+          r: 3
+          droplines:
+            vertical: params.Q
+            horizontal: calcs.MR.toFixed(2)
+          strokeWidth: 0.5
+
+# monopolist profit/loss
+      - Rectangle:
+          x1: 0
+          y1: 2
+          x2: params.Q
+          y2: (5)-(params.Q)/(1000)
+          fill: green
+          show: params.Q < 3000
+      - Rectangle:
+          x1: 0
+          y1: 2
+          x2: params.Q
+          y2: (5)-(params.Q)/(1000)
+          fill: red
+          show: params.Q > 3000
+
+# deadweight loss
+      - Area:
+          fn1: (5)-(x)/(1000)
+          fn2: (2)
+          fill: Darkgrey
+          opacity: 0.7
+          min: 1500
+          max: 3000
+          show: params.Q == 1500
+
+# evaluation
+      - Label:
+          coordinates: [3400,4]
+          text: "` \\\\LARGE\\\\text{BINGO!} `" 
+          position: c
+          bgcolor: none
+          color: green
+          show: params.Q == 1500
+
+    sidebar:
+      controls:
+
+      - title: FIGURE 5.5
+
+        sliders:
+        - param: Q
+          label: Q
+
+        divs:
+        - html: <br>
+        - html: "` The market demand curve is
+                    $$
+                    P = 5 - Q/1000
+                    $$
+                  The monopolist’s total revenue is therefore 
+                    $$
+                    R = 5Q - Q^2/1000
+                    $$
+                  from which marginal revenue is
+                    $$
+                    MR = 5 - Q/500
+                    $$
+                     `"
+        - html: "` Since marginal cost is $MC = 2$,
+                  at quantity $Q = ${params.Q}$ we have $MR > MC$, so the monopolist’s profit
+                  (green area) is not at its maximum. The monopolist has an incentive to increase
+                  output (or, equivalently, to reduce the price).
+                     `"
+          show: params.Q < 1500
+
+        - html: "` Since marginal cost is $MC = 2$,
+                  at quantity $Q = ${params.Q}$ we have $MR < MC$, so the monopolist’s profit
+                  (green area) is not at its maximum. The monopolist has an incentive to reduce
+                  output (or, equivalently, to raise the price).
+                     `"
+          show: params.Q > 1500
+
+        - html: "` Since marginal cost is $MC = 2$,
+                  at quantity $Q = ${params.Q}$ we have $MR = MC$, so the monopolist’s profit
+                  (green area) is maximized.
+                     `"
+          show: params.Q == 1500

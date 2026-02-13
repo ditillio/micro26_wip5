@@ -1,0 +1,71 @@
+schema: EconSchema
+version: 1
+params:
+  - name: AA
+    value: 3
+    min: 0
+    max: 5
+  - name: BB
+    value: 2
+    min: 0
+    max:  5
+  - name: BA
+    value: 4
+    min: 0
+    max: 5
+  - name: AB
+    value: 1
+    min: 0
+    max: 5
+layout:
+
+  GameMatrixPlusGraphPlusSidebar:
+
+    game:
+      players:
+        - Giocatore 1
+        - Giocatore 2
+      strategies:
+        - [A, B, C, D, E]
+        - [A, B, C, D, E]
+      payoffs:
+        - [[1,2],[1,1],[1,1],[1,1],[1,1]]
+        - [[1,2],[1,1],[1,1],[1,1],[1,1]]
+        - [[1,2],[1,1],[1,1],[1,1],[1,1]]
+        - [[1,2],[1,1],[1,1],[1,1],[1,1]]
+        - [[1,2],[1,1],[1,1],[1,1],[1,1]]
+
+    graph:
+
+      xAxis:
+        show: false
+      yAxis:
+        show: false
+
+
+      # objects:
+
+      # # show points for reference
+      # - Point:
+      #     coordinates: [params.AA, params.AB]
+      #     label:
+      #       text: A
+      #     drag:
+      #       - horizontal: AA
+      #       - vertical: AB
+
+      # - Point:
+      #     coordinates: [ params.BA, params.BB ]
+      #     label:
+      #       text: B
+      #     drag:
+      #       - horizontal: BA
+      #       - vertical: BB
+
+    sidebar:
+      controls:
+        - title: Strict and Weak Dominance
+          # description: Drag the dots around to change the payoffs in the game.
+          # divs:
+          #   - html: $B$ strictly dominates $A$, because $B$ yields a higher payoff than $A$ no matter what the other player chooses.
+          #     show: ((params.BA > params.AA) & (params.BB > params.AB))

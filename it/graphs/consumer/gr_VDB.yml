@@ -1,0 +1,187 @@
+---
+schema: EconSchema
+version: 1
+aspectRatio: 1.8
+params:
+  - {name: x1, value: 4, min: 0, max: 9, round: 0.1}
+  - {name: x2, value: 4, min: 0, max: 9, round: 0.1}
+
+  - {name: p1, value: 40, min: 20, max: 80, round: 20}
+  - {name: p2, value: 40, min: 20, max: 80, round: 20}
+
+  - {name: m, value: 240, min: 120, max: 360, round: 40}
+
+  - {name: showAFFORDABLE, value: true}
+
+calcs:
+  e: (params.p1)*(params.x1)+(params.p2)*(params.x2)
+  xintercept: params.m/params.p1
+  yintercept: params.m/params.p2
+  r: params.p1/params.p2
+
+layout:
+  OneGraphPlusSidebar:
+    graph:
+      xAxis:
+        max: 9.5
+        ticks: 5
+      yAxis:
+        max: 9.5
+        ticks: 5
+      objects:
+
+      - Label:
+            coordinates: [9.3, 0]
+            text: "` \\\\text{Consumo (kg)} `"
+            position: l
+      - Label:
+            coordinates: [0, 9.5]
+            text: "` \\\\text{Alloggio (d m$^2$)}  `"
+
+
+      # BudgetLine
+      - Line:
+          point: [0,params.m/params.p2]
+          slope: -params.p1/params.p2
+          color: DarkGreen
+          strokeWidth: 2
+          max: params.m/params.p1
+      - Point:
+          coordinates: [params.m/params.p1, 0]
+          droplines: {vertical: calcs.xintercept.toFixed(2), horizontal: }
+          color: black
+          r: 0
+      - Point:
+          coordinates: [0, params.m/params.p2]
+          droplines: {vertical: , horizontal: calcs.yintercept.toFixed(2)}
+          color: black
+          r: 0
+
+      # Affordable bundles
+      - Area:
+          fn: (params.m) / (params.p2) - ((params.p1)*(x)) / (params.p2)
+          fill: green
+          above: false
+          show: params.showAFFORDABLE == true
+
+
+
+      # Bundle
+      - Point:
+          coordinates: [params.x1, params.x2]
+          droplines:
+            horizontal: params.x2.toFixed(1)
+            vertical: params.x1.toFixed(1)
+          color: Darkgreen
+          r: 4
+          draggable: true
+          show: calcs.e <= params.m
+          label:
+            text: "` \\\\large{A} `"
+
+      - Point:
+          coordinates: [params.x1, params.x2]
+          droplines:
+            horizontal: params.x2.toFixed(1)
+            vertical: params.x1.toFixed(1)
+          color: Red
+          r: 4
+          draggable: true
+          label:
+            text: "` \\\\large{A} `"
+          show: calcs.e > params.m
+
+
+    sidebar:
+      controls:
+      - title: FIGURA 2.11
+        description: Il vincolo di bilancio è rappresentato graficamente dalla retta verde scuro. 
+                      Spostare i cursori per vedere come il vincolo di bilancio cambia al variare
+                      dei suoi parametri (reddito del consumatore e prezzi dei due beni).
+                      Spostare il paniere <i>A</i> per calcolare la spesa necessaria ad acquistarlo
+                      e verificarne l'accessibilità o meno.
+        checkboxes:
+        - param: showAFFORDABLE
+          label: "\\text{Mostra tutti i panieri accessibili}"
+        sliders:
+        - param: m
+          label: M
+        - param: p1
+          label: P_X
+        - param: p2
+          label: P_Y
+        divs:
+          - html: <br>
+          - html: "` Il vincolo di bilancio è
+                    $$ Y = ${calcs.yintercept} - ${calcs.r} X $$
+                     `"
+          - html: <br>
+          - html: "` Il paniere $A=(${params.x1.toFixed(1)},${params.x2.toFixed(1)})$
+                      $\\\\color{${colors.red}} \\\\text{non è accessibile}$ poiché
+                    $$ ${params.p1.toFixed(1)}*${params.x1.toFixed(1)}+${params.p2.toFixed(1)}*${params.x2.toFixed(1)}
+                          = ${calcs.e.toFixed(2)} > ${params.m} $$
+                     `"
+            show: calcs.e > params.m
+          - html: "` Il paniere $A=(${params.x1.toFixed(1)},${params.x2.toFixed(1)})$ è accessibile. 
+                      Non si trova sul vincolo di bilancio poiché
+                    $$ ${params.p1.toFixed(1)}*${params.x1.toFixed(1)}+${params.p2.toFixed(1)}*${params.x2.toFixed(1)}
+                          = ${calcs.e.toFixed(2)} < ${params.m} .$$
+                     `"
+            show: calcs.e < params.m
+          - html: "` Il paniere $A=(${params.x1.toFixed(1)},${params.x2.toFixed(1)})$ è accessibile. Si trova
+                      sul vincolo di bilancio poiché
+                    $$ ${params.p1.toFixed(1)}*${params.x1.toFixed(1)}+${params.p2.toFixed(1)}*${params.x2.toFixed(1)}
+                          = ${calcs.e.toFixed(2)} = ${params.m} .$$
+                     `"
+            show: calcs.e == params.m
+
+
+    explanation:
+      divs:
+        - html: "` Il consumatore ha un reddito settimanale di $M=${params.m}$ euro.
+                  Il prezzo del generico bene di consumo è $P_X=${params.p1}$ euro/kg 
+                  mentre l'alloggio ha un prezzo settimanale di $P_Y=${params.p2}$ euro/d m$^2$.  `"
+
+        - html: "`
+                <ul>
+                  <li>
+                    <p><small>
+                  L'intercetta verticale della retta di bilancio (valore di $Y$ corrispondente a $X=0$) è
+                  pari a $M/P_Y$, la quantità massima di $Y$
+                  che il consumatore può permettersi.
+                  Analogamente, l'intercetta orizzontale (valore di $X$ corrispondente a $Y=0$)
+                  è pari a $M/P_X$, la quantità massima di $X$ che il consumatore può permettersi.
+                    </small></p>
+                  </li>
+                  <li>
+                    <p><small>
+                  Il valore assoluto della pendenza, $P_X/P_Y$,
+                  misura il valore in termini di $Y$ che il mercato attribuisce ad una 
+                  unità di $X$, cioè il tasso a cui il mercato permette di scambiare
+                  i due beni. Infatti rinunciare ad una unità di $X$ permette di spendere $P_X$
+                  euro in più in $Y$, cioè poterne comprare $P_X/P_Y$ unità in più.
+                  Analogamente, acquistare una unità di $X$ in più obbliga a spendere
+                  $P_X$ euro in meno in $Y$, cioè comprarne $P_X/P_Y$ unità in meno. 
+                    </small></p>
+                  </li>
+                  <li>
+                    <p><small>
+                  Un aumento del reddito sposta il vincolo di bilancio parallelamente verso l'esterno,
+                  mentre una  riduzione del reddito sposta il vincolo di bilancio parallelamente
+                  verso l'interno. La pendenza, che non dipende dal reddito, non cambia.
+                    </small></p>
+                  </li>
+                  <li>
+                    <p><small>
+                  Un aumento o riduzione di $P_X$ fa ruotare il vincolo di bilancio in senso orario o antiorario,
+                  rispettivamente, intorno alla sua intercetta verticale.
+                  Un aumento o riduzione di $P_Y$ fa ruotare il vincolo di bilancio in senso antiorario o orario,
+                  rispettivamente, intorno alla sua intercetta orizzontale.
+                    </small></p>
+                  </li>
+                </ul>
+                `"
+
+
+
+

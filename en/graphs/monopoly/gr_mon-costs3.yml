@@ -1,0 +1,375 @@
+---
+schema: EconSchema
+version: 1
+params:
+
+
+- {name: Q, value: 100, min: 10, max: 350, round: 10}
+
+
+calcs:
+
+  C1: (1)*(100) + (1)*(((params.Q)/(1))^2)/(100)
+  C2: (2)*(100) + (2)*(((params.Q)/(2))^2)/(100)
+  C3: (3)*(100) + (3)*(((params.Q)/(3))^2)/(100)
+
+
+
+
+
+# aspectRatio: 1
+
+layout:
+
+  type: ThreeHorizontalGraphs
+
+  def:
+
+
+    leftGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 400
+        ticks: 0
+        title: "` 1 production unit `"
+      yAxis:
+        orient: left
+        min: 0
+        max: 1400
+        ticks: 0
+
+      objects:
+
+      - Label:
+            coordinates: [400, 0]
+            text: "` \\\\text{kg} `"
+      - Label:
+            coordinates: [0, 1400]
+            text: "` \\\\text{euro}  `"
+
+# cost function with 1 plant
+      - Curve:
+          fn: (1)*(100) + (1)*(((x)/(1))^2)/(100)
+          color: Red
+          strokeWidth: 1.5
+          position: c
+          label:
+            text: C_1
+            x: 360
+      - Point:
+          coordinates: [0, 100]
+          droplines:
+            horizontal: 100
+          color: Red
+          r: 0
+
+# shadow cost function with 2 plants
+      - Curve:
+          fn: (2)*(100) + (2)*(((x)/(2))^2)/(100)
+          color: lightgray
+          strokeWidth: 0.8
+          position: c
+          label:
+            text: C_2
+            x: 390
+
+# shadow cost function with 3 plants
+      - Curve:
+          fn: (3)*(100) + (3)*(((x)/(3))^2)/(100)
+          color: lightgray
+          strokeWidth: 0.8
+          position: c
+          label:
+            text: C_3
+            x: 390
+
+# point at selected quantity
+      - Point:
+          coordinates: [params.Q, calcs.C1]
+          droplines:
+            vertical: params.Q
+            horizontal: calcs.C1.toFixed(2)
+          color: Red
+          strokeWidth: 0.5
+          r: 3
+
+# evaluation
+      - Label:
+          coordinates: [180, 1000]
+          text: \LARGE\checkmark
+          bgcolor: none
+          color: green
+          show: calcs.C1 < min(calcs.C2,calcs.C3)
+      - Label:
+          coordinates: [180, 1000]
+          text: \LARGE{\boldsymbol\times}
+          bgcolor: none
+          color: red
+          show: calcs.C1 > min(calcs.C2,calcs.C3)
+
+
+
+
+
+
+
+
+
+
+    middleGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 400
+        ticks: 0
+        title: "` 2 production units `"
+      yAxis:
+        orient: left
+        min: 0
+        max: 1400
+        ticks: 0
+
+      objects:
+
+      - Label:
+            coordinates: [400, 0]
+            text: "` \\\\text{kg} `"
+      - Label:
+            coordinates: [0, 1400]
+            text: "` \\\\text{euro}  `"
+
+
+# cost function with 2 plants
+      - Curve:
+          fn: (2)*(100) + (2)*(((x)/(2))^2)/(100)
+          color: Red
+          strokeWidth: 1.5
+          position: c
+          label:
+            text: C_2
+            x: 390
+      - Point:
+          coordinates: [0, 200]
+          droplines:
+            horizontal: 200
+          color: Red
+          r: 0
+
+# shadow cost function with 1 plant
+      - Curve:
+          fn: (1)*(100) + (1)*(((x)/(1))^2)/(100)
+          color: lightgray
+          strokeWidth: 0.8
+          position: c
+          label:
+            text: C_1
+            x: 360
+
+# shadow cost function with 3 plants
+      - Curve:
+          fn: (3)*(100) + (3)*(((x)/(3))^2)/(100)
+          color: lightgray
+          strokeWidth: 0.8
+          position: c
+          label:
+            text: C_3
+            x: 390
+
+# point at selected quantity
+      - Point:
+          coordinates: [params.Q, calcs.C2]
+          droplines:
+            vertical: params.Q
+            horizontal: calcs.C2.toFixed(2)
+          color: Red
+          strokeWidth: 0.5
+          r: 3
+
+# evaluation
+      - Label:
+          coordinates: [180, 1000]
+          text: \LARGE\checkmark
+          bgcolor: none
+          color: green
+          show: calcs.C2 < min(calcs.C1,calcs.C3)
+      - Label:
+          coordinates: [180, 1000]
+          text: \LARGE{\boldsymbol\times}
+          bgcolor: none
+          color: red
+          show: calcs.C2 > min(calcs.C1,calcs.C3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    rightGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 400
+        ticks: 0
+        title: "` 3 production units `"
+      yAxis:
+        orient: left
+        min: 0
+        max: 1400
+        ticks: 0
+
+      objects:
+
+      - Label:
+            coordinates: [400, 0]
+            text: "` \\\\text{kg} `"
+      - Label:
+            coordinates: [0, 1400]
+            text: "` \\\\text{euro}  `"
+
+# cost function with 3 plants
+      - Curve:
+          fn: (3)*(100) + (3)*(((x)/(3))^2)/(100)
+          color: Red
+          strokeWidth: 1.5
+          position: c
+          label:
+            text: C_3
+            x: 390
+      - Point:
+          coordinates: [0, 300]
+          droplines:
+            horizontal: 300
+          color: Red
+          r: 0
+
+# shadow cost function with 2 plants
+      - Curve:
+          fn: (2)*(100) + (2)*(((x)/(2))^2)/(100)
+          color: lightgray
+          strokeWidth: 0.8
+          position: c
+          label:
+            text: C_2
+            x: 390
+
+# shadow cost function with 1 plant
+      - Curve:
+          fn: (1)*(100) + (1)*(((x)/(1))^2)/(100)
+          color: lightgray
+          strokeWidth: 0.8
+          position: c
+          label:
+            text: C_1
+            x: 360
+
+# point at selected quantity
+      - Point:
+          coordinates: [params.Q, calcs.C3]
+          droplines:
+            vertical: params.Q
+            horizontal: calcs.C3.toFixed(2)
+          color: Red
+          strokeWidth: 0.5
+          r: 3
+
+# evaluation
+      - Label:
+          coordinates: [180, 1000]
+          text: \LARGE\checkmark
+          bgcolor: none
+          color: green
+          show: calcs.C3 < min(calcs.C1,calcs.C2)
+      - Label:
+          coordinates: [180, 1000]
+          text: \LARGE{\boldsymbol\times}
+          bgcolor: none
+          color: red
+          show: calcs.C3 > min(calcs.C1,calcs.C2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    leftControls:
+
+      title: Monopolist's costs with 1, 2, 3 production units
+
+      sliders:
+      - param: Q
+        label: Q
+
+      divs:
+
+        - html: "` <b>The least costly way to produce ${params.Q} kg of pasta is to use
+                    $ \\\\textbf{\\\\color{Red}one} $
+                    production unit.</b>  `"
+          show: calcs.C1 < min(calcs.C2,calcs.C3)
+
+        - html: "` <b>The least costly way to produce ${params.Q} kg of pasta is to use
+                    $  \\\\textbf{\\\\color{Red}two} $
+                     production units.</b>  `"
+          show: calcs.C2 < min(calcs.C1,calcs.C3)
+
+        - html: "` <b>The least costly way to produce ${params.Q} kg of pasta is to use
+                    $  \\\\textbf{\\\\color{Red}three} $
+                    production units.</b>  `"
+          show: calcs.C3 < min(calcs.C1,calcs.C2)
+
+    # rightControls:
+    #   title: Funzione di costo del monopolista
+    #   sliders:
+    #   - param: share1
+    #     label: "` s `"
+
+
+
+
+
+    # explanation:
+
+    #   divs:
+
+    #     - html: "` <b>Il modo meno costoso di produrre ${params.Q} kg di pasta è utilizzare
+    #                 $ \\\\large \\\\text{\\\\color{Red}UNA} $
+    #                 unità produttiva.</b>  `"
+    #       show: calcs.C1 < min(calcs.C2,calcs.C3)
+
+    #     - html: "` <b>Il modo meno costoso di produrre ${params.Q} kg di pasta è utilizzare
+    #                 $ \\\\large \\\\text{\\\\color{Red}DUE} $
+    #                  unità produttive.</b>  `"
+    #       show: calcs.C2 < min(calcs.C1,calcs.C3)
+
+    #     - html: "` <b>Il modo meno costoso di produrre ${params.Q} kg di pasta è utilizzare
+    #                 $ \\\\large \\\\text{\\\\color{Red}TRE} $
+    #                 unità produttive.</b>  `"
+    #       show: calcs.C3 < min(calcs.C1,calcs.C2)
+
+
+
+
+
+
+
+

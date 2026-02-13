@@ -1,0 +1,429 @@
+---
+schema: EconSchema
+version: 1
+aspectRatio: 0.6
+params:
+
+  - {name: s, value: 5, min: 0, max: 100}
+  - {name: a, value: 1, min: 1, max: 3}
+  - {name: b, value: 1, min: 1, max: 3}
+
+
+# income and prices
+  - {name: m, value: 30, min: 10, max: 50, round: 5}
+  - {name: p1, value: 5, min: 1, max: 10, round: 0.5}
+  - {name: p2, value: 5, min: 1, max: 10, round: 0.5}
+
+
+# consumption levels on 45° line
+  - {name: c1, value: 1}
+  - {name: c2, value: 2}
+  - {name: c3, value: 3}
+  - {name: c4, value: 4}
+  - {name: c5, value: 5}
+  - {name: c6, value: 6}
+  - {name: c7, value: 7}
+  - {name: c8, value: 8}
+  - {name: c9, value: 9}
+
+
+
+calcs:
+
+# price ratio
+  r: (params.p1)/(params.p2)
+
+# budget line intercepts
+  xintercept: params.m/params.p1
+  yintercept: params.m/params.p2
+
+
+# optimal bundle when interior
+  x1int: ((params.a)*(params.m)+(params.a)*(params.s)*(params.p2)-(params.b)*(params.s)*(params.p1))/(((params.a)+(params.b))*(params.p1))
+  x2int: ((params.b)*(params.m)+(params.b)*(params.s)*(params.p1)-(params.a)*(params.s)*(params.p2))/(((params.b)+(params.a))*(params.p2))
+
+# optimal bundle and indirect utility
+  x1opt: max(0,min(calcs.xintercept,calcs.x1int))
+  x2opt: max(0,min(calcs.yintercept,calcs.x2int))
+  umax: (((calcs.x1opt)+(params.s))^(params.a))*(((calcs.x2opt)+(params.s))^(params.b))
+
+
+# MRS at corner Y=0
+  MRScornerX: ((params.a)/(params.b))*(((0)+(params.s))/(((params.m)/(params.p1))+(params.s)))
+
+# MRS at corner X=0
+  MRScornerY: ((params.a)/(params.b))*((((params.m)/(params.p2))+(params.s))/((0)+(params.s)))
+
+# price of X above which X=0
+  maxP1: (params.a)*((params.p2)+(params.m)/(params.s))/(params.b)
+# price of X below which Y=0
+  minP1: max(0,(params.a)*((params.p2)-((params.b)/(params.a))*(params.m)/(params.s))/(params.b))
+# demand of X when PX=minP1
+  x1min: (params.m)/(calcs.minP1)
+
+# utility levels
+  u1: (((params.c1)+(params.s))^(params.a))*(((params.c1)+(params.s))^(params.b))
+  u2: (((params.c2)+(params.s))^(params.a))*(((params.c2)+(params.s))^(params.b))
+  u3: (((params.c3)+(params.s))^(params.a))*(((params.c3)+(params.s))^(params.b))
+  u4: (((params.c4)+(params.s))^(params.a))*(((params.c4)+(params.s))^(params.b))
+  u5: (((params.c5)+(params.s))^(params.a))*(((params.c5)+(params.s))^(params.b))
+  u6: (((params.c6)+(params.s))^(params.a))*(((params.c6)+(params.s))^(params.b))
+  u7: (((params.c7)+(params.s))^(params.a))*(((params.c7)+(params.s))^(params.b))
+  u8: (((params.c8)+(params.s))^(params.a))*(((params.c8)+(params.s))^(params.b))
+  u9: (((params.c9)+(params.s))^(params.a))*(((params.c9)+(params.s))^(params.b))
+
+# case check
+  pricediff: (params.p2) - (params.p1)
+  Dpricediff: (params.m)/(params.s)
+
+layout:
+  TwoVerticalGraphsPlusSidebar:
+
+
+    topGraph:
+      xAxis:
+        max: 9.5
+        ticks: 0
+      yAxis:
+        max: 9.5
+        ticks: 0
+
+      objects:
+
+      - Label:
+            coordinates: [9.33, 0]
+            text: "` \\\\text{units of $X$} `"
+            position: l
+      - Label:
+            coordinates: [0, 9.5]
+            text: "` \\\\text{units of $Y$}  `"
+
+# Indifference Map
+      - ContourMap:
+          levels: [calcs.u1, calcs.u2, calcs.u3, calcs.u4, calcs.u5, calcs.u6, calcs.u7, calcs.u8, calcs.u9]
+          yMax: 10
+          xMax: 10
+          strokeWidth: 0.25
+          fn: (((x)+(params.s))^(params.a))*(((y)+(params.s))^(params.b))
+
+# budget line
+      - Line:
+          point: [0,calcs.yintercept]
+          slope: -params.p1/params.p2
+          color: Green
+          strokeWidth: 1.5
+          max: calcs.xintercept
+      - Point:
+          coordinates: [calcs.xintercept, 0]
+          droplines: {vertical: calcs.xintercept.toFixed(2), horizontal: }
+          color: black
+          r: 0
+      - Point:
+          coordinates: [0, calcs.yintercept]
+          droplines: {vertical: , horizontal: calcs.yintercept.toFixed(2)}
+          color: black
+          r: 0
+
+# optimal bundle
+      - Point:
+          coordinates: [calcs.x1opt, calcs.x2opt]
+          droplines:
+            horizontal: calcs.x2opt.toFixed(2)
+            vertical: calcs.x1opt.toFixed(2)
+          color: Blue
+          r: 4
+          strokeWidth: 0.5
+
+# Indifference curve at optimal bundle
+      - Curve:
+          fn: ((calcs.umax)/(((x)+(params.s))^(params.a)))^(1/(params.b))-(params.s)
+          color: Black
+          strokeWidth: 1.5
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    bottomGraph:
+      xAxis:
+        max: 9.5
+        ticks: 0
+      yAxis:
+        max: 12
+        ticks: 0
+
+      objects:
+
+      - Label:
+            coordinates: [9.33, 0]
+            text: "` \\\\text{units of $X$} `"
+            position: l
+      - Label:
+            coordinates: [0, 12]
+            text: "` \\\\text{euro/unit of $X$}  `"
+
+
+
+# demand function
+      - Curve:
+          fn: (params.a)*((params.m)+(params.s)*(params.p2))/(((params.a)+(params.b))*(x)+(params.b)*(params.s))
+          color: Blue
+          max: (params.m)/(calcs.minP1)
+          strokeWidth: 2.5
+          show: calcs.minP1 > 0
+      - Curve:
+          fn: (params.m)/(x)
+          color: Blue
+          min: (params.m)/(calcs.minP1)
+          strokeWidth: 2.5
+          show: calcs.minP1 > 0
+      - Curve:
+          fn: (params.a)*((params.m)+(params.s)*(params.p2))/(((params.a)+(params.b))*(x)+(params.b)*(params.s))
+          color: Blue
+          strokeWidth: 2.5
+          show: calcs.minP1 == 0
+      - Segment:
+          a: [0.02, calcs.maxP1]
+          b: [0.02, 1000]
+          color: Blue
+          strokeWidth: 3
+      - Point:
+          coordinates: [0, calcs.maxP1]
+          droplines:
+            horizontal: calcs.maxP1.toFixed(2)
+          color: Blue
+          r: 0
+      - Point:
+          coordinates: [(params.m)/(calcs.minP1), calcs.minP1]
+          droplines:
+            horizontal: calcs.minP1.toFixed(2)
+            vertical: calcs.x1min.toFixed(2)
+          color: Blue
+          r: 0
+          strokeWidth: 0.5
+
+
+
+
+# optimal choice
+      - Point:
+          coordinates: [calcs.x1opt, params.p1]
+          droplines:
+            vertical: calcs.x1opt.toFixed(2)
+          color: Blue
+          r: 4
+          strokeWidth: 0.5
+          show: calcs.x1opt > 0
+      - Point:
+          coordinates: [0.02, params.p1]
+          droplines:
+            vertical: 0
+          color: Blue
+          r: 4
+          strokeWidth: 0.5
+          show: calcs.x1opt == 0
+      - Point:
+          coordinates: [calcs.x1opt, params.p1]
+          droplines:
+            horizontal: params.p1.toFixed(2)
+          color: Green
+          r: 0
+          strokeWidth: 0.7
+# vertical dropline 
+      - Segment:
+          a: [calcs.x1opt, params.p1]
+          b: [calcs.x1opt, 1000]
+          strokeWidth: 0.6
+          lineStyle: dotted
+          color: blue
+
+
+# legenda
+      - Label:
+            coordinates: [7, 6.5]
+            text: "` \\\\text{individual} `"
+            position: c
+            color: Blue
+      - Label:
+            coordinates: [7, 6]
+            text: "` \\\\text{demand curve} `"
+            position: c
+            color: Blue
+      - Label:
+            coordinates: [7, 5.5]
+            text: "` \\\\text{for good $X$} `"
+            position: c
+            color: Blue
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURE 2.13
+
+        # description: Selezionare un valore del parametro 𝑠. Selezionare poi reddito e prezzi per calcolare
+        #               la scelta ottima del consumatore e la funzione di domanda del bene 𝑋.
+
+        divs:
+
+          - html: "` The price ratio is
+                    $$
+                    \\\\dfrac{P_X}{P_Y}
+                    =
+                    \\\\dfrac{${params.p1.toFixed(1)}}{${params.p2.toFixed(1)}}
+                    = ${calcs.r.toFixed(2)}
+                    $$
+                      `"
+
+          - html: "` At bundle $(${calcs.xintercept.toFixed(2)},0)$ we have
+                    $$
+                    MRS_{XY} = \\\\dfrac{${params.a}}{${params.b}}\\\\times\\\\dfrac{0+${params.s}}{${calcs.xintercept.toFixed(2)}+${params.s}} =
+                               ${calcs.MRScornerX.toFixed(2)}
+                    $$
+                    At bundle $(0,${calcs.yintercept.toFixed(2)})$ we have
+                    $$
+                    MRS_{XY} = \\\\dfrac{${params.a}}{${params.b}}\\\\times\\\\dfrac{${calcs.yintercept.toFixed(2)}+${params.s}}{0+${params.s}} =
+                               ${calcs.MRScornerY.toFixed(2)}
+                    $$
+
+                      `"
+
+          - html: "` $\\\\color{${colors.red}} \\\\text{We are therefore in case (i).}$ `"
+            show: params.p1 < calcs.minP1
+
+
+          - html: "` $\\\\color{${colors.red}} \\\\text{We are therefore in case (ii).}$ `"
+            show: params.p1 > calcs.maxP1
+
+          - html: "` $\\\\color{${colors.red}} \\\\text{We are therefore in case (iii).}$ `"
+            show: params.p1 <= calcs.maxP1 && params.p1 >= calcs.minP1
+
+          - html: <br>
+            show: params.p1 <= calcs.maxP1 && params.p1 >= calcs.minP1
+
+          - html: "` Budget Constraint:
+                    $$
+                    ${params.p1.toFixed(1)}\\\\times X
+                    +
+                    ${params.p2.toFixed(1)}\\\\times Y = ${params.m.toFixed(0)}
+                    $$
+                     `"
+            show: params.p1 <= calcs.maxP1 && params.p1 >= calcs.minP1
+
+          - html: "` Tangency Condition:
+                    $$
+                    ${params.b}\\\\times ${params.p1.toFixed(1)}\\\\times (X+${params.s})
+                    =
+                    ${params.a}\\\\times${params.p2.toFixed(1)}\\\\times (Y+${params.s})
+                    $$
+                     `"
+            show: params.p1 <= calcs.maxP1 && params.p1 >= calcs.minP1
+
+          - html: "` $\\\\color{${colors.blue}} \\\\text{Optimal choice:}$
+                    $$
+                    \\\\color{${colors.blue}}
+                    X=${calcs.x1opt.toFixed(2)} \\\\qquad Y=${calcs.x2opt.toFixed(2)}
+                    $$
+                     `"
+
+
+        sliders:
+        - param: a
+          label: \alpha
+        - param: b
+          label: \beta
+        - param: s
+          label: \sigma
+        - param: m
+          label: M
+        - param: p1
+          label: P_X
+        - param: p2
+          label: P_Y
+
+
+
+
+
+
+
+    # explanation:
+
+    #     divs:
+
+
+    #       - html: "`
+    #               <ul>
+    #                 <li>
+    #                   <p><small>
+    #                         Anche in questo caso vale la legge della domanda.
+    #                   </small></p>
+    #                 </li>
+    #                 <li>
+    #                   <p><small>
+    #                         In entrambi i casi, una variazione del reddito ($M$) provoca uno <i>spostamento della curva</i>
+    #                         di domanda del bene, verso destra o sinistra a seconda che il
+    #                         reddito aumenti o diminuisca (il bene $X$ è normale).
+    #                   </small></p>
+    #                 </li>
+    #                 <li>
+    #                   <p><small>
+    #                       Nel primo caso (preferenze Cobb-Douglas) una variazione del prezzo 
+    #                       dell'altro bene ($P_Y$) modifica la quantità
+    #                       domandata di $Y$ ma non quella di $X$:  
+    #                       al variare di $P_Y$ la curva di domanda di $X$ non si sposta
+    #                       (i due beni sono indipendenti).
+    #                       Nel secondo caso (beni sostituti) una variazione di $P_Y$ modifica la quantità
+    #                       domandata di $Y$ (a meno che $P_Y$ non sia già tanto alto
+    #                       che il consumo di $Y$ è zero) ma anche la quantità domandata di $X$
+    #                       (a meno che $P_Y$ non sia già tanto basso
+    #                       che il consumo di $X$ è zero). In particolare, un aumento di $P_Y$ 
+    #                       fa spostare a destra la curva di domanda di $X$, mentre una riduzione
+    #                       di $P_Y$ la fa spostare a sinistra (i beni sono sostituti).
+    #                   </small></p>
+    #                 </li>
+    #               </ul>
+    #               `"
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,323 @@
+params:
+- {name: SHOW, value: false}
+- {name: EC, value: 0}
+
+calcs:
+  dummy: (0)
+
+aspectRatio: 1
+
+layout:
+  TwoVerticalGraphsPlusSidebar:
+
+    topGraph: 
+      xAxis:
+        max: 11
+        ticks: 0
+      yAxis:
+        max: 25
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [11, 0]
+                text: "` \\\\text{packs}  `"
+                yPixelOffset: 8
+        - Label:
+                coordinates: [11, 0]
+                text: "` \\\\text{(millions)}  `"
+                yPixelOffset: -8
+        - Label:
+                coordinates: [0, 25]
+                text: "` \\\\text{euros} `"
+
+
+# EC function (linear)
+        - Line:
+            point: [0,0]
+            slope: (2)
+            color: Violet
+            strokeWidth: 1.5
+            max: 10
+            label:
+              text: "` EC = 2Q `"
+              x: 10
+              position: l
+            show: params.EC == 0
+
+# EC function (quadratic)
+        - Curve:
+            fn: (x)^(2) / (4)
+            color: Violet
+            label:
+              text: "` EC = Q^2 /4 `"
+              x: 10
+              position: l
+            strokeWidth: 1.7
+            show: params.EC == 1
+
+# PC function (quadratic)
+        - Curve:
+            fn: (x)^(2) / (2)
+            color: Red
+            label:
+              text: "` PC = Q^2 /2 `"
+              x: 7
+              position: l
+            strokeWidth: 1.7
+
+# SC function (EC linear)
+        - Curve:
+            fn: (x)^(2) / (2) + (2)*(x)
+            color: Purple
+            label:
+              text: "` SC = PC + EC `"
+              x: 5.2
+              position: r
+            strokeWidth: 1.7
+            show: params.EC == 0
+
+# SC function (EC quadratic)
+        - Curve:
+            fn: (x)^(2) / (2) + (x)^(2) / (4)
+            color: Purple
+            label:
+              text: "` SC = PC + EC `"
+              x: 5.7
+              position: r
+            strokeWidth: 1.7
+            show: params.EC == 1
+
+
+
+
+
+
+
+
+    bottomGraph: 
+      xAxis:
+        max: 11
+        ticks: 0
+      yAxis:
+        max: 11
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [11, 0]
+                text: "` \\\\text{packs}  `"
+                yPixelOffset: 8
+        - Label:
+                coordinates: [11, 0]
+                text: "` \\\\text{(millions)}  `"
+                yPixelOffset: -8
+        - Label:
+                coordinates: [0, 11]
+                text: "` \\\\text{euros/pack} `"
+
+# demand function
+        - Line:
+            point: [0,10]
+            slope: -(1)
+            color: Blue
+            strokeWidth: 1.5
+            label:
+              text: "` D = MPB = MSB `"
+              x: 1
+              position: bl
+
+# MEC function (EC linear)
+        - Line:
+            yIntercept: 2
+            color: Violet
+            strokeWidth: 1.5
+            label:
+              text: "` MEC = 2 `"
+              x: 10
+              position: b
+            show: params.EC == 0
+
+# MEC function (EC quadratic)
+        - Line:
+            point: [0,0]
+            slope: (0.5)
+            color: Violet
+            strokeWidth: 1.5
+            label:
+              text: "` MEC = Q/2 `"
+              x: 9.5
+              position: bl
+            show: params.EC == 1
+
+# MPC function
+        - Line:
+            point: [0,0]
+            slope: (1)
+            color: Red
+            strokeWidth: 1.5
+            max: 9
+            label:
+              text: "` MPC = Q  `"
+              x: 9
+              position: l
+
+# MSC function (EC linear)
+        - Line:
+            point: [0,2]
+            slope: (1)
+            color: Purple
+            strokeWidth: 1.5
+            label:
+              text: "` MSC = MPC + MEC  `"
+              x: 8.5
+              position: bl
+            show: params.EC == 0
+
+# MSC function (EC quadratic)
+        - Line:
+            point: [0,0]
+            slope: (1.5)
+            color: Purple
+            strokeWidth: 1.5
+            label:
+              text: "` MSC = MPC + MEC  `"
+              x: 7
+              position: bl
+            show: params.EC == 1
+
+# points
+        - Point:
+            coordinates: [5, 5]
+            droplines: {vertical: 5, horizontal: 5}
+            color: Green
+            r: 4
+            strokeWidth: 0.5
+        - Point:
+            coordinates: [4, 6]
+            droplines: {vertical: 4}
+            color: Purple
+            r: 0
+            strokeWidth: 0.5
+
+# surplus
+        - Area:
+            fn1: (10)-(x)
+            fn2: (5)
+            fill: blue
+            opacity: 0.25
+            min: 0
+            max: 5
+            show: params.SHOW == 0
+        - Area:
+            fn1: (5)
+            fn2: (x)
+            fill: Green
+            opacity: 0.2
+            min: 0
+            max: 5
+            show: params.SHOW == 0
+
+# external cost (primo modo)
+        - Area:
+            fn: (2)
+            fill: violet
+            opacity: 0.25
+            min: 0
+            max: 5
+            show: params.SHOW == 1 && params.EC == 0
+        - Area:
+            fn: (x)/(2)
+            fill: violet
+            opacity: 0.25
+            min: 0
+            max: 5
+            show: params.SHOW == 1 && params.EC == 1
+
+# external cost (secondo modo)
+        - Area:
+            fn1: (x)+(2)
+            fn2: (x)
+            fill: violet
+            opacity: 0.25
+            min: 0
+            max: 5
+            show: params.SHOW == 2 && params.EC == 0
+        - Area:
+            fn1: (1.5)*(x)
+            fn2: (x)
+            fill: violet
+            opacity: 0.25
+            min: 0
+            max: 5
+            show: params.SHOW == 2 && params.EC == 1
+
+# deadweight loss
+        - Area:
+            fn1: (x)+(2)
+            fn2: (10)-(x)
+            fill: Gray
+            opacity: 0.4
+            min: 4
+            max: 5
+            show: params.SHOW == 3 && params.EC == 0
+        - Area:
+            fn1: (1.5)*(x)
+            fn2: (10)-(x)
+            fill: Gray
+            opacity: 0.4
+            min: 4
+            max: 5
+            show: params.SHOW == 3 && params.EC == 1
+
+
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURE 8.1
+        description: "Select an external cost function:"
+        radioGroup:
+          param: EC
+          options:
+            - $EC = 2Q$
+            - $EC = Q^2/4$
+      - title: Negative externality
+        radioGroup:
+          param: SHOW
+          options:
+            - Show private surplus
+            - Show external cost (first method)
+            - Show external cost (second method)
+            - Show deadweight loss
+        divs:
+        - html: <br>
+        - html: "` The red curve in the upper graph is the <i>private cost</i>: how much 
+                  it costs firms overall to produce any given quantity.
+                  The red curve in the lower graph is the <i>marginal private cost</i>: how much 
+                  it costs firms overall to produce one more pack. `"
+        - html: <br>
+        - html: "` The pink curve in the upper graph is the <i>external cost</i>: the environmental damage
+                  corresponding to any given quantity. The pink curve in the lower graph is
+                  the <i>marginal external cost</i>: the environmental damage caused 
+                  by one additional pack. `"
+
+    explanation:
+      divs:
+        - html: "` In the market for mineral water in plastic bottles, measured e.g.
+                  in six-packs, the market demand function is $P=10-Q$, 
+                  where $P$ denotes the price per pack and $Q$ the millions of packs consumed each day. 
+                  The market supply curve is $P=Q$ and the external cost is $EC=2Q$. 
+                  In this case the marginal cost is constant, meaning each additional pack pollutes just as much as the previous one: $MEC=2$.
+                  The equilibrium quantity is $Q=5$, while the socially efficient quantity is $Q=4$. `"
+          show: params.EC == 0
+        - html: "` In the market for mineral water in plastic bottles, measured e.g.
+                  in six-packs, the market demand function is $P=10-Q$, 
+                  where $P$ denotes the price per pack and $Q$ the millions of packs consumed each day. 
+                  The market supply curve is $P=Q$ and the external cost is $EC=Q^2/4$. 
+                  In this case the marginal cost is increasing, meaning each additional pack pollutes more than the previous one: $MEC=Q/2$.
+                  The equilibrium quantity is $Q=5$, while the socially efficient quantity is $Q=4$. `"
+          show: params.EC == 1

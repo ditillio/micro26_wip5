@@ -1,0 +1,312 @@
+
+schema: EconSchema
+version: 1
+params:
+
+- {name: Q, value: 2000, min: 0, max: 4000, round: 100}
+
+- {name: tgl, value: 1000} #  half-length of tangent line
+
+- {name: rev, value: 0}
+
+calcs:
+
+  P: (5)-(params.Q)/(1000)
+  R: ((5)-(params.Q)/(1000))*(params.Q)
+  MR: (5)-(params.Q)/(500)
+  ED: -(calcs.P)/(5-calcs.P)
+
+
+
+aspectRatio: 0.75
+
+layout:
+
+  type: TwoVerticalGraphsPlusSidebar
+
+  def:
+
+
+    topGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 5500
+        ticks: 0
+      yAxis:
+        orient: left
+        min: 0
+        max: 8000
+        ticks: 0
+
+      objects:
+
+      - Label:
+            coordinates: [5500, 0]
+            text: "` \\\\text{kg} `"
+      - Label:
+            coordinates: [0, 8000]
+            text: "` \\\\text{euro}  `"
+
+# revenue
+      - Curve:
+          fn: ((5)-(x)/(1000))*(x)
+          color: Green
+          strokeWidth: 1.5
+          position: bl
+          label:
+            text: R
+            x: 4900
+      - Point:
+          coordinates: [params.Q, calcs.R]
+          color: Green
+          droplines:
+            vertical: params.Q
+            horizontal: calcs.R.toFixed(2)
+          strokeWidth: 0.5
+          r: 3
+      - Point:
+          coordinates: [0, 0]
+          color: Green
+          droplines:
+            horizontal: 0
+          r: 0
+      - Point:
+          coordinates: [5000, 0]
+          color: Green
+          droplines:
+            vertical: 5000
+          r: 0
+
+
+
+# tangent to R at chosen quantity
+      - Segment:
+          a: [(params.Q)-(params.tgl),((calcs.P)*(params.Q))-((5)-(2)*(params.Q)/(1000))*(params.tgl)]
+          b: [(params.Q)+(params.tgl),((calcs.P)*(params.Q))+((5)-(2)*(params.Q)/(1000))*(params.tgl)]
+          color: Green
+          lineStyle: dashed
+          strokeWidth: 0.8
+
+      - Label:
+            coordinates: [(params.Q)+(params.tgl),((calcs.P)*(params.Q))+((5)-(2)*(params.Q)/(1000))*(params.tgl)]
+            text: "` \\\\text{pendenza} = MR = ${calcs.MR.toFixed(2)} `"
+            color: Green
+            position: l
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    bottomGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 5500
+        ticks: 0
+      yAxis:
+        orient: left
+        min: -(3)
+        max: 6
+        ticks: 0
+      objects:
+      - Label:
+            coordinates: [5500, 0]
+            text: "` \\\\text{kg} `"
+      - Label:
+            coordinates: [0, 6]
+            text: "` \\\\text{euro/kg}  `"
+      - Point:
+          coordinates: [0, 0]
+          droplines:
+            horizontal: 0
+          color: black
+          r: 0
+
+
+# market demand function
+      - Line:
+          yIntercept: (5)
+          slope: -(1)/(1000)
+          color: Blue
+          max: (5000)
+          strokeWidth: 1.5
+          position: bl
+          label:
+            text: D
+            x: 4800
+      - Point:
+          coordinates: [0, 5]
+          droplines:
+            horizontal: 5
+          color: Blue
+          r: 0
+      - Point:
+          coordinates: [5000, 0]
+          color: Blue
+          droplines:
+            vertical: 5000
+          r: 0
+
+
+# marginal revenue
+      - Line:
+          yIntercept: (5)
+          slope: -(1)/(500)
+          color: Green
+          strokeWidth: 1.5
+          position: c
+          label:
+            text: MR
+            y: -(3)
+
+
+# chosen point
+      - Point:
+          coordinates: [params.Q, calcs.P]
+          color: Blue
+          r: 3
+          droplines:
+            vertical: params.Q
+            horizontal: calcs.P.toFixed(2)
+          strokeWidth: 0.5
+
+      - Point:
+          coordinates: [params.Q, calcs.MR]
+          color: Green
+          r: 3
+          droplines:
+            vertical: params.Q
+            horizontal: calcs.MR.toFixed(2)
+          strokeWidth: 0.5
+
+# monopolist revenue
+      - Rectangle:
+          x1: 0
+          x2: params.Q
+          y1: 0
+          y2: calcs.P
+          fill: green
+          show: params.rev == 0
+      - Area:
+          fn1: (5)-(x)/(500)
+          fn2: (0)
+          fill: green
+          min: 0
+          max: min(2500,(params.Q))
+          show: params.rev == 1
+      - Area:
+          fn1: (5)-(x)/(500)
+          fn2: (0)
+          fill: darkgray
+          opacity: 0.5
+          min: 2500
+          max: params.Q
+          show: params.rev == 1 && params.Q > 2500
+
+# label
+      - Label:
+          coordinates: [3500, 4]
+          text: "` E^D = ${calcs.ED.toFixed(2)} `"
+      - Arrow:
+          begin: [3500,4]
+          end: [params.Q,calcs.P]
+          color: blue
+          strokeWidth: 0.7
+          trim: 0.1
+
+
+
+
+
+    sidebar:
+      controls:
+
+      - title: FIGURA 5.4
+
+        sliders:
+        - param: Q
+          label: Q
+
+        radioGroup:
+          param: rev
+          options:
+            - Mostra ricavo come prezzo × quantità
+            - Mostra ricavo come area sotto MR
+
+        # checkboxes:
+        # - param: showCS
+        #   label: "` \\\\text{Mostra surplus del consumatore} `"
+        # - param: showPS
+        #   label: "` \\\\text{Mostra profitto del monopolista} `"
+        # - param: showDWL
+        #   label: "` \\\\text{Mostra perdita secca} `"
+
+        divs:
+        - html: <br>
+        - html: "` La curva di domanda di mercato è
+                    $$
+                    P = 5 - Q/1000
+                    $$
+                  Il ricavo del monopolista è quindi 
+                    $$
+                    R = 5Q - Q^2/1000
+                    $$
+                  mentre il ricavo marginale è
+                    $$
+                    MR = 5 - Q/500
+                    $$
+                     `"
+
+        - html: "` In corrispondenza della quantità $Q=${params.Q}$ la domanda è
+                    elastica: $E^D=${calcs.ED.toFixed(2)}$. A partire da questa quantità,
+                    aumentare la produzione fa aumentare il ricavo (e ridurla lo fa diminuire).
+                     `"
+          show: params.Q < 2500
+
+        - html: "` In corrispondenza della quantità $Q=${params.Q}$ la domanda è
+                    rigida: $E^D=${calcs.ED.toFixed(2)}$. A partire da  questa quantità,
+                    aumentare la produzione fa diminuire il ricavo (e ridurla lo fa aumentare).
+                     `"
+          show: params.Q > 2500
+
+        - html: "` In corrispondenza della quantità $Q=${params.Q}$ la domanda non è né elastica
+                  né rigida: $E^D=${calcs.ED.toFixed(2)}$. Il ricavo è massimo:
+                  aumentare o ridurre la produzione fa diminuire il ricavo.
+                     `"
+          show: params.Q == 2500
+
+                    
+
+    # explanation:
+    #   divs:
+    #     - html: "` In presenza di un prezzo massimo $P_\\\\text{max}=${params.cap}$ la curva di ricavo 
+    #               marginale $MR$ è piatta fino alla quantità domandata al prezzo massimo, ovvero
+    #                $Q=${((params.dint)-(params.cap))/(params.dslope)}$. 
+    #               In corrispondenza di quella quantità, la curva $MR$ presenta una discontinuità.
+    #               Oltre quella quantità, la curva coincide con la curva $MR$ in assenza di interventi.   `"
+
+
+
+
+
+
+
+
+
+
+
+
+

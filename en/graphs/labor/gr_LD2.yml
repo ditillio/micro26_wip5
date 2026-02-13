@@ -1,0 +1,199 @@
+params:
+- {name: showCS, value: false}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: p, value: 2.5, min: 1, max: 3.5, round: 0.05}
+- {name: a, value: 80, min: 60, max: 100, round: 10}
+- {name: w, value: 64, min: 30, max: 130, round: 0.05}
+- {name: num, value: 100, min: 50, max: 150, round: 5}
+
+calcs:
+  l: ((params.a)*(params.p)/(2*(params.w)))^2
+  L: (params.num)*(calcs.l)
+
+aspectRatio: 1.8
+
+layout:
+  TwoHorizontalGraphsPlusSidebar:
+
+    leftGraph: 
+      xAxis:
+        max: 13
+        ticks: 5
+      yAxis:
+        max: 150
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [13, 0]
+                text: "` \\\\text{dd} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 150]
+                text: "` \\\\text{Euro/dd}  `"
+                xPixelOffset: -6
+
+# points
+        - Point:
+            coordinates: [calcs.l, params.w]
+            droplines: {vertical: calcs.l.toFixed(2), horizontal: }
+            color: Blue
+            r: 5
+
+# wage line
+        - Line:
+            yIntercept: params.w
+            color: Brown
+            label:
+              text:
+              x: 6
+              position: l
+            strokeWidth: 2
+            bgcolor: none
+            drag:
+              - vertical: w
+        - Point:
+            coordinates: [calcs.l, params.w]
+            droplines: {vertical: , horizontal: params.w.toFixed(2)}
+            color: Brown
+            r: 0
+
+# labor demand function
+
+        - Curve:
+            fn: ( (params.p) * (params.a) ) / ( 2 * (x)^(0.5) )
+            color: Blue
+            label:
+              text: \text{individual}
+              x: 13
+              position: b
+            strokeWidth: 1.7
+        - Curve:
+            fn: ( (params.p) * (params.a) ) / ( 2 * (x)^(0.5) )
+            color: Blue
+            label:
+              text: \text{labor demand}
+              x: 13
+              position: c
+            strokeWidth: 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    rightGraph: 
+      xAxis:
+        max: 1300
+        ticks: 5
+      yAxis:
+        max: 150
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [1300, 0]
+                text: "` \\\\text{dd} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 150]
+                text: "` \\\\text{Euro/dd}  `"
+                xPixelOffset: -6
+
+# points
+        - Point:
+            coordinates: [calcs.L, params.w]
+            droplines: {vertical: calcs.L.toFixed(2), horizontal: }
+            color: Blue
+            r: 5
+
+# wage line
+        - Line:
+            yIntercept: params.w
+            color: Brown
+            label:
+              text:
+              x: 6
+              position: l
+            strokeWidth: 2
+            bgcolor: none
+            drag:
+              - vertical: w
+        - Point:
+            coordinates: [calcs.L, params.w]
+            droplines: {vertical: , horizontal: params.w.toFixed(2)}
+            color: Brown
+            r: 0
+
+# mkt labor demand function
+        - Curve:
+            fn: ( (params.num)^(0.5) ) * ( (params.p) * (params.a) ) / ( 2 * (x)^(0.5) )
+            color: Blue
+            label:
+              text: \text{market}
+              x: 1300
+              position: b
+            strokeWidth: 1.7
+        - Curve:
+            fn: ( (params.num)^(0.5) ) * ( (params.p) * (params.a) ) / ( 2 * (x)^(0.5) )
+            color: Blue
+            label:
+              text: \text{labor demand}
+              x: 1300
+              position: c
+            strokeWidth: 0
+
+
+    sidebar:
+      controls:
+      - title: FIGURE 9.5
+        # description: Muovere i primi due cursori per modificare la funzione di 
+        #             produzione o il prezzo dell'output. Muovere il terzo cursore o trascinare la retta verde nel grafico
+        #             per vedere come la quantità domandata di lavoro varia al variare del suo prezzo.
+        sliders:
+        - param: a
+          label: A
+        - param: p
+          label: P
+        - param: w
+          label: W
+        - param: num
+          label: \text{\# of firms}
+        # divs:
+        # - html: "`   `"
+
+
+    # explanation:
+    #   divs:
+    #     - html: "` Il profitto dell'impresa è $ P\\\\times A\\\\sqrt{L} - WL 
+    #               = ${params.p.toFixed(2)} \\\\times ${params.a} \\\\sqrt{L} - W L. $  `"
+    #     - html: "` La derivata rispetto a $L$ è $ P\\\\times A / (2\\\\sqrt{L}) - W 
+    #               = (${params.p.toFixed(2)} \\\\times ${params.a}) / (2 \\\\sqrt{L}) - W. $  `"
+    #     - html: "` Ponendo la derivata pari a zero otteniamo la funzione di domanda inversa di lavoro:
+    #                   $$ W = \\\\frac{P\\\\times A}{2\\\\sqrt{L}} $$ `"
+
+
+
+
+
+
+
+
+

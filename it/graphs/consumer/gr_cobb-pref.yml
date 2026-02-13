@@ -1,0 +1,187 @@
+---
+schema: EconSchema
+version: 1
+aspectRatio: 1.5
+params:
+  - {name: x1, value: 4, min: 0, max: 9, round: 0.1}
+  - {name: x2, value: 4, min: 0, max: 9, round: 0.1}
+
+  - {name: a, value: 1}
+  - {name: b, value: 1}
+
+  - {name: showMORE, value: false}
+  - {name: showLESS, value: false}
+
+# consumption levels on 45° line
+  - {name: c1, value: 1}
+  - {name: c2, value: 2}
+  - {name: c3, value: 3}
+  - {name: c4, value: 4}
+  - {name: c5, value: 5}
+  - {name: c6, value: 6}
+  - {name: c7, value: 7}
+  - {name: c8, value: 8}
+  - {name: c9, value: 9}
+
+
+
+calcs:
+
+# utility at selected bundle
+  u: ((params.x1)^(params.a))*((params.x2)^(params.b))
+
+
+  u1: ((params.c1)^(params.a))*((params.c1)^(params.b))
+  u2: ((params.c2)^(params.a))*((params.c2)^(params.b))
+  u3: ((params.c3)^(params.a))*((params.c3)^(params.b))
+  u4: ((params.c4)^(params.a))*((params.c4)^(params.b))
+  u5: ((params.c5)^(params.a))*((params.c5)^(params.b))
+  u6: ((params.c6)^(params.a))*((params.c6)^(params.b))
+  u7: ((params.c7)^(params.a))*((params.c7)^(params.b))
+  u8: ((params.c8)^(params.a))*((params.c8)^(params.b))
+  u9: ((params.c9)^(params.a))*((params.c9)^(params.b))
+
+layout:
+  OneGraphPlusSidebar:
+    graph:
+      xAxis:
+        max: 9.5
+        ticks: 5
+      yAxis:
+        max: 9.5
+        ticks: 5
+      objects:
+
+      - Label:
+            coordinates: [9.5, 0]
+            text: "` \\\\text{Consumo (kg)} `"
+            position: l
+      - Label:
+            coordinates: [0, 9.5]
+            text: "` \\\\text{Alloggio (decine di m$^2$)}  `"
+
+# Bundle
+      - Point:
+          coordinates: [params.x1, params.x2]
+          droplines:
+            horizontal: params.x2.toFixed(1)
+            vertical: params.x1.toFixed(1)
+          color: Blue
+          r: 4
+          strokeWidth: 0.5
+          draggable: true
+          label:
+            text: "` \\\\large{A} `"
+            bgcolor: none
+
+# Preferred and less preferred bundles
+      - Area:
+          fn: ((calcs.u)/((x)^(params.a)))^(1/(params.b))
+          fill: blue
+          above: true
+          show: params.showMORE == true
+      - Area:
+          fn: ((calcs.u)/((x)^(params.a)))^(1/(params.b))
+          fill: red
+          above: false
+          show: params.showLESS == true
+          min: 0.01
+
+# Indifference curve at bundle
+      - Curve:
+          fn: ((calcs.u)/((x)^(params.a)))^(1/(params.b))
+          color: Black
+          strokeWidth: 1.5
+          min: 0.04
+      
+# Indifference Map
+      - Curve:
+          fn:   ((calcs.u1)/((x)^(params.a)))^(1/(params.b))
+          color: Grey
+          strokeWidth: 0.5
+          min: 0.04
+      - Curve:
+          fn:   ((calcs.u2)/((x)^(params.a)))^(1/(params.b))
+          color: Grey
+          strokeWidth: 0.5
+          min: 0.05
+      - Curve:
+          fn:   ((calcs.u3)/((x)^(params.a)))^(1/(params.b))
+          color: Grey
+          strokeWidth: 0.5
+          min: 0.05
+      - Curve:
+          fn:   ((calcs.u4)/((x)^(params.a)))^(1/(params.b))
+          color: Grey
+          strokeWidth: 0.5
+          min: 0.01
+      - Curve:
+          fn:   ((calcs.u5)/((x)^(params.a)))^(1/(params.b))
+          color: Grey
+          strokeWidth: 0.5
+          min: 0.01
+      - Curve:
+          fn:   ((calcs.u6)/((x)^(params.a)))^(1/(params.b))
+          color: Grey
+          strokeWidth: 0.5
+          min: 0.01
+      - Curve:
+          fn:   ((calcs.u7)/((x)^(params.a)))^(1/(params.b))
+          color: Grey
+          strokeWidth: 0.5
+          min: 0.01
+      - Curve:
+          fn:   ((calcs.u8)/((x)^(params.a)))^(1/(params.b))
+          color: Grey
+          strokeWidth: 0.5
+          min: 0.01
+      - Curve:
+          fn:   ((calcs.u9)/((x)^(params.a)))^(1/(params.b))
+          color: Grey
+          strokeWidth: 0.5
+          min: 0.01
+
+      
+
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURA 2.2
+        description: Muovere i due cursori (o trascinare il punto <i>A</i>) per selezionare un paniere e poi vedere quali panieri sono preferiti
+                    ad esso e a quali esso è preferito.
+        checkboxes:
+        - param: showMORE
+          label: "\\text{Mostra panieri preferiti ad $A$}"
+        - param: showLESS
+          label: "\\text{Mostra panieri a cui $A$ è preferito}"
+        sliders:
+        - param: x1
+          label: "` \\\\text{Consumo} `"
+        - param: x2
+          label: "` \\\\text{Alloggio} `"
+        divs:
+          - html: "`  `"
+            show: calcs.u < 0
+
+    explanation:
+        divs:
+          - html: "` Nel caso di beni divisibili (alloggio sull'asse verticale, un generico bene di consumo 
+                    sull'asse orizzontale) esiste un numero infinito di curve di 
+                    indifferenza. Nel grafico sono riportate solo quelle passanti per i panieri
+                    $(1,1)$, $(2,2)$, $(3,3)$ ecc. oltre a quella 
+                    passante per il paniere $A$. La non sazietà implica che i panieri 
+                    preferiti ad $A$ sono quelli a nord-est della curva passante per $A$, mentre
+                    quelli a cui $A$ è preferito sono quelli a sud-ovest di essa.
+                    Curve di indifferenza più lontane dall'origine corrispondono quindi
+                    a livelli maggiori di benessere del consumatore. `"
+
+
+
+
+
+
+
+
+

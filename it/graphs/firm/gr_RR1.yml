@@ -1,0 +1,146 @@
+params:
+- {name: showCS, value: false}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+
+- {name: x, value: 120, min: 0, max: 200}
+- {name: a, value: 2, min: 0, max: 4, round: 0.1}
+- {name: b, value: 0, min: 0, max: 0.02, round: 0.001}
+
+- {name: alpha, value: 0.5, min: 0.5, max: 1, round: 0.5}
+- {name: w, value: 64, min: 40, max: 80, round: 1}
+- {name: fc, value: 100, min: 0, max: 200, round: 5}
+- {name: maxcost, value: 950}
+- {name: maxprice, value: 5.5}
+
+calcs:
+  p: (params.a) - (params.b)*(params.x)
+  r: (calcs.p) * (params.x)
+  l: ((params.x)/(params.a))^(1/(params.alpha))
+  vc: params.w * calcs.l
+  tc: params.w * calcs.l + params.fc
+  aaa: (params.alpha)^(-1)
+
+aspectRatio: 1.4
+
+layout:
+  TwoVerticalGraphsPlusSidebar:
+
+    topGraph: 
+      xAxis:
+        max: 210
+        ticks: none
+      yAxis:
+        max: params.maxprice
+        ticks: none
+
+      objects:
+
+        - Label:
+                coordinates: [210, 0]
+                text: "` \\\\text{output (kg)}  `"
+                xPixelOffset: 0
+                position: l
+
+        - Label:
+                coordinates: [0, 5.5]
+                text: "` \\\\text{euro / kg} `"
+                yPixelOffset: 0
+                xPixelOffset: 0
+                position: c
+
+# firm's demand function
+        - Curve:
+            fn: (params.a) - (params.b)*(x)
+            color: Blue
+            label:
+              text: "` P  `"
+              x: 180
+              position: bl
+            strokeWidth: 1.7
+            max: 205
+            drag:
+            - vertical: a
+
+# points
+        - Point:
+            coordinates: [params.x,calcs.p]
+            droplines: {vertical: params.x, horizontal: calcs.p.toFixed(1)}
+            color: Blue
+            r: 4
+            drag:
+            - horizontal: x
+
+
+
+
+
+
+
+
+
+    bottomGraph: 
+      xAxis:
+        max: 210
+        ticks: none
+      yAxis:
+        max: 650
+        ticks: none
+
+      objects:
+
+        - Label:
+                coordinates: [210, 0]
+                text: "` \\\\text{output (kg)}  `"
+                xPixelOffset: 0
+
+        - Label:
+                coordinates: [0, 650]
+                text: "` \\\\text{euro} `"
+                yPixelOffset: 0
+                xPixelOffset: 0
+                position: c
+
+# firm's total revenue function
+        - Curve:
+            fn: ( (params.a) - (params.b)*(x) ) * (x)
+            color: Green
+            label:
+              text: "` R `"
+              x: 195
+              position: br
+            strokeWidth: 1.7
+            max: 205
+
+# points
+        - Point:
+            coordinates: [params.x,calcs.r]
+            droplines: {vertical: params.x, horizontal: calcs.r.toFixed(1)}
+            r: 4
+            color: Green
+            drag:
+            - horizontal: x
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURA 3.13
+        description: Spostare la curva di domanda inversa per il prodotto dell'impresa
+                      (retta blu nel grafico di sopra) per vedere come varia la funzione
+                      di ricavo totale (grafico di sotto). Spostare il cursore qui sotto (o muovere il punto blu nel grafico
+                      di sopra, o il punto verde nel grafico di sotto) per vedere come, al variare della quantità prodotta <i>Q</i>,
+                      variano il prezzo unitario (grafico di sopra) e il ricavo totale (grafico di sotto).  
+        sliders:
+        - param: a
+          label: P
+        - param: x
+          label: Q
+        divs:
+        - html: "` `"
+        - html: "` `"
+        - html: "` Quando la curva di domanda inversa per il prodotto dell'impresa è orizzontale,
+                  la curva di ricavo totale è una retta. `"
+        - html: "` `"
+        - html: "` `"

@@ -1,0 +1,291 @@
+
+schema: EconSchema
+params:
+
+- {name: p1, value: 3, min: 0.5, max: 4.5, round: 0.5}
+- {name: p2, value: 3.5, min: 0.5, max: 4.5, round: 0.5}
+
+
+calcs:
+  Q: (5000)-(1000)*min((params.p1),(params.p2))
+  profit: (min((params.p1),(params.p2))-(2))*(calcs.Q)
+
+  dev: (min((params.p1),(params.p2))+(2))/(2)
+  Qdev: (5000)-(1000)*(calcs.dev)
+  profitdev: ((calcs.dev)-(2))*(calcs.Qdev)
+
+  dev2: (max((params.p1),(params.p2))+(2))/(2)
+  Qdev2: (5000)-(1000)*(calcs.dev2)
+  profitdev2: ((calcs.dev2)-(2))*(calcs.Qdev2)
+
+aspectRatio: 4
+
+layout:
+  OneGraphPlusSidebar:
+
+    graph:
+      xAxis:
+        min: 0
+        max: 5
+        ticks: 5
+      yAxis:
+        min: -4
+        max: 6
+        show: false
+
+
+      objects:
+
+
+# firm 1
+      - Point:
+          coordinates: [params.p1, 0]
+          droplines:
+            vertical: params.p1.toFixed(1)
+          color: Blue
+          r: 0
+          show: params.p1 !== 2
+
+      - Label:
+          coordinates: [(params.p1)-(0.5), 5]
+          text: "` P_1 `"
+          color: Blue
+          position: c
+
+      - Arrow:
+          begin: [(params.p1)-(0.5),5]
+          end: [params.p1,0]
+          color: Blue
+          strokeWidth: 1
+          trim: 0.03
+          bgcolor: none
+
+# firm 2
+      - Point:
+          coordinates: [params.p2, 0]
+          droplines:
+            vertical: params.p2.toFixed(1)
+          color: Red
+          r: 0
+          show: params.p2 !== 2
+
+      - Label:
+          coordinates: [(params.p2)+(0.25), 5]
+          text: "` P_2 `"
+          color: Red
+          position: c
+
+      - Arrow:
+          begin: [(params.p2)+(0.25),5]
+          end: [params.p2,0]
+          color: Red
+          strokeWidth: 1
+          trim: 0.03
+          bgcolor: none
+
+# marginal cost
+      - Point:
+          coordinates: [2, 0]
+          droplines:
+            vertical: 2
+          color: Green
+          r: 0
+
+      - Label:
+          coordinates: [2.5, -4]
+          text: "` MC `"
+          color: Green
+          position: l
+
+      - Arrow:
+          begin: [2.7,-4]
+          end: [2,-0.8]
+          color: Green
+          strokeWidth: 1
+          trim: 0.1
+
+
+
+
+# evaluation
+      - Label:
+          coordinates: [4,5]
+          text: "` \\\\LARGE\\\\text{BINGO!} `" 
+          position: c
+          bgcolor: none
+          color: green
+          show: params.p1 == 2 && params.p2 == 2
+
+
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURA 6.2
+        description: Muovere i cursori fino a individuare l'equilibrio di Nash del gioco.
+        sliders:
+        - param: p1
+          label: P_1
+        - param: p2
+          label: P_2
+        # divs:
+        # - html: "`Quando il prezzo è $P=${params.p}$ euro/kg, la quantità domandata 
+        #         da ciascun consumatore è $Q=${calcs.d}$. La quantità complessivamente
+        #         domandata nel mercato è quindi $Q=${calcs.D}$.
+        #           `"
+
+
+
+
+
+
+
+
+    explanation:
+      divs:
+        - html: "`
+                  L'impresa 1 conquista l'intero mercato poiché $P_1< P_2$, ma ottiene un profitto
+                  negativo poiché $P_1< MC$. Scegliendo $P_1=MC$ otterrebbe un profitto pari a zero. 
+                  La configurazione di prezzi selezionata quindi non è un equilibrio di Nash.
+                `"
+          show: params.p1 < params.p2 && params.p1 < 2
+
+        - html: "`
+                  L'impresa 2 conquista l'intero mercato poiché $P_2< P_1$, ma ottiene un profitto
+                  negativo poiché $P_2< MC$. Scegliendo $P_2=MC$ otterrebbe un profitto pari a zero. 
+                  La configurazione di prezzi selezionata quindi non è un equilibrio di Nash.
+                `"
+          show: params.p2 < params.p1 && params.p2 < 2
+
+        - html: "`
+                  Le imprese si spartiscono il mercato, poiché offrono lo stesso prezzo. Ma tale prezzo
+                  è minore del costo marginale, quindi entrambe ottengono un profitto negativo.
+                  Ciascuna ha quindi un incentivo a scegliere un prezzo maggiore dell'altra, in modo da
+                  ottenere un profitto pari a zero. 
+                  La configurazione di prezzi selezionata quindi non è un equilibrio di Nash.
+                `"
+          show: params.p2 == params.p1 && params.p2 < 2
+
+        - html: "`
+                  Dato che $P_1=${params.p1.toFixed(2)}$ è minore di $P_2=${params.p2.toFixed(2)}$,
+                  l'impresa 1 conquista l'intero mercato, mentre l'impresa 2 non vende nulla.
+                  Ma per l'impresa 2 scegliere $P_2=${params.p2.toFixed(2)}$ non è
+                  una risposta ottima a $P_1=${params.p1.toFixed(2)}$. Dato che $P_1>MC$, infatti, l'impresa 2 potrebbe
+                  ottenere un profitto positivo scegliendo un prezzo più basso di $P_1$ ma più alto di $MC$, per esempio 
+                  $ P_2=${calcs.dev.toFixed(2)}$. Questo le permetterebbe di conquistare l'intero mercato, vendendo
+                  $$
+                  Q = 5000-1000 \\\\times ${calcs.dev.toFixed(2)} = ${calcs.Qdev.toFixed(0)}
+                  $$
+                  unità e ottenendo quindi un profitto pari a
+                  $$
+                  (${calcs.dev.toFixed(2)} - 2 ) \\\\times ${calcs.Qdev.toFixed(0)}
+                  =${calcs.profitdev.toFixed(2)}>0
+                  $$
+                  La configurazione di prezzi selezionata quindi non è un equilibrio di Nash.
+                `"
+          show: params.p1 < params.p2 && params.p1 > 2
+
+        - html: "`
+                  Dato che $P_2=${params.p2.toFixed(2)}$ è minore di $P_1=${params.p1.toFixed(2)}$,
+                  l'impresa 2 conquista l'intero mercato, mentre l'impresa 1 non vende nulla.
+                  Ma per l'impresa 1 scegliere $P_1=${params.p1.toFixed(2)}$ non è
+                  una risposta ottima a $P_2=${params.p2.toFixed(2)}$. Dato che $P_2>MC$, infatti, l'impresa 1 potrebbe
+                  ottenere un profitto positivo scegliendo un prezzo più basso di $P_2$ ma più alto di $MC$, per esempio 
+                  $ P_1=${calcs.dev.toFixed(2)}$. Questo le permetterebbe di conquistare l'intero mercato, vendendo
+                  $$
+                  Q = 5000-1000 \\\\times ${calcs.dev.toFixed(2)} = ${calcs.Qdev.toFixed(0)}
+                  $$
+                  unità e ottenendo quindi un profitto pari a
+                  $$
+                  (${calcs.dev.toFixed(2)} - 2 ) \\\\times ${calcs.Qdev.toFixed(0)}
+                  =${calcs.profitdev.toFixed(2)}>0
+                  $$
+                  La configurazione di prezzi selezionata quindi non è un equilibrio di Nash.
+                `"
+          show: params.p2 < params.p1 && params.p2 > 2
+
+        - html: "`
+                  Dato che $P_1=P_2=${params.p2.toFixed(2)}$, le imprese si spartiscono il mercato. Al prezzo da loro
+                  annunciato, la quantità domandata dal mercato è
+                  $$
+                  Q = 5000-1000 \\\\times ${params.p1.toFixed(2)} = ${calcs.Q.toFixed(0)}
+                  $$
+                  Ciascuna impresa vende quindi $ ${calcs.Q.toFixed(0)}/2=${calcs.Q.toFixed(0)/2} $ unità, ottenendo
+                  un profitto pari a
+                  $$
+                  (${params.p2.toFixed(2)}-2) \\\\times ${calcs.Q.toFixed(0)/2} = 
+                  ${(params.p2.toFixed(2)-2)*calcs.Q.toFixed(0)/2} 
+                  $$
+                  Ma ognuna potrebbe abbassare leggermente il prezzo, per esempio a $ ${params.p2.toFixed(2)-0.25}$,
+                   e conquistare in questo modo l'intero mercato, vendendo
+                  $$
+                  Q = 5000-1000 \\\\times ${params.p2.toFixed(2)-0.25} = ${5000-1000*(params.p2.toFixed(2)-0.25)}
+                  $$
+                  unità e ottenendo così un profitto maggiore:
+                  $$
+                  (${params.p2.toFixed(2)-0.25}-2)\\\\times ${5000-1000*(params.p2.toFixed(2)-0.25)}
+                  =
+                  ${(params.p2.toFixed(2)-0.25-2)*(5000-1000*(params.p2.toFixed(2)-0.25))}
+                  >
+                  ${(params.p2.toFixed(2)-2)*calcs.Q.toFixed(0)/2} 
+                  $$
+                  La configurazione di prezzi selezionata quindi non è un equilibrio di Nash.
+                `"
+          show: params.p2 == params.p1 && params.p2 > 2
+
+        - html: "`
+                  Dato che $P_1=${params.p1.toFixed(2)}$ è minore di $P_2=${params.p2.toFixed(2)}$,
+                  l'impresa 1 conquista l'intero mercato, ottenendo un profitto pari a zero poiché $P_1=MC$,
+                  mentre l'impresa 2 non vende nulla.
+                  Ma per l'impresa 1 scegliere $P_1=${params.p1.toFixed(2)}$ non è
+                  una risposta ottima a $P_2=${params.p2.toFixed(2)}$. Dato che $P_2>MC$, infatti, l'impresa 1 potrebbe
+                  ottenere un profitto positivo scegliendo un prezzo più basso di $P_2$ ma più alto di $MC$, per esempio 
+                  $ P_1=${calcs.dev2.toFixed(2)}$. Questo le permetterebbe comunque di conquistare l'intero mercato, vendendo
+                  $$
+                  Q = 5000-1000 \\\\times ${calcs.dev2.toFixed(2)} = ${calcs.Qdev2.toFixed(0)}
+                  $$
+                  unità e ottenendo un profitto pari a
+                  $$
+                  (${calcs.dev2.toFixed(2)} - 2 ) \\\\times ${calcs.Qdev2.toFixed(0)}
+                  =${calcs.profitdev2.toFixed(2)}>0
+                  $$
+                  La configurazione di prezzi selezionata quindi non è un equilibrio di Nash.
+                `"
+          show: params.p1 < params.p2 && params.p1 == 2
+
+        - html: "`
+                  Dato che $P_2=${params.p2.toFixed(2)}$ è minore di $P_1=${params.p1.toFixed(2)}$,
+                  l'impresa 1 conquista l'intero mercato, ottenendo un profitto pari a zero poiché $P_2=MC$,
+                  mentre l'impresa 1 non vende nulla.
+                  Ma per l'impresa 2 scegliere $P_2=${params.p2.toFixed(2)}$ non è
+                  una risposta ottima a $P_1=${params.p1.toFixed(2)}$. Dato che $P_1>MC$, infatti, l'impresa 2 potrebbe
+                  ottenere un profitto positivo scegliendo un prezzo più basso di $P_1$ ma più alto di $MC$, per esempio 
+                  $ P_2=${calcs.dev2.toFixed(2)}$. Questo le permetterebbe comunque di conquistare l'intero mercato, vendendo
+                  $$
+                  Q = 5000-1000 \\\\times ${calcs.dev2.toFixed(2)} = ${calcs.Qdev2.toFixed(0)}
+                  $$
+                  unità e ottenendo un profitto pari a
+                  $$
+                  (${calcs.dev2.toFixed(2)} - 2 ) \\\\times ${calcs.Qdev2.toFixed(0)}
+                  =${calcs.profitdev2.toFixed(2)}>0
+                  $$
+                  La configurazione di prezzi selezionata quindi non è un equilibrio di Nash.
+                `"
+          show: params.p2 < params.p1 && params.p2 == 2
+
+        - html: "`
+                Dato che $P_1=P_2=MC$, le imprese si spartiscono il mercato e ciascuna ottiene 
+                un profitto nullo. Nessuna delle due ha incentivo a ridurre il prezzo
+                (conquisterebbe l'intero mercato, ma subirebbe una perdita) o ad aumentarlo
+                (perderebbe tutta la domanda e quindi il suo profitto sarebbe comunque zero).
+                Questo è l'unico equilibrio di Nash del gioco!
+                `"
+          show: params.p2 == params.p1 && params.p2 == 2
+
+        - html: <br><br><br><br>
+
+
+
+
+

@@ -1,0 +1,178 @@
+---
+schema: EconSchema
+version: 1
+params:
+- {name: w, value: 35, min: 20, max: 60}
+- {name: M, value: 70, min: 0, max: 120, round: 10}
+- {name: L, value: 3, min: 0, max: 7}
+- {name: p, value: 20, min: 10, max: 30}
+calcs:
+  wealth: 7*params.w + params.M
+  consumptionEndowment: params.M / params.p
+  leisure: (7 - params.L)
+  consumption: (params.M + params.w*params.L) / params.p
+  maxconsumption: (params.M + params.w*7) / params.p
+  wageIncome: params.w*params.L
+  wageconsumption: (params.w*params.L)/params.p
+  realwage: params.w / params.p
+
+aspectRatio: 1.05
+
+layout:
+  type: OneGraphPlusSidebar
+  def:
+    graph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 8
+        ticks: 0
+      yAxis:
+        orient: left
+        min: 0
+        max: 32  
+        ticks: 0
+      objects:
+
+
+      - Label:
+            coordinates: [8, 0]
+            text: "` \\\\text{Tempo  (gg)} `"
+            yPixelOffset: 0
+            position: l
+
+      - Label:
+            coordinates: [0, 32]
+            text: "` \\\\text{Consumo (kg)}  `"
+            xPixelOffset: -5
+
+
+# budget line
+      - Line:
+          yIntercept: calcs.maxconsumption
+          max: 7
+          slope: -params.w / params.p
+          color: Blue
+          strokeWidth: 2
+
+      - Point:
+          coordinates: [calcs.leisure, calcs.consumption]
+          droplines:
+            vertical: calcs.leisure
+            horizontal: "`(M_0+WL)/P = ${ calcs.consumption.toFixed(2) } `"
+          color: Blue
+          drag:
+            - directions: x
+              param: L
+              expression: params.L - drag.dx
+          show: params.L > 0 && params.L < 7
+
+      - Point:
+          coordinates: [0, calcs.maxconsumption]
+          droplines:
+            vertical: 0
+            horizontal: "`(M_0+WT)/P = ${ calcs.maxconsumption.toFixed(2) } `"
+          color: Black
+          r: 0
+
+      - type: EconBundle
+        def:
+          name: endowmentBundle
+          coordinates:
+          - 7
+          - calcs.consumptionEndowment
+          droplines:
+            vertical: "`T=7`"
+            horizontal: "`M_0/P = ${ calcs.consumptionEndowment.toFixed(2) } `"
+          color: Black
+          label:
+            text: \text{Situazione iniziale}
+
+      - type: Segment
+        def:
+          a:
+          - 7
+          - params.M*0.5/params.p
+          b:
+          - calcs.leisure
+          - params.M*0.5/params.p
+#          startArrow: true
+          endArrow: true
+          color: Red
+          strokeWidth: 1
+          label:
+            text: "`\\\\text{Lavoro $L=${params.L}$}`"
+            location: 0.5
+            yPixelOffset: 0
+
+      - type: Segment
+        def:
+          a:
+          - 0
+          - params.M*0.5/params.p
+          b:
+          - calcs.leisure
+          - params.M*0.5/params.p
+#          startArrow: true
+          endArrow: true
+          color: Blue
+          strokeWidth: 1
+          label:
+            text: "`\\\\text{Tempo libero $N=${7-params.L}$}`"
+            location: 0.5
+            yPixelOffset: 0
+
+      - type: Segment
+        def:
+          a:
+          - calcs.leisure * 0.5
+          - calcs.consumptionEndowment
+          b:
+          - calcs.leisure * 0.5
+          - calcs.consumption
+#          startArrow: true
+          endArrow: true
+          show: params.L > 0
+          color: Darkgreen
+          strokeWidth: 1
+          label:
+            text: "`\\\\text{Consumo aggiuntivo}=${calcs.wageconsumption.toFixed(2)}`"
+            location: 0.5
+            xPixelOffset: 0
+            align: center
+
+    sidebar:
+      controls:
+
+      - title: FIGURA 9.1
+#        description: The budget line for a worker who can choose how many hours to work at a constant wage
+
+        sliders:
+        - param: w
+          label: W
+        - param: p
+          label: P
+        - param: M
+          label: M_0
+        - param: L
+          label: L
+
+
+    explanation:
+        divs:
+        - html: "` Il prezzo del bene di consumo è $P = ${params.p.toFixed(2)}$.   `"
+        - html: "`   `"
+        - html: "` Il reddito non da lavoro
+                  $M_0 = ${params.M}$ garantisce quindi un livello di consumo
+                  pari a $M_0/P=${calcs.consumptionEndowment.toFixed(2)}$ unità.  `"
+        - html: "`   `"
+        - html: "` Lavorando $L = ${params.L}$ giorni al salario giornaliero $W = ${params.w.toFixed(2)}$, 
+                   si ottiene un reddito da lavoro pari 
+                   a $WL = ${calcs.wageIncome.toFixed(2)}$
+                   euro e quindi un consumo aggiuntivo di $WL/P = ${calcs.wageconsumption.toFixed(2)}$
+                   unità.   `"
+        - html: "`   `"
+        - html: "` Il salario reale (valore assoluto della pendenza del vincolo di bilancio) 
+                  è $$\\\\frac{W}{P} = \\\\frac{${params.w.toFixed(2)} }{ ${params.p.toFixed(2)} } = ${calcs.realwage.toFixed(2)}$$ Ciò vuol dire che,
+                  secondo il mercato, il valore di una giornata di lavoro, misurato 
+                  in termini del bene di consumo, è pari a ${calcs.realwage.toFixed(2)} unità.   `"

@@ -1,0 +1,7 @@
+@font-face {
+  font-family: "ETBook";
+  src: url("et-book-roman-line-figures.woff2") format("woff2"),
+       url("et-book-roman-line-figures.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}

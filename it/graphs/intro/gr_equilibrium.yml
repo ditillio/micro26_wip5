@@ -1,0 +1,147 @@
+
+schema: EconSchema
+params:
+- {name: numcons, value: 1000, min: 500, max: 1500, round: 100}
+- {name: numimp, value: 500, min: 300, max: 700, round: 50}
+- {name: w, value: 100, min: 25, max: 300, round: 5}
+- {name: p, value: 2, min: 1, max: 5, round: 0.5}
+- {name: m, value: 500, min: 300, max: 700, round: 50}
+- {name: p2, value: 2, min: 1, max: 3, round: 0.5}
+- {name: showCS, value: false}
+
+
+calcs:
+  d: (0.002)*(params.m)-(0.3)*(params.p)+(0.1)*(params.p2)
+  D: (params.numcons)*(calcs.d)
+  s: (100)*(params.p)/(params.w)
+  S: (params.numimp)*(100)*(params.p)/(params.w)
+  sslope: (params.w)/(100)
+  Sslope: (calcs.sslope)/(params.numimp)
+
+  Qeq: ((0.002)*(params.m)+(0.1)*(params.p2))/((1)/(params.numcons)+(0.3)*(params.w)/((100)*(params.numimp)))
+  Peq: (params.w)*(calcs.Qeq)/((100)*(params.numimp))
+
+  DHintercept: (params.numcons)*((0.002)*(params.m)+(0.1)*(params.p2))
+
+
+
+
+aspectRatio: 1.5
+
+layout:
+  OneGraphPlusSidebar:
+
+    graph:
+      xAxis:
+        max: 1800
+        ticks: 0
+      yAxis:
+        max: 5
+        ticks: 0
+      objects:
+
+      - Label:
+              coordinates: [1800, 0]
+              text: "` \\\\text{kg} `"
+              yPixelOffset: 0
+              position: l
+      - Label:
+              coordinates: [0, 5]
+              text: "` \\\\text{euro/kg}  `"
+              xPixelOffset: 0
+
+# market demand
+      - Curve:
+          fn: (params.numcons)*((0.002)*(params.m)-(0.3)*(y)+(0.1)*(params.p2))
+          color: Blue
+          strokeWidth: 1.5
+      - Label:
+              coordinates: [(calcs.DHintercept), 0.3]
+              text: "` D  `"
+              bgcolor: none
+              color: Blue
+
+# market supply
+      - Line:
+          slope: calcs.Sslope
+          color: Red
+          strokeWidth: 1.5
+
+# equilibrium
+      - Point:
+          coordinates: [calcs.Qeq, calcs.Peq]
+          droplines:
+            horizontal: calcs.Peq.toFixed(2)
+            vertical: calcs.Qeq.toFixed(2)
+          strokeWidth: 0.5
+          color: Green
+          r: 3.5
+
+
+# # consumer surplus blue
+#       - Area: {fn1: (12-4*(x)/(params.numcons)), fn2: params.p, fill: Blue, opacity: params.ops, min: 0.001, max: calcs.D, show: params.showCS == true }
+
+
+
+
+
+
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURA 1.4
+        description: Muovere uno dei primi tre cursori per vedere come cambia l'equilibrio di mercato in risposta ad uno shock alla domanda, o uno degli altri due per vedere come cambia l'equilibrio in seguito ad uno shock all'offerta.
+      - title: Shock alla domanda
+        # checkboxes:
+        # - param: showCS
+        #   label: "\\text{Mostra e calcola surplus dei consumatori.}"
+        sliders:
+        - param: numcons
+          label: N_\text{cons}
+        - param: m
+          label: M
+        - param: p2
+          label: P_\text{riso}
+      - title: Shock all'offerta
+        # checkboxes:
+        # - param: showCS
+        #   label: "\\text{Mostra e calcola surplus dei consumatori.}"
+        sliders:
+        - param: numimp
+          label: N_\text{imp}
+        - param: w
+          label: P_\text{input}
+        # divs:
+        # - html: "`Quando il prezzo è $P=${params.p}$ euro/kg, la quantità domandata 
+        #         da ciascun consumatore è $Q=${calcs.d}$. La quantità complessivamente
+        #         domandata nel mercato è quindi $Q=${calcs.D}$.
+        #           `"
+
+
+
+
+
+
+
+
+    explanation:
+      divs:
+        - html: "`
+                Uno shock all’offerta sposta l’equilibrio lungo la curva di domanda,
+                verso nord-ovest nel caso di uno shock negativo, verso sud-est se lo
+                shock è positivo. Analogamente, uno shock alla domanda sposta
+                l'equilibrio lungo la curva di offerta, verso sud-ovest nel caso di 
+                uno shock negativo, verso nord-est se lo shock è positivo. 
+                `"
+
+
+
+
+
+
+
+
+
+

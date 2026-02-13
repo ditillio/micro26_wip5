@@ -1,0 +1,107 @@
+
+schema: EconSchema
+params:
+- {name: numcons, value: 1000, min: 500, max: 1500, round: 100}
+- {name: p, value: 2, min: 1, max: 5, round: 0.5}
+- {name: m, value: 500, min: 300, max: 700, round: 50}
+- {name: p2, value: 2, min: 1, max: 3, round: 0.5}
+- {name: showCS, value: false}
+
+
+calcs:
+  d: max(0.02,(0.002)*(params.m)-(0.3)*(params.p)+(0.1)*(params.p2))
+  D: (params.numcons)*(calcs.d)
+
+
+
+
+
+
+aspectRatio: 1.25
+
+layout:
+  OneGraphPlusSidebar:
+    graph:
+      xAxis:
+        ticks: 0
+        max: 8
+        title: Domanda individuale
+      yAxis:
+        max: 10.5
+        ticks: 0
+      objects:
+
+
+      - Line:
+          yIntercept: 10
+          slope: -1
+          color: Blue
+          strokeWidth: 25
+
+      - Line:
+          yIntercept: 0
+          slope: 1
+          color: Red
+          strokeWidth: 25
+
+      - Point:
+          coordinates: [5,5]
+          color: Green
+          r: 50
+
+      - Area:
+          fn1: 10-(x)
+          fn2: (5)
+          fill: Blue
+          opacity: 0.25
+          min: 0
+          max: 5
+
+      - Area:
+          fn1: (5)
+          fn2: (x)
+          fill: Green
+          opacity: 0.25
+          min: 0
+          max: 5
+
+
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURA 1.2
+        # checkboxes:
+        # - param: showCS
+        #   label: "\\text{Mostra e calcola surplus dei consumatori.}"
+        sliders:
+        - param: p
+          label: P_\text{pasta}
+        - param: numcons
+          label: N_\text{cons}
+        - param: m
+          label: M
+        - param: p2
+          label: P_\text{riso}
+        # divs:
+        # - html: "`Quando il prezzo è $P=${params.p}$ euro/kg, la quantità domandata 
+        #         da ciascun consumatore è $Q=${calcs.d}$. La quantità complessivamente
+        #         domandata nel mercato è quindi $Q=${calcs.D}$.
+        #           `"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

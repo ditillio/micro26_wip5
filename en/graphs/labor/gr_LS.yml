@@ -1,0 +1,252 @@
+---
+schema: EconSchema
+version: 1
+params:
+- {name: a, value: 1, min: 1, max: 2}
+- {name: b, value: 2, min: 1, max: 2}
+- {name: w, value: 35, min: 0, max: 70}
+- {name: M, value: 70, min: 40, max: 120, round: 10}
+- {name: p, value: 20, min: 15, max: 35}
+- {name: num, value: 1000, min: 500, max: 1500, round: 100}
+
+calcs:
+  wealth: ( 7 * (params.w) ) + params.M
+  consumptionEndowment: params.M / params.p
+  leisure: (7 - params.L)
+  consumption: (params.M + params.w*params.L) / params.p
+  maxconsumption: (params.M + params.w*7) / params.p
+  wageIncome: params.w*params.L
+  wageconsumption: (params.w*params.L)/params.p
+  rN: (params.a) / ( (params.a) + (params.b) ) 
+  rC: (params.b) / ( (params.a) + (params.b) ) 
+  optchoiceNinterior: calcs.wealth * calcs.rN / params.w
+  optchoiceLinterior: -(calcs.optchoiceNinterior)+7
+  optchoiceCinterior: calcs.wealth * calcs.rC / params.p
+  optchoiceNcorner: 7 * calcs.rN
+  optchoiceCcorner: calcs.consumptionEndowment
+  maxUinterior: ( (calcs.optchoiceNinterior)^(params.a) ) * ( (calcs.optchoiceCinterior)^(params.b) )
+  maxUcorner: ((calcs.optchoiceNcorner)^(params.a))*((calcs.optchoiceCcorner)^(params.b))
+  realwage: params.w / params.p
+  mrsEndowment: ((params.a)/(params.b)) * (calcs.consumptionEndowment) / 7
+
+aspectRatio: 2
+
+layout:
+  type: TwoHorizontalGraphsPlusSidebar
+  def:
+
+
+
+
+
+
+
+
+
+    leftGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 8
+        ticks: 0
+      yAxis:
+        orient: left
+        min: 0
+        max: 75
+        ticks: 0
+      objects:
+
+      - Label:
+            coordinates: [8, 0]
+            text: "` \\\\text{dd} `"
+            yPixelOffset: 0
+            position: l
+
+      - Label:
+            coordinates: [0, 75]
+            text: "` \\\\text{Euro/dd}  `"
+            xPixelOffset: -5
+
+
+# leisure demand function
+      - Curve:
+          fn: calcs.rN * params.M / ( (x) - 7*calcs.rN )
+          color: Blue
+          strokeWidth: 0.6
+          max: 7
+          min: calcs.rN * 7
+      - Segment:
+          a: [7,0]
+          b: [7,calcs.rN * params.M / ( 7 - 7*calcs.rN )]
+          color: Blue
+          strokeWidth: 1
+
+
+
+# labor supply function
+      - Curve:
+          fn: calcs.rN * params.M / ( - (x) + 7*calcs.rC )  
+          color: Red
+          strokeWidth: 2.5
+          max: calcs.rC * 7
+          position: b
+          label:
+            text: \text{individual}
+            x: calcs.rC * 7 - calcs.rN * params.M / 60
+      - Curve:
+          fn: calcs.rN * params.M / ( - (x) + 7*calcs.rC )  
+          color: Red
+          strokeWidth: 0
+          max: calcs.rC * 7
+          position: c
+          label:
+            text: \text{labor supply}
+            x: calcs.rC * 7 - calcs.rN * params.M / 60
+      - Segment:
+          a: [0.03,0]
+          b: [0.03,calcs.rN * params.M / ( 7*calcs.rC )]
+          color: Red
+          strokeWidth: 2.5
+
+# optimal choice of labor interior
+      - Point:
+          coordinates: [-(calcs.optchoiceNinterior)+7, params.w]
+          droplines:
+            vertical: calcs.optchoiceLinterior.toFixed(2)
+            horizontal: params.w.toFixed(2)
+          color: Red
+          show: params.w > ( params.a * params.M ) / ( 7 * params.b )
+
+# optimal choice of labor corner
+      - Point:
+          coordinates: [0.02, params.w]
+          droplines:
+            vertical: 
+            horizontal: params.w.toFixed(2)
+          color: Red
+          show: params.w <= ( params.a * params.M ) / ( 7 * params.b )
+
+# shadow point for dropline at N=T
+      - Point:
+          coordinates: [7, 1000]
+          droplines:
+            vertical: "`T=7`"
+            horizontal:
+          color: Black
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    rightGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 5000
+        ticks: 0
+      yAxis:
+        orient: left
+        min: 0
+        max: 75
+        ticks: 0
+      objects:
+
+
+      - Label:
+            coordinates: [5000, 0]
+            text: "` \\\\text{dd} `"
+            yPixelOffset: 0
+            position: l
+
+      - Label:
+            coordinates: [0, 75]
+            text: "` \\\\text{Euro/dd}  `"
+            xPixelOffset: -5
+
+
+
+
+# mkt labor supply function
+      - Curve:
+          fn: calcs.rN * params.M / ( - (x)/params.num + 7*calcs.rC )  
+          color: Red
+          strokeWidth: 2.5
+          max: params.num * 4.66
+          position: b
+          label:
+            text: \text{market}
+            x: params.num * ( calcs.rC * 7 - calcs.rN * params.M / 60 )
+      - Curve:
+          fn: calcs.rN * params.M / ( - (x)/params.num + 7*calcs.rC )  
+          color: Red
+          strokeWidth: 0
+          max: params.num * 3.5
+          position: c
+          label:
+            text: \text{labor supply}
+            x: params.num * ( calcs.rC * 7 - calcs.rN * params.M / 60 )
+      - Segment:
+          a: [30,0]
+          b: [30,calcs.rN * params.M / ( 7*calcs.rC )]
+          color: Red
+          strokeWidth: 2.5
+
+# optimal choice of labor interior
+      - Point:
+          coordinates: [(-(calcs.optchoiceNinterior)+7)*(params.num), params.w]
+          droplines:
+            vertical: (calcs.optchoiceLinterior.toFixed(2))*(params.num)
+            horizontal: params.w.toFixed(2)
+          color: Red
+          show: params.w > ( params.a * params.M ) / ( 7 * params.b )
+
+# optimal choice of labor corner
+      - Point:
+          coordinates: [0.02, params.w]
+          droplines:
+            vertical: 
+            horizontal: params.w.toFixed(2)
+          color: Red
+          show: params.w <= ( params.a * params.M ) / ( 7 * params.b )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    sidebar:
+      controls:
+
+      - title: FIGURE 9.3
+#        description: The budget line for a worker who can choose how many hours to work at a constant wage
+        sliders:
+        - param: M
+          label: M_0
+        - param: w
+          label: W
+        - param: num
+          label: \text{\# of workers}
+
+        divs:
+        - html: "`  `"

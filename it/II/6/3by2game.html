@@ -1,0 +1,168 @@
+<span class="marginnote">
+<input type="radio" name="dom32" id="DOMcheck1game32" onclick="DOMerase32('darkgrey')">
+<b>Eliminazione iterata - Step 1</b>
+</span>
+<span class="marginnote" id="DOM32msg1">
+</span>
+<span class="marginnote">
+<input type="radio" name="dom32" id="DOMcheck2game32" onclick="DOMerase32('darkgrey')">
+<b> Eliminazione iterata - Step 2</b>
+</span>
+<span class="marginnote" id="DOM32msg2">
+</span>
+<span class="marginnote">
+<input type="radio" name="dom32" id="DOMcheck0game32" onclick="DOMerase32('darkgrey')" checked>
+Reset
+</span>
+
+<table class="alfgame" style="width:20%; table-layout:auto; border-collapse: collapse">
+  <tr>
+    <td style="visibility: hidden"> Giocatore111111 </td>
+    <td style="visibility: hidden"> Down </td>
+    <td style="visibility: hidden"> 333 </td>
+    <td style="visibility: hidden"> 333 </td>
+    <td style="visibility: hidden"> 333 </td>
+    <td style="visibility: hidden"> 333 </td>
+    <td style="visibility: hidden"> 333 </td>
+    <td style="visibility: hidden"> 333 </td>
+    <td style="visibility: hidden"> 333 </td>
+    <td style="visibility: hidden"> 333 </td>
+  </tr>
+  <tr>
+    <td colspan="2"></td>
+    <td colspan="4" style="vertical-align:bottom">
+    $\text{Giocatore 2}$
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2"></td>
+    <td colspan="2">
+    Left
+    </td>
+    <td colspan="2">
+    Right
+    </td>
+  </tr>
+  <tr>
+    <td>
+    </td>
+    <td>
+    Up
+    </td>
+    <td id="DOMUL1game32" style="border-top:solid 2px #060; border-left:solid 2px #060; color:blue">
+        7
+    </td>
+    <td id="DOMUL2game32" style="border-top:solid 2px #060; border-right:solid 2px #060; color:red">
+        3
+    </td>
+    <td id="DOMUR1game32" style="border-top:solid 2px #060; border-left:solid 2px #060; color:blue">
+        4
+    </td>
+    <td id="DOMUR2game32" style="border-top:solid 2px #060; border-right:solid 2px #060; color:red">
+        4
+    </td>
+  </tr>
+  <tr>
+    <td style="vertical-align:bottom; text-align:center">
+    $\text{Giocatore 1}$
+    </td>
+    <td>
+    Middle
+    </td>
+    <td id="DOMML1game32" style="border-top:solid 2px #060; border-left:solid 2px #060; color:blue">
+        2
+    </td>
+    <td id="DOMML2game32" style="border-top:solid 2px #060; border-right:solid 2px #060; color:red">
+        0
+    </td>
+    <td style="border-top:solid 2px #060; border-left:solid 2px #060; color:blue">
+        5
+    </td>
+    <td style="border-top:solid 2px #060; border-right:solid 2px #060; color:red">
+        1
+    </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>
+    Down
+    </td>
+    <td id="DOMDL1game32" style="border-bottom:solid 2px #060; border-top:solid 2px #060; border-left:solid 2px #060; color:blue">
+        6
+    </td>
+    <td id="DOMDL2game32" style="border-bottom:solid 2px #060; border-top:solid 2px #060; border-right:solid 2px #060; color:red">
+        2
+    </td>
+    <td id="DOMDR1game32" style="border-bottom:solid 2px #060; border-top:solid 2px #060; border-left:solid 2px #060; color:blue">
+        0
+    </td>
+    <td id="DOMDR2game32" style="border-bottom:solid 2px #060; border-top:solid 2px #060; border-right:solid 2px #060; color:red">
+        3
+    </td>
+  </tr>
+</table>
+
+<script>
+function DOMerase32(newColor) {
+  var checkBox1 = document.getElementById("DOMcheck1game32");
+  var checkBox2 = document.getElementById("DOMcheck2game32");
+  var checkBox3 = document.getElementById("DOMcheck3game32");
+  var checkBox0 = document.getElementById("DOMcheck0game32");
+  const domUL1game32 = document.getElementById("DOMUL1game32");
+  const domUL2game32 = document.getElementById("DOMUL2game32");
+  const domML1game32 = document.getElementById("DOMML1game32");
+  const domML2game32 = document.getElementById("DOMML2game32");
+  const domDL1game32 = document.getElementById("DOMDL1game32");
+  const domDL2game32 = document.getElementById("DOMDL2game32");
+  const domDR1game32 = document.getElementById("DOMDR1game32");
+  const domDR2game32 = document.getElementById("DOMDR2game32");
+  const domUR1game32 = document.getElementById("DOMUR1game32");
+  const domUR2game32 = document.getElementById("DOMUR2game32");
+  if (checkBox1.checked == true){
+  document.getElementById("DOM32msg1").innerHTML = 
+  " Right domina Left dato che <br> 4>3, 1>0, e 3>2 <br> Up domina Down dato che <br> 7>6 e 4>0 <br> Nel primo step eliminiamo quindi Left e Down. "
+  ;
+  document.getElementById("DOM32msg2").innerHTML = "";
+  domUL1game32.style.background = newColor;
+  domUL2game32.style.background = newColor;
+  domML1game32.style.background = newColor;
+  domML2game32.style.background = newColor;
+  domDL1game32.style.background = newColor;
+  domDL2game32.style.background = newColor;
+  domDR1game32.style.background = newColor;
+  domDR2game32.style.background = newColor;
+  domUR1game32.style.background = "transparent";
+  domUR2game32.style.background = "transparent";
+  } else if (checkBox2.checked == true){
+  document.getElementById("DOM32msg1").innerHTML = 
+  " Right domina Left dato che <br> 4>3, 1>0, e 3>2 <br> Up domina Down dato che <br> 7>6 e 4>0 <br> Nel primo step eliminiamo quindi Left e Down. "
+  ;
+  document.getElementById("DOM32msg2").innerHTML = 
+  " Nel gioco ottenuto eliminando Left e Down, Middle domina Up, dato che 5>4. "
+  ;
+  domUL1game32.style.background = newColor;
+  domUL2game32.style.background = newColor;
+  domML1game32.style.background = newColor;
+  domML2game32.style.background = newColor;
+  domDL1game32.style.background = newColor;
+  domDL2game32.style.background = newColor;
+  domDR1game32.style.background = newColor;
+  domDR2game32.style.background = newColor;
+  domUR1game32.style.background = newColor;
+  domUR2game32.style.background = newColor;
+  } else if (checkBox0.checked == true){
+  document.getElementById("DOM32msg1").innerHTML = "";
+  document.getElementById("DOM32msg2").innerHTML = "";
+  domUL1game32.style.background = "transparent";
+  domUL2game32.style.background = "transparent";
+  domML1game32.style.background = "transparent";
+  domML2game32.style.background = "transparent";
+  domDL1game32.style.background = "transparent";
+  domDL2game32.style.background = "transparent";
+  domDR1game32.style.background = "transparent";
+  domDR2game32.style.background = "transparent";
+  domUR1game32.style.background = "transparent";
+  domUR2game32.style.background = "transparent";
+    }
+} 
+</script>

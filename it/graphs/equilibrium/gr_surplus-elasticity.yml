@@ -1,0 +1,390 @@
+params:
+
+- {name: split, value: 0}
+
+calcs:
+
+  zz: params.split
+
+
+# aspectRatio: 2
+
+layout:
+  ThreeHorizontalGraphs:
+
+
+
+
+
+    leftGraph: 
+      xAxis:
+        max: 11
+        ticks: 0
+      yAxis:
+        max: 11
+        ticks: 0
+      label: a
+
+      objects:
+
+        - Label:
+                coordinates: [11, 0]
+                text: "` \\\\text{t} `"
+        - Label:
+                coordinates: [0, 11]
+                text: "` \\\\text{euro/kg}  `"
+
+# demand
+        - Line:
+            point: [0,10]
+            slope: -(1)
+            color: Blue
+            label:
+              text: D
+              x: 10
+              position: b
+              bgcolor: none
+            strokeWidth: 2
+        - Point:
+            coordinates: [0, 10]
+            color: Blue
+            r: 0
+            droplines:
+              horizontal: "` 10 `"
+        - Point:
+            coordinates: [10, 0]
+            color: Blue
+            r: 0
+            droplines:
+              vertical: "` 10 `"
+
+# supply
+        - Line:
+            point: [0,0]
+            slope: (4)
+            color: Red
+            label:
+              text: S_{SR}
+              x: 2.8
+            strokeWidth: 2
+
+# consumer surplus
+        - Area:
+            fn1: (10)-(x)
+            fn2: (8)
+            fill: blue
+            min: 0
+            max: 2
+
+        # - Segment:
+        #     a: [0,2.5]
+        #     b: [params.q,2.5]
+        #     lineStyle: dotted
+        #     color: black
+        #     strokeWidth: 0.5
+
+# producer surplus
+        - Area:
+            fn1: (8)
+            fn2: (4)*(x)
+            fill: green
+            min: 0
+            max: 2
+
+# equilibrium
+        - Point:
+            coordinates: [2, 8]
+            color: Green
+            r: 4
+            droplines:
+              horizontal: "` 8 `"
+              vertical: "` 2 `"
+            strokeWidth: 0.5
+
+
+
+
+
+
+
+
+
+
+
+
+
+    middleGraph: 
+      xAxis:
+        max: 11
+        ticks: 0
+      yAxis:
+        max: 11
+        ticks: 0
+      label: a
+
+      objects:
+
+        - Label:
+                coordinates: [11, 0]
+                text: "` \\\\text{t} `"
+        - Label:
+                coordinates: [0, 11]
+                text: "` \\\\text{euro/kg}  `"
+
+# demand
+        - Line:
+            point: [0,10]
+            slope: -(1)
+            color: Blue
+            label:
+              text: D
+              x: 10
+              position: b
+              bgcolor: none
+            strokeWidth: 2
+        - Point:
+            coordinates: [0, 10]
+            color: Blue
+            r: 0
+            droplines:
+              horizontal: "` 10 `"
+        - Point:
+            coordinates: [10, 0]
+            color: Blue
+            r: 0
+            droplines:
+              vertical: "` 10 `"
+
+# supply
+        - Line:
+            point: [0,0]
+            slope: (2/3)
+            color: Red
+            max: 10
+            label:
+              text: S_{SR}
+              x: 10
+              position: c
+            strokeWidth: 2
+
+# consumer surplus
+        - Area:
+            fn1: (10)-(x)
+            fn2: (4)
+            fill: blue
+            min: 0
+            max: 6
+
+        # - Segment:
+        #     a: [0,2.5]
+        #     b: [params.q,2.5]
+        #     lineStyle: dotted
+        #     color: black
+        #     strokeWidth: 0.5
+
+# producer surplus
+        - Area:
+            fn1: (4)
+            fn2: (2/3)*(x)
+            fill: green
+            min: 0
+            max: 6
+
+# equilibrium
+        - Point:
+            coordinates: [6, 4]
+            color: Green
+            r: 4
+            droplines:
+              horizontal: "` 4 `"
+              vertical: "` 6 `"
+            strokeWidth: 0.5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    rightGraph: 
+      xAxis:
+        max: 11
+        ticks: 0
+      yAxis:
+        max: 11
+        ticks: 0
+      label: a
+
+      objects:
+
+        - Label:
+                coordinates: [11, 0]
+                text: "` \\\\text{t} `"
+        - Label:
+                coordinates: [0, 11]
+                text: "` \\\\text{euro/kg}  `"
+
+# demand
+        - Line:
+            point: [0,10]
+            slope: -(1)
+            color: Blue
+            label:
+              text: D
+              x: 10
+              position: b
+              bgcolor: none
+            strokeWidth: 2
+        - Point:
+            coordinates: [0, 10]
+            color: Blue
+            r: 0
+            droplines:
+              horizontal: "` 10 `"
+        - Point:
+            coordinates: [10, 0]
+            color: Blue
+            r: 0
+            droplines:
+              vertical: "` 10 `"
+
+# supply
+        - Line:
+            point: [0,0]
+            slope: (0.25)
+            color: Red
+            max: 10
+            label:
+              text: S_{SR}
+              x: 10
+            strokeWidth: 2
+
+# consumer surplus
+        - Area:
+            fn1: (10)-(x)
+            fn2: (2)
+            fill: blue
+            min: 0
+            max: 8
+
+        # - Segment:
+        #     a: [0,2.5]
+        #     b: [params.q,2.5]
+        #     lineStyle: dotted
+        #     color: black
+        #     strokeWidth: 0.5
+
+# producer surplus
+        - Area:
+            fn1: (2)
+            fn2: (0.25)*(x)
+            fill: green
+            min: 0
+            max: 8
+
+# equilibrium
+        - Point:
+            coordinates: [8, 2]
+            color: Green
+            r: 4
+            droplines:
+              horizontal: "` 2 `"
+              vertical: "` 8 `"
+            strokeWidth: 0.5
+
+
+
+
+
+
+
+
+
+
+
+
+    leftControls:
+      title: Tecnologia I
+      divs:
+      - html: "` Prezzo di equilibrio: $8$ `"
+      - html: "` Quantità di equilibrio: $2$ `"
+      - html: "` Surplus (in migliaia di euro): `"
+      - html: "` $\\\\quad$ Consumatore: $2$ `"
+      - html: "` $\\\\quad$ Produttore: $8$ `"
+      - html: "` $\\\\quad$ Totale: $10$ `"
+
+      # sliders:
+      #   - param: q
+      #     label: Q
+
+    middleControls:
+      title: Tecnologia II
+      divs:
+      - html: "` Prezzo di equilibrio: $4$ `"
+      - html: "` Quantità di equilibrio: $6$ `"
+      - html: "` Surplus (in migliaia di euro):`"
+      - html: "` $\\\\quad$ Consumatore: $18$ `"
+      - html: "` $\\\\quad$ Produttore: $12$ `"
+      - html: "` $\\\\quad$ Totale: $30$ `"
+
+      # checkboxes:
+      # - param: split
+      #   label: "` \\\\text{Riduci quota a 20} \\\\% `"
+
+    rightControls:
+      title: Tecnologia III
+      divs:
+      - html: "` Prezzo di equilibrio: $2$ `"
+      - html: "` Quantità di equilibrio: $8$ `"
+      - html: "` Surplus (in migliaia di euro): `"
+      - html: "` $\\\\quad$ Consumatore: $32$ `"
+      - html: "` $\\\\quad$ Produttore: $8$ `"
+      - html: "` $\\\\quad$ Totale: $40$ `"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    explanation:
+      divs:
+        - html: <br>
+        # - html: "`
+        #         Il grafico di sinistra rappresenta l'equilibrio di breve periodo quando 
+        #         nel mercato sono presenti 20 imprese. La quantità scmbiata è pari a 2500
+        #         unità. Ogni impresa produce quindi 125 unità. Dato questo numero di imprese,
+        #         il mercato non può fare di meglio.
+        #         `"
+
+
+
+
+
+
+
+
+
+
+
+
+
+

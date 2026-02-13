@@ -1,0 +1,389 @@
+---
+schema: EconSchema
+version: 1
+params:
+- {name: a, value: 1, min: 1, max: 2}
+- {name: b, value: 1, min: 1, max: 2}
+- {name: w, value: 35, min: 0, max: 70}
+- {name: M, value: 70, min: 40, max: 120, round: 10}
+- {name: p, value: 20, min: 10, max: 30}
+
+calcs:
+  wealth: ( 7 * (params.w) ) + params.M
+  consumptionEndowment: params.M / params.p
+  leisure: (7 - params.L)
+  consumption: (params.M + params.w*params.L) / params.p
+  maxconsumption: (params.M + params.w*7) / params.p
+  wageIncome: params.w*params.L
+  wageconsumption: (params.w*params.L)/params.p
+  rN: (params.a) / ( (params.a) + (params.b) ) 
+  rC: (params.b) / ( (params.a) + (params.b) ) 
+  optchoiceNinterior: calcs.wealth * calcs.rN / params.w
+  optchoiceLinterior: -(calcs.optchoiceNinterior)+7
+  optchoiceCinterior: calcs.wealth * calcs.rC / params.p
+  optchoiceNcorner: 7 * calcs.rN
+  optchoiceCcorner: calcs.consumptionEndowment
+  maxUinterior: ( (calcs.optchoiceNinterior)^(params.a) ) * ( (calcs.optchoiceCinterior)^(params.b) )
+  maxUcorner: ((calcs.optchoiceNcorner)^(params.a))*((calcs.optchoiceCcorner)^(params.b))
+  realwage: params.w / params.p
+  mrsEndowment: ((params.a)/(params.b)) * (calcs.consumptionEndowment) / 7
+
+aspectRatio: 0.8
+
+layout:
+  type: TwoVerticalGraphsPlusSidebar
+  def:
+
+    topGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 8
+        ticks: 0
+      yAxis:
+        orient: left
+        min: 0
+        max: 20
+        ticks: 0
+      objects:
+
+
+      - Label:
+            coordinates: [8, 0]
+            text: "` \\\\text{Time  (dd)} `"
+            yPixelOffset: 0
+            position: l
+
+      - Label:
+            coordinates: [0, 20]
+            text: "` \\\\text{Consumption (kg)}  `"
+            xPixelOffset: -5
+
+# opt indiff curve interior
+      - Curve:
+          fn: ((calcs.maxUinterior)/((x)^(params.a)))^(1/params.b)
+          color: Black
+          strokeWidth: 1
+          show: params.w > ( params.a * params.M ) / ( 7 * params.b )
+      - Curve:
+          fn: ((calcs.maxUcorner)/((x)^(params.a)))^(1/params.b)
+          color: Black
+          strokeWidth: 1
+          show: params.w > ( params.a * params.M ) / ( 7 * params.b )
+      - Curve:
+          fn: ((1.5*calcs.maxUinterior)/((x)^(params.a)))^(1/params.b)
+          color: Black
+          strokeWidth: 1
+          show: params.w > ( params.a * params.M ) / ( 7 * params.b )
+
+# opt indiff curve corner
+      - Curve:
+          fn: ((calcs.maxUcorner)/((x)^(params.a)))^(1/params.b)
+          color: Black
+          strokeWidth: 1
+          show: params.w <= ( params.a * params.M ) / ( 7 * params.b )
+      - Curve:
+          fn: ((0.6*calcs.maxUcorner)/((x)^(params.a)))^(1/params.b)
+          color: Black
+          strokeWidth: 1
+          show: params.w <= ( params.a * params.M ) / ( 7 * params.b )
+      - Curve:
+          fn: ((1.5*calcs.maxUcorner)/((x)^(params.a)))^(1/params.b)
+          color: Black
+          strokeWidth: 1
+          show: params.w <= ( params.a * params.M ) / ( 7 * params.b )
+
+
+# budget line
+      - Line:
+          yIntercept: calcs.maxconsumption
+          max: 7
+          slope: -params.w / params.p
+          color: Blue
+          strokeWidth: 2
+
+# optimal choice interior
+
+      - Point:
+          coordinates: [calcs.optchoiceNinterior, calcs.optchoiceCinterior]
+          droplines:
+            vertical: calcs.optchoiceNinterior.toFixed(2)
+            horizontal: calcs.optchoiceCinterior.toFixed(2)
+          color: Blue
+          r: 4
+          label:
+            text: \text{optimal choice}
+          show: params.w > ( params.a * params.M ) / ( 7 * params.b )
+
+
+
+# optimal choice corner
+
+      - Point:
+          coordinates: [calcs.optchoiceNcorner, calcs.optchoiceCcorner]
+          droplines:
+            vertical: calcs.optchoiceNcorner.toFixed(2)
+            horizontal: calcs.optchoiceCcorner.toFixed(2)
+          color: Blue
+          r: 4
+          label:
+            text: \text{optimal choice = initial situation}
+          show: params.w <= ( params.a * params.M ) / ( 7 * params.b )
+
+# shadow point max consumption
+
+      - Point:
+          coordinates: [0, calcs.maxconsumption]
+          droplines:
+            vertical: 0
+            horizontal: "`(M_0+WT)/P = ${ calcs.maxconsumption.toFixed(2) } `"
+          color: Black
+          r: 0
+
+# endowment point
+
+      - type: EconBundle
+        def:
+          name: endowmentBundle
+          coordinates:
+          - 7
+          - calcs.consumptionEndowment
+          droplines:
+            vertical: "`T=7`"
+            horizontal: "`M_0/P = ${ calcs.consumptionEndowment.toFixed(2) } `"
+          color: Black
+          r: 4
+          label:
+            text: \text{initial situation}
+            position: l
+          show: params.w > ( params.a * params.M ) / ( 7 * params.b )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    bottomGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 8
+        ticks: 0
+      yAxis:
+        orient: left
+        min: 0
+        max: 75
+        ticks: 0
+      objects:
+
+
+      - Label:
+            coordinates: [8, 0]
+            text: "` \\\\text{Time  (dd)} `"
+            yPixelOffset: 0
+            position: l
+
+      - Label:
+            coordinates: [0, 75]
+            text: "` \\\\text{Wage (Euro/dd)}  `"
+            xPixelOffset: -5
+
+
+# leisure demand function
+      - Curve:
+          fn: calcs.rN * params.M / ( (x) - 7*calcs.rN )
+          color: Blue
+          strokeWidth: 2.5
+          max: 7
+          min: calcs.rN * 7
+          label:
+            text: \text{demand of leisure}
+            x: 5
+            position: bl
+      - Segment:
+          a: [7,0]
+          b: [7,calcs.rN * params.M / ( 7 - 7*calcs.rN )]
+          color: Blue
+          strokeWidth: 2.5
+
+
+# labor supply function
+      - Curve:
+          fn: calcs.rN * params.M / ( - (x) + 7*calcs.rC )  
+          color: Red
+          strokeWidth: 2.5
+          max: calcs.rC * 7
+          label:
+            text: \text{supply of labor}
+            x: 2
+            position: br
+      - Segment:
+          a: [0.03,0]
+          b: [0.03,calcs.rN * params.M / ( 7*calcs.rC )]
+          color: Red
+          strokeWidth: 2.5
+
+# optimal choice of leisure interior
+      - Point:
+          coordinates: [calcs.optchoiceNinterior, params.w]
+          droplines:
+            horizontal: params.w.toFixed(2)
+          color: Blue
+          r: 4
+          show: params.w > ( params.a * params.M ) / ( 7 * params.b )
+# optimal choice of leisure interior (shadow)
+      - Point:
+          coordinates: [calcs.optchoiceNinterior, 1000]
+          droplines:
+            vertical: calcs.optchoiceNinterior.toFixed(2)
+          color: Blue
+          r: 4
+          show: params.w > ( params.a * params.M ) / ( 7 * params.b )
+
+# optimal choice of labor interior
+      - Point:
+          coordinates: [-(calcs.optchoiceNinterior)+7, params.w]
+          droplines:
+            vertical: calcs.optchoiceLinterior.toFixed(2)
+            horizontal: params.w.toFixed(2)
+          color: Red
+          r: 4
+          show: params.w > ( params.a * params.M ) / ( 7 * params.b )
+
+# optimal choice of leisure corner
+      - Point:
+          coordinates: [7, params.w]
+          droplines:
+            vertical: 
+            horizontal: params.w.toFixed(2)
+          color: Blue
+          r: 4
+          show: params.w <= ( params.a * params.M ) / ( 7 * params.b )
+
+# optimal choice of labor corner
+      - Point:
+          coordinates: [0.02, params.w]
+          droplines:
+            vertical: 
+            horizontal: params.w.toFixed(2)
+          color: Red
+          r: 4
+          show: params.w <= ( params.a * params.M ) / ( 7 * params.b )
+
+# shadow point for dropline at N=T
+      - Point:
+          coordinates: [7, 1000]
+          droplines:
+            vertical: "`T=7`"
+            horizontal:
+          color: Black
+          r: 4
+
+
+
+
+
+
+
+
+    sidebar:
+      controls:
+
+      - title: FIGURE 9.2
+#        description: The budget line for a worker who can choose how many hours to work at a constant wage
+        sliders:
+        - param: a
+          label: \alpha
+        - param: b
+          label: \beta
+        - param: M
+          label: M_0
+        - param: w
+          label: W
+        - param: p
+          label: P
+
+        divs:
+        - html: "` The consumer/worker's utility function is
+                  $$ U(N,C) = NC $$ `"
+          show: params.a == 1 && params.b == 1
+        - html: "` The consumer/worker's utility function is
+                  $$ U(N,C) = N^2C $$ `"
+          show: params.a == 2 && params.b == 1
+        - html: "` The consumer/worker's utility function is
+                  $$ U(N,C) = NC^2 $$ `"
+          show: params.a == 1 && params.b == 2
+        - html: "` The consumer/worker's utility function is
+                  $$ U(N,C) = N^2C^2 $$ `"
+          show: params.a == 2 && params.b == 2
+        - html: "` The marginal rate of substitution of leisure with consumption is then
+                $$ MRS_{NC} = \\\\frac{C}{N} $$ `"
+          show: params.a == params.b
+        - html: "` The marginal rate of substitution of leisure with consumption is then
+                $$ MRS_{CN} = \\\\frac{2C}{N} $$ `"
+          show: params.a > params.b
+        - html: "` The marginal rate of substitution of leisure with consumption is then
+                $$ MRS_{CN} = \\\\frac{C}{2N} $$ `"
+          show: params.a < params.b
+        - html: "` In the initial situation 
+                    ($N=7$, $C= ${calcs.consumptionEndowment.toFixed(2)} $) we therefore have 
+                    $MRS_{NC}=${calcs.consumptionEndowment.toFixed(2)}/7=
+                    ${calcs.mrsEndowment.toFixed(2)}$ `"
+          show: params.a == params.b
+        - html: "` In the initial situation 
+                    ($N=7$, $C= ${calcs.consumptionEndowment.toFixed(2)} $) we therefore have 
+                    $MRS_{NC}=2\\\\times ${calcs.consumptionEndowment.toFixed(2)}/7=
+                    ${calcs.mrsEndowment.toFixed(2)}$ `"
+          show: params.a > params.b
+        - html: "` In the initial situation 
+                    ($N=7$, $C= ${calcs.consumptionEndowment.toFixed(2)} $) we therefore have 
+                    $MRS_{NC}= ${calcs.consumptionEndowment.toFixed(2)}/(2\\\\times7)=
+                    ${calcs.mrsEndowment.toFixed(2)}$ `"
+          show: params.a < params.b
+        - html: "`  `"
+        - html: "` The price of consumption is $P = ${params.p.toFixed(2)}$. `"
+        - html: "` Real wage is therefore 
+                  $$W/P = ${params.w.toFixed(2)}/ ${params.p.toFixed(2)}=
+                  ${calcs.realwage.toFixed(2)}$$ `"
+        - html: "`  `"
+        - html: "` Since $ ${calcs.mrsEndowment.toFixed(2)} < ${calcs.realwage.toFixed(2)} $, the optimal choice
+                  is interior:
+                  $$ N=${calcs.optchoiceNinterior.toFixed(2)} \\\\qquad C=${calcs.optchoiceCinterior.toFixed(2)}    $$ `"
+          show: calcs.realwage > calcs.mrsEndowment
+        - html: "` Since $ ${calcs.mrsEndowment.toFixed(2)} \\\\geq ${calcs.realwage.toFixed(2)} $, 
+                    the optimal choice is a corner solution:
+                  $$ N=7 \\\\qquad C=${calcs.consumptionEndowment.toFixed(2)}    $$ `"
+          show: calcs.realwage <= calcs.mrsEndowment
+
+
+
+    explanation:
+        divs:
+        - html: "` The rule for computing the consumer/worker's optimal choice can be summarized 
+                  like this:   `"
+        - html: "` If at the initial situation (that is, $N=T$ and 
+                  $C=M_0/P$) the marginal rate of substitution is greater than the 
+                  real wage $W/P$, then the optimal choice is a corner solution, 
+                  namely the initial situation 
+                  (i.e. not working at all, having $N=T$ days of leisure, and consuming 
+                  $M_0/P$ units of consumption).   `"
+        - html: "` If, instead, at the initial situation the marginal rate of substitution is 
+                  smaller then the real wage,
+                  then the optimal choice is interior and is computed in the usual way, namely
+                  solving the system of equations comprising the budget constraint and the tangency condition 
+                  $MRS_{NC}=W/P$.   `"
+
+
+
+
+
+

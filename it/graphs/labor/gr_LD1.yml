@@ -1,0 +1,108 @@
+params:
+- {name: showCS, value: false}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: p, value: 2.5, min: 1, max: 3.5, round: 0.05}
+- {name: a, value: 80, min: 60, max: 100, round: 10}
+- {name: w, value: 64, min: 30, max: 130, round: 0.05}
+
+calcs:
+  l: ((params.a)*(params.p)/(2*(params.w)))^2
+
+aspectRatio: 1.8
+
+layout:
+  OneGraphPlusSidebar:
+
+    graph: 
+      xAxis:
+        max: 13
+        ticks: 5
+      yAxis:
+        max: 150
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [13, 0]
+                text: "` \\\\text{Lavoro (gg)} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 150]
+                text: "` \\\\text{Salario (Euro/gg)}  `"
+                xPixelOffset: -6
+
+# points
+        - Point:
+            coordinates: [calcs.l, params.w]
+            droplines: {vertical: calcs.l.toFixed(2), horizontal: }
+            color: Blue
+            r: 5
+
+# wage line
+        - Line:
+            yIntercept: params.w
+            color: Brown
+            label:
+              text: "` MLC=W `"
+              x: 13
+              position: l
+            strokeWidth: 2
+            bgcolor: none
+            drag:
+              - vertical: w
+        - Point:
+            coordinates: [calcs.l, params.w]
+            droplines: {vertical: , horizontal: params.w.toFixed(2)}
+            color: Brown
+            r: 0
+
+# labor demand function
+
+        - Curve:
+            fn: ( (params.p) * (params.a) ) / ( 2 * (x)^(0.5) )
+            color: Blue
+            label:
+              text: "` MLR = \\\\dfrac{ ${params.p.toFixed(2)} \\\\times ${params.a} }{ 2 \\\\sqrt{L} } `"
+              x: 13
+              position: l
+            strokeWidth: 1.7
+
+    sidebar:
+      controls:
+      - title: FIGURA 9.4
+        description: Muovere i primi due cursori per modificare la funzione di 
+                    produzione o il prezzo dell'output. Muovere il terzo cursore o trascinare la retta marrone nel grafico
+                    per vedere come la quantità domandata di lavoro varia al variare del suo prezzo.
+        sliders:
+        - param: a
+          label: A
+        - param: p
+          label: P
+        - param: w
+          label: W
+        # divs:
+        # - html: "`   `"
+
+
+    # explanation:
+    #   divs:
+    #     - html: "` Il profitto dell'impresa è $ P\\\\times A\\\\sqrt{L} - WL 
+    #               = ${params.p.toFixed(2)} \\\\times ${params.a} \\\\sqrt{L} - W L. $  `"
+    #     - html: "` La derivata rispetto a $L$ è $ P\\\\times A / (2\\\\sqrt{L}) - W 
+    #               = (${params.p.toFixed(2)} \\\\times ${params.a}) / (2 \\\\sqrt{L}) - W. $  `"
+    #     - html: "` Ponendo la derivata pari a zero otteniamo la funzione di domanda inversa di lavoro:
+    #                   $$ W = \\\\frac{P\\\\times A}{2\\\\sqrt{L}} $$ `"
+
+
+
+
+
+
+
+
+

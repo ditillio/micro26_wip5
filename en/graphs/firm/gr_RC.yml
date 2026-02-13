@@ -1,0 +1,228 @@
+params:
+- {name: showCS, value: false}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: p, value: 2.5, min: 0.5, max: 3.5, round: 0.1}
+- {name: a, value: 80, min: 60, max: 100, round: 5}
+- {name: w, value: 64, min: 40, max: 80, round: 1}
+- {name: fc, value: 100, min: 0, max: 300, round: 5}
+- {name: maxcost, value: 600}
+
+calcs:
+  l: ((params.x)/(params.a))^2
+  vc: params.w * calcs.l
+  tc: params.w * calcs.l + params.fc
+  tr: params.p * params.x
+  xopt: (params.p) * ( (params.a)^2 ) / ( 2 * (params.w) ) 
+
+  lopt: ((calcs.xopt)/(params.a))^2
+  vcopt: params.w * calcs.lopt
+  tcopt: params.w * calcs.lopt + params.fc
+  tropt: params.p * calcs.xopt
+
+  econprofit: calcs.tropt - calcs.vcopt
+  accprofit: calcs.tropt - calcs.tcopt
+
+  aux: min(0,calcs.accprofit)
+  aux2: max(0,calcs.accprofit)
+
+  mc: 2 * params.w * params.x / ( (params.a)^2 )
+  avc: (calcs.vc) / (params.x)
+  atc: (calcs.tc) / (params.x)
+
+  mcopt: 2 * params.w * calcs.xopt / ( (params.a)^2 )
+  avcopt: (calcs.vcopt) / (calcs.xopt)
+  atcopt: (calcs.tcopt) / (calcs.xopt)
+
+aspectRatio: 1
+
+layout:
+  TwoVerticalGraphsPlusSidebar:
+
+    topGraph: 
+      xAxis:
+        max: 210
+        ticks: none
+      yAxis:
+        max: 600
+        ticks: none
+
+      objects:
+
+        - Label:
+                coordinates: [210, 0]
+                text: "` \\\\text{Output (kg)} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 600]
+                text: "` \\\\text{Euro}  `"
+                xPixelOffset: -3
+
+# revenue
+        - Line:
+            slope: params.p
+            color: Green
+            strokeWidth: 1.5
+            label:
+              text: "` R = ${params.p.toFixed(1)} Q `"
+              x: 210
+              position: l
+              bgcolor: none
+              show: params.p > 0
+
+# VC curve
+
+        - Curve:
+            fn: params.w * ((x)/(params.a))^2
+            color: Orange
+            label:
+              text: "` VC = \\\\dfrac{ ${params.w} }{ ${params.a}^2 } Q^2 `"
+              x: min((params.a)*sqrt((params.maxcost)/(params.w)),190)
+              position: tl
+            strokeWidth: 1.7
+
+# TC curve
+
+        - Curve:
+            fn: params.w * ((x)/(params.a))^2 + (params.fc)
+            color: Brown
+            label:
+              text: "` C = ${params.fc} + \\\\dfrac{ ${params.w} }{ ${params.a}^2 } Q^2 `"
+              x: min((params.a)*sqrt((params.maxcost-(params.fc))/(params.w)),200)
+              position: br
+            strokeWidth: 1.7
+
+# dropline optimal x
+        - Segment:
+            a: [calcs.xopt,0]
+            b: [calcs.xopt,calcs.vcopt]
+            color: Black
+            lineStyle: dotted
+            strokeWidth: 1
+
+# profit / loss
+        - Segment: {a: [calcs.xopt,calcs.tropt], b: [calcs.xopt,calcs.tcopt], color: Blue, strokeWidth: 5, show: calcs.tropt > calcs.tcopt}
+        - Segment: {a: [calcs.xopt,calcs.tropt], b: [calcs.xopt,calcs.tcopt], color: Red, strokeWidth: 5, show: calcs.tropt < calcs.tcopt}
+        - Segment: {a: [calcs.xopt,calcs.tcopt], b: [calcs.xopt,calcs.vcopt], color: Darkgrey, strokeWidth: 5, show: calcs.tropt > calcs.tcopt}
+        - Segment: {a: [calcs.xopt,calcs.tropt], b: [calcs.xopt,calcs.vcopt], color: LawnGreen, strokeWidth: 5, show: calcs.tropt < calcs.tcopt}
+
+# fc, tr, tc, vc points and labels
+        - Point: {coordinates: [0, params.fc], color: Brown, r: 0, droplines: {horizontal: params.fc.toFixed(2)}}
+        - Point: {coordinates: [calcs.xopt, calcs.tropt], color: Green, r: 4, droplines: {horizontal: calcs.tropt.toFixed(2), vertical: calcs.xopt.toFixed(1)}}
+        - Point: {coordinates: [calcs.xopt, calcs.tcopt], color: Brown, r: 4, droplines: {horizontal: calcs.tcopt.toFixed(2)}}
+        - Point: {coordinates: [calcs.xopt, calcs.vcopt], color: Orange, r: 4, droplines: {horizontal: calcs.vcopt.toFixed(2)}}
+
+
+
+    bottomGraph: 
+      xAxis:
+        max: 210
+        ticks: none
+      yAxis:
+        max: 350
+        min: -250
+        ticks: none
+
+      objects:
+
+        - Label:
+                coordinates: [210, 0]
+                text: "` \\\\text{Output (kg)} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 350  ]
+                text: "` \\\\text{Euro}  `"
+                xPixelOffset: -3
+
+# accounting profit
+
+        - Curve:
+            fn: params.p * (x) - params.w * ((x)/(params.a))^2 - (params.fc)
+            color: Darkgreen
+            label:
+              text: "` R - C `"
+              x: min((params.a)*sqrt((params.maxcost)/(params.w)),190)
+              position: bl
+            strokeWidth: 1.7
+
+# economic profit
+
+        - Curve:
+            fn: params.p * (x) - params.w * ((x)/(params.a))^2
+            color: Forestgreen
+            label:
+              text: "` R - VC `"
+              x: min((params.a)*sqrt((params.maxcost)/(params.w)),190)
+              position: bl
+            strokeWidth: 1.7
+
+# dropline optimal x
+        - Segment:
+            a: [calcs.xopt,1000]
+            b: [calcs.xopt,calcs.aux]
+            color: Black
+            lineStyle: dotted
+            strokeWidth: 1
+
+# profit / loss
+        - Segment: {a: [calcs.xopt,calcs.accprofit], b: [calcs.xopt,0], color: Blue, strokeWidth: 5, show: calcs.tropt > calcs.tcopt}
+        - Segment: {a: [calcs.xopt,calcs.accprofit], b: [calcs.xopt,0], color: Red, strokeWidth: 5, show: calcs.tropt < calcs.tcopt}
+        - Segment: {a: [calcs.xopt,calcs.econprofit], b: [calcs.xopt,calcs.aux2], color: Darkgrey, strokeWidth: 5, show: calcs.tropt > calcs.tcopt}
+        - Segment: {a: [calcs.xopt,calcs.econprofit], b: [calcs.xopt,calcs.aux2], color: LawnGreen, strokeWidth: 5, show: calcs.tropt < calcs.tcopt}
+
+# fc, tr, tc, vc points and labels
+        - Point: {coordinates: [calcs.xopt, calcs.econprofit], color: Forestgreen, r: 4, droplines: {horizontal: calcs.econprofit.toFixed(2)}}
+        - Point: {coordinates: [calcs.xopt, calcs.accprofit], color: Darkgreen, r: 4, droplines: {horizontal: calcs.accprofit.toFixed(2)}}
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURE 3.14
+        sliders:
+        - param: p
+          label: P
+        divs:
+        - html: "` `"
+        - html: "` The production function is $Q=80\\\\sqrt{L}$. `"
+        - html: "` The daily wage is $W=${params.w}$, the fixed cost $FC=${params.fc}$. `"
+        - html: "` The variable cost and total cost functions are therefore `"
+        - html: "` 
+                    $$VC(Q)=\\\\frac{${params.w}}{80^2}Q^2 \\\\qquad 
+                    C(Q)=${params.fc} + \\\\frac{${params.w}}{80^2}Q^2 $$ `"
+        - html: "` When the output price is $P = ${params.p.toFixed(2)}$, the firm's optimal choice is to produce ${calcs.xopt.toFixed(1)}
+                  units. Maximum profit (length of the blue segment) is $$ R - C = ${calcs.accprofit.toFixed(2)}$$ `"
+          show: (calcs.accprofit > 0)
+        - html: "` When the output price is $P = ${params.p.toFixed(2)}$, the firm's optimal choice is to produce ${calcs.xopt.toFixed(1)}
+                  units. Maximum profit (minus the length of the red segment) 
+                  is  $$ R - C = ${calcs.accprofit.toFixed(2)}$$ `"
+          show: (calcs.accprofit < 0)
+        - html: "` The firm cannot do better. For example, producing zero output gives a revenue of zero, but 
+                  cost would be equal to fixed cost. Hence, profit would be lower:
+                  $$0-${params.fc}=-${params.fc}<${calcs.accprofit.toFixed(2)}$$
+                  By producing a positive quantity, instead, the firm is able to cover at least part
+                   (green segment) of the fixed cost.`"
+          show: (calcs.accprofit < 0)
+        - html: "` When the output price is $P = ${params.p.toFixed(2)}$, the firm's optimal choice is to produce ${calcs.xopt.toFixed(1)}
+                  units. Maximum profit is zero:  $$ R - C = ${calcs.accprofit.toFixed(2)}$$ `"
+          show: (params.p.toFixed(1) == 2.0)
+        - html: "` The firm cannot do better. For example, producing zero output gives a revenue of zero, but 
+                  cost would be equal to fixed cost. Hence, profit would be lower:
+                  $$0-${params.fc}=-${params.fc}<${calcs.accprofit.toFixed(2)}$$
+                  By producing a positive quantity, instead, the firm is able to cover its fixed cost.`"
+          show: (params.p.toFixed(1) == 2.0)
+
+    explanation:
+      divs:
+        - html: "` In the short run, the fixed cost is sunk and hence it must be ignored.
+        The firm's short-run optimal choice is the same <i><b>independently of the value of the fixed cost</b></i>.  `"
+          show: params.p > 0
+
+
+
+

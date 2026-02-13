@@ -1,0 +1,229 @@
+params:
+- {name: showCS, value: false}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: x, value: 120, min: 0, max: 200}
+- {name: A, value: 80, min: 60, max: 100, round: 5}
+- {name: alpha, value: 0.5, min: 0.5, max: 1, round: 0.5}
+- {name: w, value: 64, min: 40, max: 80, round: 1}
+- {name: fc, value: 100, min: 0, max: 200, round: 5}
+- {name: maxcost, value: 950}
+- {name: maxlabor, value: 12}
+
+calcs:
+  l: ((params.x)/(params.A))^(1/(params.alpha))
+  vc: params.w * calcs.l
+  tc: params.w * calcs.l + params.fc
+  aaa: (params.alpha)^(-1)
+
+aspectRatio: 1
+
+layout:
+  TwoVerticalGraphsPlusSidebar:
+
+    topGraph: 
+      xAxis:
+        max: 210
+        ticks: 0
+      yAxis:
+        max: params.maxlabor
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [210, 0]
+                text: "` \\\\text{Output (kg)}  `"
+                xPixelOffset: 0
+
+        - Label:
+                coordinates: [0, params.maxlabor]
+                text: "` \\\\text{Labor (dd)} `"
+                yPixelOffset: 0
+                xPixelOffset: 0
+                position: c
+
+# points
+        - Point:
+            coordinates: [params.x, calcs.l]
+            droplines: {vertical: params.x.toFixed(0), horizontal: calcs.l.toFixed(2)}
+            color: Blue
+            r: 5
+            drag:
+            - horizontal: x
+
+# inverse production function (quadratic)
+        - Curve:
+            fn: ( (x) / (params.A) )^(calcs.aaa)
+            color: Blue
+            label:
+              text: "` L = { \\\\dfrac{1}{ ${params.A}^2} } Q^2 `"
+              x: min((params.A)*sqrt(params.maxlabor ),210)
+              position: tl
+            strokeWidth: 1.7
+            max: 205
+            show: params.alpha == 0.5
+
+# inverse production function (linear)
+        - Curve:
+            fn: ( (x) / (params.A) )^(calcs.aaa)
+            color: Blue
+            label:
+              text: "` L = ( 1 / ${params.A} ) Q `"
+              x: 200  
+              position: c
+            strokeWidth: 1.7
+            show: params.alpha == 1
+
+
+
+
+
+
+
+    bottomGraph: 
+      xAxis:
+        max: 210
+        ticks: 0
+      yAxis:
+        max: params.maxcost
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [210, 0]
+                text: "` \\\\text{Output (kg)}  `"
+                xPixelOffset: 0
+
+        - Label:
+                coordinates: [0, params.maxcost]
+                text: "` \\\\text{Euro} `"
+                yPixelOffset: 0
+                xPixelOffset: 0
+                position: c
+
+# points
+        - Point: {coordinates: [params.x, calcs.tc], droplines: {vertical: params.x.toFixed(0), horizontal: calcs.tc.toFixed(2)}, color: Brown, r: 5}
+        - Point: {coordinates: [params.x, calcs.vc], droplines: {vertical: , horizontal: calcs.vc.toFixed(2)}, color: Darkorange, r: 5}
+        - Point: {coordinates: [params.x, params.fc], droplines: {vertical: , horizontal: params.fc.toFixed(2)}, color: Gray, r: 5}
+
+# VC (quadratic)
+
+        - Curve:
+            fn: params.w * ( (x) / (params.A) ) ^ 2
+            color: Darkorange
+            label:
+              text: "` VC(Q) = \\\\dfrac{ ${params.w} }{ ${params.A}^2 } Q^2 `"
+              x: min((params.A)*sqrt((params.maxcost)/(params.w)),190)
+              position: tl
+            strokeWidth: 1.7
+            max: 210
+            show: params.alpha == 0.5 && params.fc > 0
+
+# VC (linear)
+
+        - Curve:
+            fn: params.w * ( (x) / (params.A) )
+            color: Darkorange
+            label:
+              text: "` VC(Q) = ( ${params.w} / ${params.A} ) Q `"
+              x: 200
+              position: c
+            strokeWidth: 1.7
+            show: params.alpha == 1
+
+# TC (quadratic)
+
+        - Curve:
+            fn: params.w * ( (x) / (params.A) ) ^ 2 + params.fc
+            color: Brown
+            label:
+              text: "` C(Q) = ${params.fc} + \\\\dfrac{ ${params.w} }{ ${params.A}^2 } Q^2 `"
+              x: min((params.A)*sqrt((params.maxcost-(params.fc))/(params.w)),200)
+              position: br
+              bgcolor: none
+            strokeWidth: 1.7
+            max: 210
+            show: params.alpha == 0.5 && params.fc > 0
+
+# TC=VC with FC=0 (quadratic)
+
+        - Curve:
+            fn: params.w * ( (x) / (params.A) ) ^ 2 + params.fc
+            color: brown
+            label:
+              text: "` C(Q) = VC(Q) = \\\\dfrac{ ${params.w} }{ ${params.A}^2 } Q^2 `"
+              x: min((params.A)*sqrt((params.maxcost-(params.fc))/(params.w)),200)
+              position: c
+            strokeWidth: 1.7
+            max: 210
+            show: params.alpha == 0.5 && params.fc == 0
+
+# TC (linear)
+
+        - Curve:
+            fn: params.w * ( (x) / (params.A) ) + params.fc
+            color: Brown
+            label:
+              text: "` C(Q) = ${params.fc} + ( ${params.w} / ${params.A} ) Q `"
+              x: 200  
+              position: c
+            strokeWidth: 1.7
+            show: params.alpha == 1
+
+# FC curve
+
+        - Curve:
+            fn: params.fc
+            color: Gray
+            label:
+              text: FC
+              x: 210
+              position: l
+              bgcolor: none
+            strokeWidth: 1.7
+            show: params.fc > 0
+
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURE 3.8
+        sliders:
+        - param: A
+          label: A
+        - param: fc
+          label: FC
+        - param: w
+          label: W
+        - param: x
+          label: Q
+        divs:
+        - html: "` `"
+        - html: "` `"
+        - html: "` `"
+        - html: "` `"
+        - html: "` `"
+        - html: "` The production function is $Q=${params.A}L^{0.5}$. 
+                   The inverse production function is therefore $L=(1/{${params.A}}^2)Q^2$. `"
+        - html: "` Thus, producing $ Q = ${params.x.toFixed(0)} $ units of output requires hiring
+                   $$ L = (1/{${params.A}}^2) {${params.x.toFixed(0)}}^2 = ${calcs.l.toFixed(2)} $$
+                   units of labor. `"
+        - html: "` `"
+        - html: "` `"
+        - html: "` `"
+        - html: "` Given that the daily wage is $W=${params.w}$, the firm's
+                   variable cost is
+                  $$ VC(${params.x.toFixed(0)}) = \\\\frac{ ${params.w} }{ ${params.A} ^2 } ${params.x.toFixed(0)} ^2 
+                  = ${calcs.vc.toFixed(2)}. $$  `"
+        - html: "` `"
+        - html: "` `"
+        - html: "` `"
+
+        - html: "` Finally, given that the fixed cost is $FC = ${params.fc}$, we can compute
+                  total cost:
+                  $$ C(${params.x.toFixed(0)}) = ${params.fc} + ${calcs.vc.toFixed(2)} = ${calcs.tc.toFixed(2)}. $$
+                   `"

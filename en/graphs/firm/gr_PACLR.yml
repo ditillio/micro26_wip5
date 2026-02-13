@@ -1,0 +1,284 @@
+params:
+- {name: showCS, value: false}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: p, value: 3, min: 0.5, max: 4, round: 0.1}
+- {name: a, value: 80, min: 60, max: 100, round: 5}
+- {name: w, value: 64, min: 40, max: 80, round: 1}
+- {name: fc, value: 100, min: 0, max: 300, round: 5}
+- {name: maxcost, value: 600}
+
+calcs:
+  l: ((params.x)/(params.a))^2
+  vc: params.w * calcs.l
+  tc: params.w * calcs.l + params.fc
+  tr: params.p * params.x
+  xopt: (params.p) * ( (params.a)^2 ) / ( 2 * (params.w) ) 
+
+  lopt: ((calcs.xopt)/(params.a))^2
+  vcopt: params.w * calcs.lopt
+  tcopt: params.w * calcs.lopt + params.fc
+  tropt: params.p * calcs.xopt
+
+  econprofit: calcs.tropt - calcs.vcopt
+  accprofit: calcs.tropt - calcs.tcopt
+
+  aux: min(0,calcs.accprofit)
+  aux2: max(0,calcs.accprofit)
+
+  mc: 2 * params.w * params.x / ( (params.a)^2 )
+  avc: (calcs.vc) / (params.x)
+  atc: (calcs.tc) / (params.x)
+
+  mcopt: 2 * params.w * calcs.xopt / ( (params.a)^2 )
+  avcopt: (calcs.vcopt) / (calcs.xopt)
+  atcopt: (calcs.tcopt) / (calcs.xopt)
+
+  zzz: min(params.p,calcs.atcopt)
+
+  qeff: params.a * sqrt((params.fc)/(params.w))
+  acmin: params.w * (calcs.qeff) / ((params.a)^2) + params.fc / (calcs.qeff)
+
+aspectRatio: 1
+
+layout:
+  TwoVerticalGraphsPlusSidebar:
+
+    topGraph: 
+      xAxis:
+        max: 210
+        ticks: none
+      yAxis:
+        max: 5
+        ticks: none
+
+      objects:
+
+        - Label:
+                coordinates: [210, 0]
+                text: "` \\\\text{Output (kg)} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 5]
+                text: "` \\\\text{Euro/kg}  `"
+                xPixelOffset: 0
+
+# price line
+        - Line:
+            yIntercept: params.p
+            color: Green
+            strokeWidth: 1.5
+            label:
+              text: "` MR = P `"
+              x: 210
+              position: l
+            drag:
+              - vertical: p
+
+# ATC curve
+
+        - Curve:
+            fn: params.w * ((x)/(params.a))^2 / (x) + (params.fc) / (x)
+            color: Brown
+            label:
+              text: AC
+              x: 210
+              position: bl
+              bgcolor: none
+            strokeWidth: 1.7
+
+# AVC curve
+
+        - Curve:
+            fn: params.w * ((x)/(params.a))^2 / (x)
+            color: Orange
+            label:
+              text: AVC
+              x: 190
+              position: tl
+              bgcolor: none
+            strokeWidth: 1.7
+
+# MC curve
+
+        - Curve:
+            fn: 2 * params.w * (x) / ( (params.a)^2 )
+            color: Red
+            label:
+              text: MC
+              x: 210
+              position: l
+              bgcolor: none
+            strokeWidth: 1.7
+
+# dropline optimal x
+        - Segment:
+            a: [calcs.xopt,0]
+            b: [calcs.xopt,1000]
+            color: Black
+            lineStyle: dotted
+            strokeWidth: 1
+
+# droplines ATC and AVC
+        - Segment:
+            a: [0,calcs.atcopt]
+            b: [calcs.xopt,calcs.atcopt]
+            color: Black
+            lineStyle: dotted
+            strokeWidth: 1
+        - Segment:
+            a: [0,calcs.avcopt]
+            b: [calcs.xopt,calcs.avcopt]
+            color: Black
+            lineStyle: dotted
+            strokeWidth: 1
+
+# profit / loss
+        - Area: {fn1: params.p, fn2: calcs.atcopt, fill: Blue, opacity: params.ops, min: 0, max: calcs.xopt, show: calcs.accprofit.toFixed(0) > 0 }
+        - Area: {fn1: params.p, fn2: calcs.atcopt, fill: Red, opacity: params.ops, min: 0, max: calcs.xopt, show: calcs.accprofit.toFixed(0) < 0 }
+        - Area: {fn1: calcs.zzz, fn2: calcs.avcopt, fill: Gray, opacity: params.ops, min: 0, max: calcs.xopt, show: calcs.accprofit.toFixed(0) > 0}
+        - Area: {fn1: calcs.zzz, fn2: calcs.avcopt, fill: GreenYellow, opacity: params.ops, min: 0, max: calcs.xopt, show: calcs.accprofit.toFixed(0) < 0}
+
+# points and labels
+        - Point: {coordinates: [calcs.xopt, params.p], color: Green, r: 0, droplines: {horizontal: params.p.toFixed(2)}}
+        - Point: {coordinates: [calcs.xopt, params.p], color: Red, r: 4, droplines: {vertical: calcs.xopt.toFixed(1)}}
+        - Point: {coordinates: [calcs.xopt, calcs.atcopt], color: Brown, r: 4, droplines: {horizontal: calcs.atcopt.toFixed(2)}}
+        - Point: {coordinates: [calcs.xopt, calcs.avcopt], color: Orange, r: 4, droplines: {horizontal: calcs.avcopt.toFixed(2)}}
+
+# Qeff & ACmin
+        - Point: {coordinates: [calcs.qeff, calcs.acmin], droplines: {vertical: , horizontal: }, color: Blue, r: 4}
+
+        - Label:
+                coordinates: [calcs.qeff, 0]
+                text: "` Q^{\\\\text{eff}} = ${calcs.qeff.toFixed(2)} `"
+                yPixelOffset: -32
+                xPixelOffset: 
+                position: c
+                color: Blue
+
+        - Label:
+                coordinates: [0, calcs.acmin]
+                text: "` AC_{\\\\text{min}} = ${calcs.acmin.toFixed(2)} `"
+                yPixelOffset: 
+                xPixelOffset: -90
+                position: c
+                color: Blue
+
+
+
+    bottomGraph: 
+      xAxis:
+        max: 210
+        ticks: none
+      yAxis:
+        max: 410
+        min: -250
+        ticks: none
+
+      objects:
+
+        - Label:
+                coordinates: [210, 0]
+                text: "` \\\\text{Output (kg)} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 410  ]
+                text: "` \\\\text{Euro}  `"
+                xPixelOffset: -3
+
+# accounting profit
+
+        - Curve:
+            fn: params.p * (x) - params.w * ((x)/(params.a))^2 - (params.fc)
+            color: Darkgreen
+            label:
+              text: "` R - C `"
+              x: 210
+              position: bl
+            strokeWidth: 1.7
+
+# economic profit
+
+        - Curve:
+            fn: params.p * (x) - params.w * ((x)/(params.a))^2
+            color: Forestgreen
+            label:
+              text: "` R - VC `"
+              x: 210
+              position: bl
+            strokeWidth: 1.7
+
+# dropline optimal x
+        - Segment:
+            a: [calcs.xopt,1000]
+            b: [calcs.xopt,calcs.aux]
+            color: Black
+            lineStyle: dotted
+            strokeWidth: 1
+
+# profit / loss
+        - Segment: {a: [calcs.xopt,calcs.accprofit], b: [calcs.xopt,0], color: Blue, strokeWidth: 5, show: calcs.tropt > calcs.tcopt}
+        - Segment: {a: [calcs.xopt,calcs.accprofit], b: [calcs.xopt,0], color: Red, strokeWidth: 5, show: calcs.tropt < calcs.tcopt}
+        - Segment: {a: [calcs.xopt,calcs.econprofit], b: [calcs.xopt,calcs.aux2], color: Darkgrey, strokeWidth: 5, show: calcs.tropt > calcs.tcopt}
+        - Segment: {a: [calcs.xopt,calcs.econprofit], b: [calcs.xopt,calcs.aux2], color: LawnGreen, strokeWidth: 5, show: calcs.tropt < calcs.tcopt}
+
+# fc, tr, tc, vc points and labels
+        - Point: {coordinates: [calcs.xopt, calcs.econprofit], color: Forestgreen, r: 4, droplines: {horizontal: calcs.econprofit.toFixed(2)}}
+        - Point: {coordinates: [calcs.xopt, calcs.accprofit], color: Darkgreen, r: 4, droplines: {horizontal: calcs.accprofit.toFixed(2)}}
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURE 3.17
+        sliders:
+        - param: p
+          label: P
+        divs:
+        - html: "` The minimum average cost is $AC_{\\\\text{min}} = ${calcs.acmin.toFixed(2)}$. `"
+        - html: "` The market price of output, $P = ${params.p.toFixed(2)}$, is larger than the minimum average cost. `"
+          show: (calcs.accprofit > 0)
+        - html: "` The firm's long-run optimal choice is therefore to produce the quantity at which
+                   $MC=P$, that is, $Q=${calcs.xopt.toFixed(1)}$
+                  units. `"
+          show: (calcs.accprofit > 0)
+        - html: "` Maximum profit (blue area in the top graph, length of the blue segment in the bottom graph)
+                is positive: $$ R - C = ${calcs.accprofit.toFixed(2)}$$ `"
+          show: (calcs.accprofit > 0)
+        - html: "` The market price of output, $P = ${params.p.toFixed(2)}$, is smaller than the minimum average cost. `"
+          show: (calcs.accprofit < 0)
+        - html: "` The firm's long-run optimal choice is to shut down ($Q=0$). `"
+          show: (calcs.accprofit < 0)
+        - html: "` The firm cannot do better. For example, producing the quantity at which 
+                $MC=P$, namely $Q=${calcs.xopt.toFixed(1)}$, the short-run optimal choice,
+                <i>is not</i> the long-run optimal choice.  `"
+          show: (calcs.accprofit < 0)
+        - html: "` Indeed, profit would be negative (red area in the top graph, or red segment in the bottom graph). 
+                By shutting down the firm instead obtains zero revenue but also pays zero costs
+                (the fixed cost is avoidable in the long run), thus making zero profits.  `"
+          show: (calcs.accprofit < 0)
+        - html: "` The market price of output, $P = ${params.p.toFixed(2)}$, equals the minimum average cost. `"
+          show: (params.p.toFixed(1) == 2.0)
+        - html: "` In the long run the firm is therefore indifferent between shutting down ($Q=0$)
+                  and producing the quantity at which $MC=P$, namely 
+                  $Q=Q^{\\\\text{eff}}=${calcs.qeff.toFixed(2)}$. `"
+          show: (params.p.toFixed(1) == 2.0)
+        - html: "` Both choices are optimal. In both cases, profit (which is the maximum profit) is zero. `"
+          show: (params.p.toFixed(1) == 2.0)
+
+    explanation:
+      divs:
+        - html: "` In the long run, the fixed cost is an avoidable cost, hence it must be taken into account
+                  in determining the firm's optimal choice. Only in Case 2 is the firm's long-run optimal choice 
+                  the same as its short-run optimal choice. That is, only if the market price of output
+                  is sufficiently high (larger than minimum average cost). `"
+          show: params.p > 0
+
+
+
+

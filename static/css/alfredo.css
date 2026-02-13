@@ -1,0 +1,14 @@
+/* Titolo della figura nella sidebar */
+.sidebar > div:first-child > div:first-child {
+  font-family: "et-book", "Times New Roman", Times, serif !important;
+  font-size: 14pt !important;
+  font-weight: bold !important;
+
+  /* Non forzare maiuscole/minuscole: rispettare il testo del YAML */
+  text-transform: none !important;
+  font-variant: normal !important;
+  font-variant-caps: normal !important;
+
+  line-height: 1.2;
+}
+

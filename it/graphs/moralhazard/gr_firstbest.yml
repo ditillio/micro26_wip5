@@ -1,0 +1,450 @@
+params:
+
+- {name: w, value: 150, min: 0, max: 1000, round: 1}
+- {name: b, value: 600, min: 0, max: 1000, round: 4}
+- {name: d, value: 10, min: 0, max: 4}
+- {name: ubar, value: 15}
+- {name: effort, value: 0, min: 0, max: 1}
+
+- {name: p2H, value: 0.75}
+- {name: p2L, value: 0.25}
+
+- {name: x1, value: 1000} # revenue in case of failure
+- {name: x2, value: 3000} # revenue in case of success
+
+- {name: riskav, value: 0}
+
+
+calcs:
+
+  d: "( (params.riskav < 1) ? '400' : (params.d) )"
+  ubar: "( (params.riskav < 1) ? '225' : (params.ubar) )"
+
+  p2H: params.p2H
+  p2L: params.p2L
+
+  p1H: (1)-(calcs.p2H)
+  p1L: (1)-(calcs.p2L)
+
+  w1: params.w
+  u1L: "( (params.riskav < 1) ? (calcs.w1) : sqrt(calcs.w1) )"
+  u1H: (calcs.u1L)-(calcs.d)
+
+  w2: (params.w)+(params.b)
+  u2L: "( (params.riskav < 1) ? (calcs.w2) : sqrt(calcs.w2) )"
+  u2H: (calcs.u2L)-(calcs.d)
+
+  ewH: (calcs.p1H)*(calcs.w1)+(calcs.p2H)*(calcs.w2)
+  ewL: (calcs.p1L)*(calcs.w1)+(calcs.p2L)*(calcs.w2)
+
+  euH: (calcs.p1H)*(calcs.u1H)+(calcs.p2H)*(calcs.u2H)
+  euL: (calcs.p1L)*(calcs.u1L)+(calcs.p2L)*(calcs.u2L)
+
+  uMax: "( (params.riskav < 1) ? '1000' : '35' )"
+
+  eu: "( (params.effort < 1) ? max(calcs.euH,calcs.euL) : calcs.euH )"
+
+
+
+  profitH: (calcs.p1H)*((params.x1)-(calcs.w1))+(calcs.p2H)*((params.x2)-(calcs.w2))
+  profitL: (calcs.p1L)*((params.x1)-(calcs.w1))+(calcs.p2L)*((params.x2)-(calcs.w2))
+  profit0: min(calcs.profitH,calcs.profitL)
+
+
+aspectRatio: 1
+
+layout:
+  OneGraphPlusSidebar:
+
+    graph: 
+      xAxis:
+        max: 1000
+        ticks: 0
+      yAxis:
+        max: calcs.uMax
+        min: -(1.1)*(calcs.d)
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [1000, 0]
+                text: "` \\\\text{Salario} `"
+        - Label:
+                coordinates: [0, calcs.uMax]
+                text: "` \\\\text{Utilità}  `"
+
+# bernoulli utility function with high effort (neutral)
+        - Line:
+            yIntercept: -(calcs.d)
+            slope: 1
+            color: Blue
+            label:
+              text: "` U=W-${calcs.d} `"
+              x: 1000
+              position: c
+            strokeWidth: 1.5
+            show: params.riskav == 0
+        - Point:
+            coordinates: [0, -(calcs.d)]
+            droplines: {vertical: , horizontal: -(calcs.d)}
+            strokeWidth: 0.5
+            color: Blue
+            r: 0
+            show: params.riskav == 0
+
+# bernoulli utility function with low effort (neutral)
+        - Line:
+            yIntercept: 0
+            slope: 1
+            color: Blue
+            label:
+              text: "` U=W `"
+              x: 1000
+              position: c
+            strokeWidth: 1.5
+            show: params.riskav == 0
+        - Point:
+            coordinates: [0, 0]
+            droplines: {vertical: , horizontal: 0}
+            strokeWidth: 0.5
+            color: Blue
+            r: 0
+            show: params.riskav == 0
+
+# bernoulli utility function with high effort (averse)
+        - Curve:
+            fn: sqrt(x)-(calcs.d)
+            color: Blue
+            label:
+              text: "` U = \\\\sqrt{W} - ${calcs.d} `"
+              x: 1000
+            strokeWidth: 1.5
+            show: params.riskav == 1
+        - Label:
+            coordinates: [0, -(calcs.d)]
+            text: "` \\\\small -${calcs.d}  `"
+            position: r
+            color: Blue
+            show: params.riskav == 1
+
+# bernoulli utility function with low effort (averse)
+        - Curve:
+            fn: sqrt(x)
+            color: Blue
+            label:
+              text: "` U = \\\\sqrt{W} `"
+              x: 1000
+            strokeWidth: 1.5
+            show: params.riskav == 1
+        - Label:
+            coordinates: [0, 0]
+            text: "` \\\\small 0  `"
+            position: r
+            color: Blue
+            show: params.riskav == 1
+
+# points (high effort)
+        - Point:
+            coordinates: [calcs.w1, calcs.u1H]
+            droplines: {vertical: calcs.w1.toFixed(0), horizontal: calcs.u1H.toFixed(2)}
+            strokeWidth: 0.5
+            color: Blue
+            r: 3
+        - Point:
+            coordinates: [calcs.w2, calcs.u2H]
+            droplines: {vertical: calcs.w2.toFixed(0), horizontal: calcs.u2H.toFixed(2)}
+            strokeWidth: 0.5
+            color: Blue
+            r: 3
+        - Segment:
+            a: [calcs.w1, calcs.u1H]
+            b: [calcs.w2, calcs.u2H]
+            color: Red
+            strokeWidth: 1.5
+            lineStyle: dashed
+        - Point:
+            coordinates: [calcs.ewH, calcs.euH]
+            droplines: {vertical: calcs.ewH.toFixed(0), horizontal: calcs.euH.toFixed(2)}
+            strokeWidth: 0.5
+            color: Red
+            r: 3
+            label:
+              text: H
+              position: tl
+
+# points (low effort)
+        - Point:
+            coordinates: [calcs.w1, calcs.u1L]
+            droplines: {vertical: calcs.w1.toFixed(0), horizontal: calcs.u1L.toFixed(2)}
+            strokeWidth: 0.5
+            color: Blue
+            r: 3
+            show: params.effort == 0
+        - Point:
+            coordinates: [calcs.w2, calcs.u2L]
+            droplines: {vertical: calcs.w2.toFixed(0), horizontal: calcs.u2L.toFixed(2)}
+            strokeWidth: 0.5
+            color: Blue
+            r: 3
+            show: params.effort == 0
+        - Segment:
+            a: [calcs.w1, calcs.u1L]
+            b: [calcs.w2, calcs.u2L]
+            color: Red
+            strokeWidth: 1.5
+            lineStyle: dashed
+            show: params.effort == 0
+        - Point:
+            coordinates: [calcs.ewL, calcs.euL]
+            droplines: {vertical: calcs.ewL.toFixed(0), horizontal: calcs.euL.toFixed(2)}
+            strokeWidth: 0.5
+            color: Red
+            r: 3
+            label:
+              text: L
+              position: tl
+            show: params.effort == 0
+
+
+
+
+
+# reservation utility
+        - Line:
+            point: [0,calcs.ubar]
+            slope: 0
+            color: Green
+            strokeWidth: 1
+            label:
+              text: "` \\\\underline{U} = ${calcs.ubar} `"
+              x: 1000
+
+
+
+
+
+
+
+# contract
+        - Rectangle:
+            a: [75,((calcs.uMax)/(35))*25.5]
+            b: [525,((calcs.uMax)/(35))*35]
+            fill: brown
+            opacity: 0.1
+            stroke: black
+            strokeWidth: 1
+        - Rectangle:
+            a: [85,((calcs.uMax)/(35))*25.75]
+            b: [515,((calcs.uMax)/(35))*34.75]
+            fill: white
+            opacity: 0.1
+            stroke: black
+            strokeWidth: 1
+        - Label:
+            coordinates: [300, ((calcs.uMax)/(35))*33.7]
+            text: \text{\small CONTRATTO DI LAVORO}
+            bgcolor: none
+        - Label:
+            coordinates: [120, ((calcs.uMax)/(35))*32]
+            text: "` \\\\text{\\\\small Impegno minimo: } \\\\color{Blue} e=${params.effort} `"
+            bgcolor: none
+            position: l
+        - Label:
+            coordinates: [120, ((calcs.uMax)/(35))*30.5]
+            text: "` \\\\text{\\\\small Salario base: } \\\\color{Blue} W_0=${params.w} `"
+            bgcolor: none
+            position: l
+        - Label:
+            coordinates: [120, ((calcs.uMax)/(35))*29]
+            text: "` \\\\text{\\\\small Bonus: } \\\\color{Blue} B=${params.b} `"
+            bgcolor: none
+            position: l
+        - Label:
+            coordinates: [90, ((calcs.uMax)/(35))*27]
+            text: "` \\\\text{\\\\small Firma del lavoratore: } \\\\underline{\\\\qquad}  `"
+            bgcolor: none
+            position: l
+        - Label:
+            coordinates: [460, ((calcs.uMax)/(35))*27.5]
+            text: \Large{\checkmark}
+            bgcolor: none
+            color: green
+            show: calcs.eu >= calcs.ubar
+        - Label:
+            coordinates: [460, ((calcs.uMax)/(35))*27.5]
+            text: \Large{\boldsymbol\times}
+            bgcolor: none
+            color: red
+            show: calcs.eu < calcs.ubar
+
+
+
+
+
+
+
+
+
+
+
+
+# evaluation
+        - Label:
+            coordinates: [500, -300]
+            text: \LARGE{\textbf{BINGO!}}
+            bgcolor: none
+            color: Red
+            show: params.riskav == 0 && calcs.eu == 225
+        - Label:
+            coordinates: [500, -6]
+            text: \LARGE{\textbf{BINGO!}}
+            bgcolor: none
+            color: Red
+            show: params.riskav == 1 && params.effort == 1 && params.b == 0 && params.w == 625
+
+
+
+
+
+
+
+
+
+
+
+
+    sidebar:
+
+      controls:
+
+      - title: FIGURA 13.1
+        description: Selezionare l'atteggiamento verso il rischio del lavoratore.
+
+        radioGroup:
+          param: riskav
+          options:
+            - Lavoratore neutrale al rischio
+            - Lavoratore avverso al rischio
+
+      - title: Lavoratore neutrale al rischio
+        description: Muovere i cursori fino a individuare il contratto che massimizza il profitto dell'impresa.
+        sliders:
+        - param: effort
+          label: \text{Impegno min. } e
+        - param: w
+          label: \text{Salario base } W_0
+        - param: b
+          label: \text{Bonus } B
+        divs:
+        - html: "` 
+                      `"
+        show: params.riskav == 0
+
+
+
+
+
+
+      - title: Lavoratore avverso al rischio
+        description: Muovere i cursori fino a individuare il contratto che massimizza il profitto dell'impresa.
+        sliders:
+        - param: effort
+          label: \text{Impegno min. } e
+        - param: w
+          label: \text{Salario base } W_0
+        - param: b
+          label: \text{Bonus} B
+        divs:
+        - html: <br>
+        - html: "` 
+                      `"
+        show: params.riskav == 1
+
+
+
+
+    explanation:
+      divs:
+        - html: "` Il contratto specifica un livello di impegno minimo pari a zero.
+                    Se firma il contratto, il lavoratore può quindi scegliere se
+                    impegnarsi e ottenere un'utilità attesa pari all'altezza del
+                    punto $H$, o non impegnarsi e ottenere un'utilità attesa pari
+                    all'altezza del punto $L$.
+                      `"
+          show: params.effort == 0
+        - html: "` In entrambi i casi, però, l'utilità attesa è minore dell'utilità
+                   di riserva del lavoratore (i punti $L$ e $H$ si trovano entrambi
+                   sotto la retta verde). Il lavoratore, quindi, non firma il contratto,
+                   e il profitto dell'impresa è quello derivante dalla sua opzione alternativa,
+                   ovvero $\\\\underline\\\\Pi$.
+                      `"
+          show: params.effort == 0 && calcs.euH < calcs.ubar && calcs.euL < calcs.ubar
+        - html: "` In almeno uno dei due casi, l'utilità attesa è almeno pari all'utilità
+                     di riserva del lavoratore (i punti $L$ e $H$ non si trovano entrambi
+                     sotto la retta verde). Il lavoratore, quindi, firma il contratto.
+                        `"
+          show: params.effort == 0 && calcs.eu >= calcs.ubar
+        - html: "` Una volta firmato il contratto, il lavoratore decide di impegnarsi
+                    (l'altezza del punto $H$ non è minore di quella del punto $L$).
+                    Il profitto dell'impresa è quindi
+                    $$
+                    0.25\\\\times(${params.x1}-${calcs.w1})+
+                    0.75\\\\times(${params.x2}-${calcs.w2})=
+                    ${calcs.profitH}
+                    $$
+                        `"
+          show: params.effort == 0 && calcs.eu >= calcs.ubar && calcs.euH >= calcs.euL
+        - html: "` Una volta firmato il contratto, il lavoratore decide di non impegnarsi
+                    (l'altezza del punto $H$ è minore di quella del punto $L$).
+                    Il profitto dell'impresa è quindi
+                    $$
+                    0.75\\\\times(${params.x1}-${calcs.w1})+
+                    0.25\\\\times(${params.x2}-${calcs.w2})=
+                    ${calcs.profitL}
+                    $$
+                        `"
+          show: params.effort == 0 && calcs.eu >= calcs.ubar && calcs.euH < calcs.euL
+
+
+
+
+        - html: "` Il contratto specifica che l'impegno del lavoratore deve essere alto.
+                    Se firma il contratto, il lavoratore ottiene quindi un'utilità
+                    attesa pari all'altezza del punto $H$.
+                      `"
+          show: params.effort == 1
+        - html: "` Tale utilità attesa è però minore della sua utilità di riserva
+                   (il punto $H$ si trova sotto la retta verde).
+                    Il lavoratore, quindi, non firma il contratto, e il profitto
+                    dell'impresa è quello derivante dalla sua opzione alternativa,
+                    ovvero $\\\\underline\\\\Pi$.
+                      `"
+          show: params.effort == 1 && calcs.euH < calcs.ubar
+        - html: "` Tale utilità attesa non è minore della sua utilità di riserva
+                   (il punto $H$ non si trova sotto la retta verde).
+                    Il lavoratore, quindi, firma il contratto, e il profitto
+                    dell'impresa è
+                    $$
+                    0.25\\\\times(${params.x1}-${calcs.w1})+
+                    0.75\\\\times(${params.x2}-${calcs.w2})=
+                    ${calcs.profitH}
+                    $$
+                      `"
+          show: params.effort == 1 && calcs.euH >= calcs.ubar
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

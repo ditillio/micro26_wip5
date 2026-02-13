@@ -1,0 +1,153 @@
+schema: EconSchema
+params:
+- {name: a, value: 5, min: 2, max: 11, round: 1}
+- {name: b, value: 0.001, min: 0.0005, max: 0.002, round: 0.0005}
+- {name: s, value: 1, min: 0, max: 1, round: 0.25}
+- {name: c, value: 2, min: 0, max: 8, round: 0.5}
+
+calcs:
+  nash: ((params.a)-(params.c))/((params.b)*(2+params.s))
+  mono: ((params.a)-(params.c))/((params.b)*(2))
+  maxQ: ((params.a)-(params.c))/((params.b)*(params.s)) # vertical intercept of BR2
+
+#aspectRatio: 1
+
+layout:
+  OneGraphPlusSidebar:
+    graph:
+      xAxis:
+        ticks: 0
+        max: 3300
+      yAxis:
+        max: 3300
+        ticks: 0
+      objects:
+
+      - Label:
+            coordinates: [3240, 0]
+            text: "` \\\\text{Firm 2} `"
+            yPixelOffset: 10
+            position: l
+      - Label:
+            coordinates: [3240, 0]
+            text: "` \\\\text{Quantity} `"
+            yPixelOffset: -10
+            position: l
+      - Label:
+            coordinates: [0,3300]
+            text: "` \\\\text{Firm 1} `"
+            yPixelOffset: 10
+      - Label:
+            coordinates: [0,3300]
+            text: "` \\\\text{Quantity} `"
+            yPixelOffset: -10
+
+# BR1
+      - Line:
+          point: [0,calcs.mono]
+          slope: -(params.s)/2
+          label:
+            text: BR_1
+            x: min(3000,(0.85)*(calcs.maxQ))
+          color: Blue
+          strokeWidth: 1.5
+          show: params.s !== 0
+
+# BR2
+      - Line:
+          point: [calcs.mono,0]
+          slope: -2/(params.s)
+          label:
+            text: BR_2
+            y: min(3000,(0.85)*(calcs.maxQ))
+          color: Red
+          strokeWidth: 1.5
+          show: params.s !== 0
+
+# intercepts
+      - Point: {coordinates: [0, calcs.mono], r: 0, droplines: {horizontal: calcs.mono.toFixed(2)}, color: Blue} 
+      - Point: {coordinates: [calcs.maxQ, 0], r: 0, droplines: {vertical: calcs.maxQ.toFixed(2)}, color: Blue} 
+      - Point: {coordinates: [0, calcs.maxQ], r: 0, droplines: {horizontal: calcs.maxQ.toFixed(2)}, color: Red} 
+      - Point: {coordinates: [calcs.mono, 0], r: 0, droplines: {vertical: calcs.mono.toFixed(2)}, color: Red} 
+
+
+# equilibrium
+      - Point:
+          coordinates: [calcs.nash, calcs.nash]
+          r: 4
+          droplines:
+            horizontal: calcs.nash.toFixed(2)
+            vertical: calcs.nash.toFixed(2)
+          strokeWidth: 0.5
+          color: Green
+
+    sidebar:
+
+      controls:
+
+      - title: FIGURE 6.1
+        sliders:
+        - param: a
+          label: a
+        - param: b
+          label: b
+        # - param: s
+        #   label: s
+        - param: c
+          label: c
+
+        divs:
+        - html: "` The best response function of firm 1 is
+                  $$
+                  Q_1=${calcs.mono.toFixed(2)}-(${params.s}/2)Q_2
+                  $$
+                  while that of firm 2 is
+                  $$
+                  Q_2=${calcs.mono.toFixed(2)}-(${params.s}/2)Q_1
+                  $$
+                  Solving the two equations together we obtain the Cournot–Nash equilibrium:
+                  $$
+                  Q_1=${calcs.nash.toFixed(2)}
+                  \\\\qquad
+                  Q_2=${calcs.nash.toFixed(2)}
+                  $$
+                  `"
+
+
+
+    explanation:
+      divs:
+        - html: "`
+                To calculate the Cournot–Nash equilibrium, we write the profits of the two firms:
+                $$
+                \\\\Pi_1 = (P - c) Q_1 = \\\\big[a - b(Q_1+Q_2) - c\\\\big]Q_1
+                $$
+                $$
+                \\\\Pi_2 = (P - c) Q_2 = \\\\big[a - b(Q_1+Q_2) - c\\\\big]Q_2
+                $$
+                Each firm chooses the quantity that maximizes its profit, taking
+                the quantity chosen by the other as given. The best response function of firm 1
+                is obtained by setting the derivative of $\\\\Pi_1$ with respect to $Q_1$ equal to zero:
+                $$
+                \\\\frac{d \\\\Pi_1}{d Q_1} = a - c - 2bQ_1 - bQ_2 = 0
+                \\\\qquad\\\\Rightarrow\\\\qquad
+                Q_1 = \\\\frac{a - c}{2b} - \\\\frac{1}{2}Q_2
+                $$
+                Similarly, the best response function of firm 2 is obtained by setting
+                the derivative of $\\\\Pi_2$ with respect to $Q_2$ equal to zero:
+                $$
+                \\\\frac{d \\\\Pi_2}{d Q_2} = a - c - 2bQ_2 - bQ_1 = 0
+                \\\\qquad\\\\Rightarrow\\\\qquad
+                Q_2 = \\\\frac{a - c}{2b} - \\\\frac{1}{2}Q_1
+                $$
+                The Cournot–Nash equilibrium is found by solving the two equations simultaneously:
+                the quantities $Q_1$ and $Q_2$ must be best responses to each other.
+                The solution is therefore
+                $$
+                Q_1 = \\\\frac{a - c}{3b} \\\\qquad Q_2 = \\\\frac{a - c}{3b}
+                $$
+                It follows that total quantity and equilibrium price are
+                $$
+                Q = \\\\frac{2(a - c)}{3b} \\\\qquad P = \\\\frac{a + 2c}{3}
+                $$
+                  `"

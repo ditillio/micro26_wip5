@@ -1,0 +1,68 @@
+{% assign prevIndex = include.sectionIndex | minus: 1 %}
+{% assign nextIndex = include.sectionIndex | plus: 1 %}
+{% assign numSections = include.list.size %}
+
+<div class="screen-only">
+  {% if include.previous | default: true %}
+    {% unless include.sectionIndex == 0 %}
+      {% assign prev = include.list[prevIndex] %}
+      <div class="subtitle">
+        {% if language == "it" %}Precedente{% else %}Previous{% endif %}:
+        <a class="np-link" href="{{ prevIndex | plus: 1 }}">{{ prev.title[language] }}</a>
+      </div>
+    {% endunless %}
+  {% endif %}
+
+  {% if nextIndex == numSections %}
+    <div class="subtitle">[ {% if language == "it" %}Fine del capitolo{% else %}End of chapter{% endif %} ]</div>
+  {% else %}
+    {% assign next = include.list[nextIndex] %}
+    <div class="subtitle">
+      {% if language == "it" %}Seguente{% else %}Next{% endif %}:
+      <a class="np-link" href="{{ nextIndex | plus: 1 }}">{{ next.title[language] }}</a>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+(function(){
+  // intercetta i click sui link PREV/NEXT e fornisce la navigazione al top window
+  function onReady(fn){
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+
+  onReady(function(){
+    // seleziona i link del blocco next-previous
+    var anchors = Array.prototype.slice.call(document.querySelectorAll('.screen-only .np-link'));
+    anchors.forEach(function(a){
+      a.addEventListener('click', function(ev){
+        // lascia passare click con modifier o link che aprono in nuova scheda
+        if (ev.ctrlKey || ev.metaKey || ev.shiftKey || a.target === '_blank') return;
+
+        ev.preventDefault();
+
+        try {
+          // risolvi href relativo rispetto alla pagina corrente (es. "3" -> "/it/I/1/3")
+          var resolved = new URL(a.getAttribute('href'), window.location.href);
+          var absPath = resolved.pathname + resolved.search + resolved.hash; // es. /it/I/1/3
+
+          // costruisci base del top (es. "/micro26_wip4/it/" o "/it/")
+          var topPath = window.top.location.pathname.split('?')[0] || '/';
+          if (topPath.indexOf('/') !== 0) topPath = '/' + topPath;
+          if (topPath[topPath.length-1] !== '/') topPath = topPath + '/';
+
+          // naviga il top all'URL con ?load=absPath
+          // usiamo encodeURI per non doppiare gli slash
+          window.top.location.href = topPath + '?load=' + encodeURIComponent(absPath);
+          return;
+        } catch (err) {
+          // fallback: se qualcosa va storto, prosegui con navigazione normale sul top
+          try { window.top.location.href = a.href; }
+          catch (e) { window.location.href = a.href; }
+        }
+      });
+    });
+  });
+})();
+</script>

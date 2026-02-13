@@ -1,0 +1,264 @@
+params:
+
+- {name: w1, value: 0, min: 0, max: 100}
+- {name: w2, value: 100, min: 0, max: 100}
+
+- {name: p1, value: 0.5, min: 0, max: 1, round: 0.1}
+
+- {name: p1slider, value: 10, min: 0, max: 20, round: 1}
+
+- {name: w1slider, value: 0, min: 0, max: 20, round: 0.2}
+- {name: w2slider, value: 20, min: 0, max: 20, round: 0.2}
+
+
+calcs:
+  w1: (5)*(params.w1slider)
+  w2: (5)*(params.w2slider)
+  p1: (params.p1slider)/(20)
+  p2: (1)-(calcs.p1)
+  u1: sqrt(calcs.w1)
+  u2: sqrt(calcs.w2)
+  EP: (calcs.p1)*(calcs.w1)+(calcs.p2)*(calcs.w2)
+  uEP: sqrt(calcs.EP)
+  EU: (calcs.p1)*(calcs.u1)+(calcs.p2)*(calcs.u2)
+  CE: (calcs.EU)^(2)
+  RP: (calcs.EP)-(calcs.CE)
+
+aspectRatio: 1.3
+
+layout:
+  OneGraph:
+
+    graph: 
+      xAxis:
+        max: 121
+        ticks: 0
+      yAxis:
+        max: 11
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [121, 0]
+                text: "` \\\\text{Payoff} `"
+        - Label:
+                coordinates: [0, 11]
+                text: "` \\\\text{Utilità}  `"
+
+#  W1 slider
+        - Label:
+                coordinates: [94, 7]
+                text: "` W_1 = ${calcs.w1.toFixed(0)} `"
+                color: Blue
+                position: r
+        - Rectangle: {a: [95, 6.95], b: [115, 7.05], fill: Lightgray, opacity: 1, strokeWidth: 0}
+        - Ellipse: {c: [95,7], rx: 0.5, ry: 0.05, fill: Lightgray, opacity: 1, strokeWidth: 0}
+        - Ellipse: {c: [115,7], rx: 0.5, ry: 0.05, fill: Lightgray, opacity: 1, strokeWidth: 0}
+        - Point:
+            coordinates: [(95)+(params.w1slider), 7]
+            r: 8
+            color: Black
+            opacity: 0.6
+            shadow: true
+            drag:
+              - horizontal: w1slider
+
+#  W2 slider
+        - Label:
+                coordinates: [94, 6.6]
+                text: "` W_2 = ${calcs.w2.toFixed(0)} `"
+                color: Blue
+                position: r
+        - Rectangle: {a: [95, 6.55], b: [115, 6.65], fill: Lightgray, opacity: 1, strokeWidth: 0}
+        - Ellipse: {c: [95,6.6], rx: 0.5, ry: 0.05, fill: Lightgray, opacity: 1, strokeWidth: 0}
+        - Ellipse: {c: [115,6.6], rx: 0.5, ry: 0.05, fill: Lightgray, opacity: 1, strokeWidth: 0}
+        - Point:
+            coordinates: [(95)+(params.w2slider), 6.6]
+            r: 8
+            color: Black
+            opacity: 0.6
+            drag:
+              - horizontal: w2slider
+
+
+
+
+#  Pr(W1) slider
+        - Label:
+                coordinates: [94, 5.5]
+                text: "` \\\\Pr(W_1) = ${calcs.p1.toFixed(2)} `"
+                color: Blue
+                position: r
+        - Rectangle: {a: [95, 5.45], b: [115, 5.55], fill: Lightgray, opacity: 1, strokeWidth: 0}
+        - Ellipse: {c: [95,5.5], rx: 0.5, ry: 0.05, fill: Lightgray, opacity: 1, strokeWidth: 0}
+        - Ellipse: {c: [115,5.5], rx: 0.5, ry: 0.05, fill: Lightgray, opacity: 1, strokeWidth: 0}
+        - Point:
+            coordinates: [(95)+(params.p1slider), 5.5]
+            r: 8
+            color: Black
+            opacity: 0.6
+            drag:
+              - horizontal: p1slider
+
+#  Pr(W2) slider
+        - Label:
+                coordinates: [94, 5.1]
+                text: "` \\\\Pr(W_2) = ${calcs.p2.toFixed(2)} `"
+                color: Blue
+                position: r
+        - Rectangle: {a: [95, 5.05], b: [115, 5.15], fill: Lightgray, opacity: 1, strokeWidth: 0}
+        - Ellipse: {c: [95,5.1], rx: 0.5, ry: 0.05, fill: Lightgray, opacity: 1, strokeWidth: 0}
+        - Ellipse: {c: [115,5.1], rx: 0.5, ry: 0.05, fill: Lightgray, opacity: 1, strokeWidth: 0}
+        - Point:
+            coordinates: [(95)+((20)-(params.p1slider)), 5.1]
+            r: 8
+            color: Black
+            opacity: 0.6
+            drag:
+              - directions: x
+                param: p1slider
+                expression: " drag.x - 95 "
+
+
+# bernoulli utility function
+
+        - Curve:
+            fn: sqrt(x)
+            color: Blue
+            max: 110
+            label:
+              text: "` u(W)=\\\\sqrt{W} `"
+              x: 110
+              position: c
+            strokeWidth: 1.5
+
+# points
+        - Point:
+            coordinates: [calcs.w1, calcs.u1]
+            droplines: {vertical: calcs.w1.toFixed(0), horizontal: calcs.u1.toFixed(2)}
+            strokeWidth: 0.5
+            color: Blue
+            r: 5
+            show: params.p1slider < 20
+            drag:
+              - directions: x
+                param: w1slider
+                expression: " drag.x / 5 "
+
+        - Point:
+            coordinates: [calcs.w2, calcs.u2]
+            droplines: {vertical: calcs.w2.toFixed(0), horizontal: calcs.u2.toFixed(2)}
+            strokeWidth: 0.5
+            color: Blue
+            r: 5
+            show: params.p1slider > 0
+            drag:
+              - directions: x
+                param: w2slider
+                expression: " drag.x / 5 "
+
+        - Point:
+            coordinates: [calcs.EP, 0]
+            droplines: {vertical: calcs.EP.toFixed(2)}
+            strokeWidth: 0.5
+            color: Darkgreen
+            r: 0
+        - Point:
+            coordinates: [calcs.EP, calcs.EU]
+            droplines: {horizontal: calcs.EU.toFixed(2)}
+            strokeWidth: 0.5
+            color: Red
+            r: 2
+        - Point:
+            coordinates: [calcs.CE, calcs.EU]
+            droplines: {vertical: calcs.CE.toFixed(2)}
+            strokeWidth: 0.5
+            color: Blue
+            r: 2
+        - Point:
+            coordinates: [calcs.EP, calcs.uEP]
+            droplines: {horizontal: calcs.uEP.toFixed(2), vertical: }
+            strokeWidth: 0.5
+            color: Black
+            r: 2
+
+# risk premium
+        - Label:
+            coordinates: [((calcs.EP)+(calcs.CE))/2, 0.48]
+            text: "` RP `"
+            color: Purple
+            show: params.p1slider > 0 && params.p1slider < 20
+        - Arrow:
+            begin: [calcs.CE, 0.3]
+            end: [calcs.EP, 0.3]
+            double: true
+            color: Purple
+            strokeWidth: 1
+            show: params.p1slider > 0 && params.p1slider < 20
+
+
+
+
+# calculations
+        - Label:
+                coordinates: [75, 3]
+                text: "` EP = ${calcs.p1.toFixed(2)} \\\\times ${calcs.w1.toFixed(0)} +
+                  ${calcs.p2.toFixed(2)} \\\\times ${calcs.w2.toFixed(0)} = ${calcs.EP.toFixed(2)} `"
+                color: Darkgreen
+                position: l
+        - Label:
+                coordinates: [75, 2.5]
+                text: "` u(EP) = \\\\sqrt{${calcs.EP.toFixed(2)}} = ${calcs.uEP.toFixed(2)} `"
+                color: Black
+                position: l
+        - Label:
+                coordinates: [75, 2]
+                text: "` EU = ${calcs.p1.toFixed(2)} \\\\times\\\\sqrt{${calcs.w1.toFixed(0)}} +
+                  ${calcs.p2.toFixed(2)} \\\\times\\\\sqrt{${calcs.w2.toFixed(0)}} = ${calcs.EU.toFixed(2)} `"
+                color: Red
+                position: l
+        - Label:
+                coordinates: [75, 1.5]
+                text: "` CE = EU^2 = ${calcs.CE.toFixed(2)} `"
+                color: Blue
+                position: l
+        - Label:
+                coordinates: [75, 1]
+                text: "` RP = EP-CE = ${calcs.RP.toFixed(2)} `"
+                color: Purple
+                position: l
+
+
+
+# segment
+        - Segment:
+            a: [calcs.w1, calcs.u1]
+            b: [calcs.w2, calcs.u2]
+            color: Red
+            strokeWidth: 1
+
+
+
+    explanation:
+      divs:
+        - html: "` ... trascinare i punti blu nel grafico  `"
+
+
+
+    # sidebar:
+    #   controls:
+    #   - title: Funzione di produzione
+    #     description: Muovere i primi due cursori per modificare i parametri della funzione di 
+    #                 produzione. Muovere il terzo cursore o trascinare il punto blu nel grafico
+    #                 per vedere come,
+    #                 dati i parametri scelti, la quantità di output varia al variare
+    #                  della quantità di input.
+    #     sliders:
+    #     - param: w1
+    #       label: W_1
+    #     - param: w2
+    #       label: W_2
+    #     divs:
+    #     - html: "` $EP=${calcs.EP.toFixed(2)}$ e $EU=${calcs.EU.toFixed(2)}$ `"
+    #       show: params.p1 !== 3

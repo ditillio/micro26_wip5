@@ -1,0 +1,254 @@
+---
+schema: EconSchema
+version: 1
+params:
+
+
+- {name: showTS, value: 0} # show total surplus
+
+
+
+
+
+
+calcs:
+
+  dummy: params.TS
+
+
+
+
+
+# aspectRatio: 1
+
+layout:
+
+  type: TwoHorizontalGraphsPlusSidebar
+
+  def:
+
+
+    leftGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 30
+        ticks: 0
+        title: Gruppo 𝐴
+      yAxis:
+        orient: left
+        min: 0
+        max: 130
+        ticks: 0
+
+
+      objects:
+
+      - Label:
+            coordinates: [27, 0]
+            text: "` \\\\text{lavoratori} `"
+            position: l
+            yPixelOffset: 9
+      - Label:
+            coordinates: [27, 0]
+            text: "` \\\\text{(migliaia)} `"
+            position: l
+            yPixelOffset: -9
+      - Label:
+            coordinates: [0,130]
+            text: "` \\\\text{salario} `"
+
+# supply group A
+      - Line:
+          yIntercept: 50
+          slope: (2)
+          color: Red
+          strokeWidth: 1
+          position: c
+          label:
+            text: "` W=50+2Q_A `"
+            x: 30
+      - Point:
+          coordinates: [0, 50]
+          droplines:
+            horizontal: 50
+          color: Red
+          r: 0
+
+# price line group A
+      - Line:
+          yIntercept: (90)
+          color: Blue
+          strokeWidth: 1
+      - Point:
+          coordinates: [0, 90]
+          droplines:
+            horizontal: 90
+          color: Blue
+          r: 0
+
+# equilibrium
+      - Point:
+          coordinates: [20, 90]
+          droplines:
+            vertical: 20
+            horizontal: 90
+          color: Green
+          r: 3
+          strokeWidth: 0.5
+
+# surplus
+      - Area:
+          fn1: (90)
+          fn2: (50)+(2)*(x)
+          fill: blue
+          min: 0
+          max: 20
+          show: params.showTS == 1
+
+
+
+
+
+
+
+
+
+
+
+
+    rightGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 30
+        ticks: 0
+        title: Gruppo 𝐵
+      yAxis:
+        orient: left
+        min: 0
+        max: 130
+        ticks: 0
+
+
+      objects:
+
+      - Label:
+            coordinates: [27, 0]
+            text: "` \\\\text{lavoratori} `"
+            position: l
+            yPixelOffset: 9
+      - Label:
+            coordinates: [27, 0]
+            text: "` \\\\text{(migliaia)} `"
+            position: l
+            yPixelOffset: -9
+      - Label:
+            coordinates: [0,130]
+            text: "` \\\\text{salario} `"
+
+# supply group B
+      - Line:
+          yIntercept: 50
+          slope: (1)
+          color: Red
+          strokeWidth: 1
+          position: c
+          label:
+            text: "` W=50+Q_B `"
+            x: 30
+      - Point:
+          coordinates: [0, 50]
+          droplines:
+            horizontal: 50
+          color: Red
+          r: 0
+
+# price line group B
+      - Line:
+          yIntercept: (60)
+          color: Blue
+          strokeWidth: 1
+      - Point:
+          coordinates: [0, 60]
+          droplines:
+            horizontal: 60
+          color: Blue
+          r: 0
+
+# equilibrium
+      - Point:
+          coordinates: [10, 60]
+          droplines:
+            vertical: 10
+            horizontal: 60
+          color: Green
+          r: 3
+          strokeWidth: 0.5
+
+# surplus
+      - Area:
+          fn1: (60)
+          fn2: (50)+(x)
+          fill: blue
+          min: 0
+          max: 10
+          show: params.showTS == 1
+
+
+
+
+
+
+
+
+
+    sidebar:
+      controls:
+
+      - title: FIGURA 12.3
+        # sliders:
+        # - param: P1
+        #   label: P_1
+        # - param: P2
+        #   label: P_2
+
+        checkboxes:
+        - param: showTS
+          label: "` \\\\text{Mostra surplus totale} `"
+        # - param: showPS
+        #   label: "` \\\\text{Mostra surplus del monopolista} `"
+        # - param: showDWL
+        #   label: "` \\\\text{Mostra perdita secca} `"
+
+        divs:
+        - html: <br>
+        - html: "` Dato che le imprese fanno zero profitti, il surplus totale coincide
+                   con il surplus del lavoratore, ed è pari a
+                   $$
+                   \\\\text{$450$ migliaia di euro}
+                   $$ 
+                   (somma delle aree azzurre).
+                  `"
+          show: params.showTS == 1
+
+
+    explanation:
+      divs:
+        - html: <br>
+        # - html: "` Le compagnie, in concorrenza tra loro, offrono polizze  per
+        #             bassi rischi ad un prezzo pari al corrispondente costo marginale, ovvero il premio
+        #             equo $FP_A=3000$. Allo stesso modo, offrono polizze per
+        #             alti rischi al corrispondente premio equo $FP_B=6000$. 
+        #           `"
+
+
+
+
+
+
+
+
+
+
+

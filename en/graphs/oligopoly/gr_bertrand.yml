@@ -1,0 +1,273 @@
+schema: EconSchema
+params:
+
+- {name: p1, value: 3, min: 0.5, max: 4.5, round: 0.5}
+- {name: p2, value: 3.5, min: 0.5, max: 4.5, round: 0.5}
+
+
+calcs:
+  Q: (5000)-(1000)*min((params.p1),(params.p2))
+  profit: (min((params.p1),(params.p2))-(2))*(calcs.Q)
+
+  dev: (min((params.p1),(params.p2))+(2))/(2)
+  Qdev: (5000)-(1000)*(calcs.dev)
+  profitdev: ((calcs.dev)-(2))*(calcs.Qdev)
+
+  dev2: (max((params.p1),(params.p2))+(2))/(2)
+  Qdev2: (5000)-(1000)*(calcs.dev2)
+  profitdev2: ((calcs.dev2)-(2))*(calcs.Qdev2)
+
+aspectRatio: 4
+
+layout:
+  OneGraphPlusSidebar:
+
+    graph:
+      xAxis:
+        min: 0
+        max: 5
+        ticks: 5
+      yAxis:
+        min: -4
+        max: 6
+        show: false
+
+
+      objects:
+
+
+# firm 1
+      - Point:
+          coordinates: [params.p1, 0]
+          droplines:
+            vertical: params.p1.toFixed(1)
+          color: Blue
+          r: 0
+          show: params.p1 !== 2
+
+      - Label:
+          coordinates: [(params.p1)-(0.5), 5]
+          text: "` P_1 `"
+          color: Blue
+          position: c
+
+      - Arrow:
+          begin: [(params.p1)-(0.5),5]
+          end: [params.p1,0]
+          color: Blue
+          strokeWidth: 1
+          trim: 0.03
+          bgcolor: none
+
+# firm 2
+      - Point:
+          coordinates: [params.p2, 0]
+          droplines:
+            vertical: params.p2.toFixed(1)
+          color: Red
+          r: 0
+          show: params.p2 !== 2
+
+      - Label:
+          coordinates: [(params.p2)+(0.25), 5]
+          text: "` P_2 `"
+          color: Red
+          position: c
+
+      - Arrow:
+          begin: [(params.p2)+(0.25),5]
+          end: [params.p2,0]
+          color: Red
+          strokeWidth: 1
+          trim: 0.03
+          bgcolor: none
+
+# marginal cost
+      - Point:
+          coordinates: [2, 0]
+          droplines:
+            vertical: 2
+          color: Green
+          r: 0
+
+      - Label:
+          coordinates: [2.5, -4]
+          text: "` MC `"
+          color: Green
+          position: l
+
+      - Arrow:
+          begin: [2.7,-4]
+          end: [2,-0.8]
+          color: Green
+          strokeWidth: 1
+          trim: 0.1
+
+
+
+
+# evaluation
+      - Label:
+          coordinates: [4,5]
+          text: "` \\\\LARGE\\\\text{BINGO!} `" 
+          position: c
+          bgcolor: none
+          color: green
+          show: params.p1 == 2 && params.p2 == 2
+
+
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURE 6.2
+        description: Move the sliders to identify the Nash equilibrium of the game.
+        sliders:
+        - param: p1
+          label: P_1
+        - param: p2
+          label: P_2
+
+
+
+
+
+    explanation:
+      divs:
+        - html: "`
+                  Firm 1 captures the entire market because $P_1< P_2$, but earns a negative profit since $P_1< MC$. By choosing $P_1=MC$, it would obtain zero profit. 
+                  The selected price configuration is therefore not a Nash equilibrium.
+                `"
+          show: params.p1 < params.p2 && params.p1 < 2
+
+        - html: "`
+                  Firm 2 captures the entire market because $P_2< P_1$, but earns a negative profit since $P_2< MC$. By choosing $P_2=MC$, it would obtain zero profit. 
+                  The selected price configuration is therefore not a Nash equilibrium.
+                `"
+          show: params.p2 < params.p1 && params.p2 < 2
+
+        - html: "`
+                  The firms split the market, as they offer the same price. But that price
+                  is below marginal cost, so both earn a negative profit.
+                  Each firm therefore has an incentive to choose a higher price than the other, in order to
+                  obtain zero profit. 
+                  The selected price configuration is therefore not a Nash equilibrium.
+                `"
+          show: params.p2 == params.p1 && params.p2 < 2
+
+        - html: "`
+                  Since $P_1=${params.p1.toFixed(2)}$ is lower than $P_2=${params.p2.toFixed(2)}$,
+                  firm 1 captures the entire market, while firm 2 sells nothing.
+                  But for firm 2, choosing $P_2=${params.p2.toFixed(2)}$ is not
+                  a best response to $P_1=${params.p1.toFixed(2)}$. Since $P_1>MC$, firm 2 could
+                  earn a positive profit by choosing a price lower than $P_1$ but higher than $MC$, for example 
+                  $ P_2=${calcs.dev.toFixed(2)}$. This would allow it to capture the whole market, selling
+                  $$
+                  Q = 5000-1000 \\\\times ${calcs.dev.toFixed(2)} = ${calcs.Qdev.toFixed(0)}
+                  $$
+                  units and thus earning a profit of
+                  $$
+                  (${calcs.dev.toFixed(2)} - 2 ) \\\\times ${calcs.Qdev.toFixed(0)}
+                  =${calcs.profitdev.toFixed(2)}>0
+                  $$
+                  The selected price configuration is therefore not a Nash equilibrium.
+                `"
+          show: params.p1 < params.p2 && params.p1 > 2
+
+        - html: "`
+                  Since $P_2=${params.p2.toFixed(2)}$ is lower than $P_1=${params.p1.toFixed(2)}$,
+                  firm 2 captures the entire market, while firm 1 sells nothing.
+                  But for firm 1, choosing $P_1=${params.p1.toFixed(2)}$ is not
+                  a best response to $P_2=${params.p2.toFixed(2)}$. Since $P_2>MC$, firm 1 could
+                  earn a positive profit by choosing a price lower than $P_2$ but higher than $MC$, for example 
+                  $ P_1=${calcs.dev.toFixed(2)}$. This would allow it to capture the whole market, selling
+                  $$
+                  Q = 5000-1000 \\\\times ${calcs.dev.toFixed(2)} = ${calcs.Qdev.toFixed(0)}
+                  $$
+                  units and thus earning a profit of
+                  $$
+                  (${calcs.dev.toFixed(2)} - 2 ) \\\\times ${calcs.Qdev.toFixed(0)}
+                  =${calcs.profitdev.toFixed(2)}>0
+                  $$
+                  The selected price configuration is therefore not a Nash equilibrium.
+                `"
+          show: params.p2 < params.p1 && params.p2 > 2
+
+        - html: "`
+                  Since $P_1=P_2=${params.p2.toFixed(2)}$, the firms split the market. At the price they
+                  announce, the market demand is
+                  $$
+                  Q = 5000-1000 \\\\times ${params.p1.toFixed(2)} = ${calcs.Q.toFixed(0)}
+                  $$
+                  Each firm thus sells $ ${calcs.Q.toFixed(0)}/2=${calcs.Q.toFixed(0)/2} $ units, earning
+                  a profit of
+                  $$
+                  (${params.p2.toFixed(2)}-2) \\\\times ${calcs.Q.toFixed(0)/2} = 
+                  ${(params.p2.toFixed(2)-2)*calcs.Q.toFixed(0)/2} 
+                  $$
+                  But each firm could slightly lower its price, for example to $ ${params.p2.toFixed(2)-0.25}$,
+                   and thereby capture the entire market, selling
+                  $$
+                  Q = 5000-1000 \\\\times ${params.p2.toFixed(2)-0.25} = ${5000-1000*(params.p2.toFixed(2)-0.25)}
+                  $$
+                  units and earning a greater profit:
+                  $$
+                  (${params.p2.toFixed(2)-0.25}-2)\\\\times ${5000-1000*(params.p2.toFixed(2)-0.25)}
+                  =
+                  ${(params.p2.toFixed(2)-0.25-2)*(5000-1000*(params.p2.toFixed(2)-0.25))}
+                  >
+                  ${(params.p2.toFixed(2)-2)*calcs.Q.toFixed(0)/2} 
+                  $$
+                  The selected price configuration is therefore not a Nash equilibrium.
+                `"
+          show: params.p2 == params.p1 && params.p2 > 2
+
+        - html: "`
+                  Since $P_1=${params.p1.toFixed(2)}$ is lower than $P_2=${params.p2.toFixed(2)}$,
+                  firm 1 captures the entire market, earning zero profit because $P_1=MC$,
+                  while firm 2 sells nothing.
+                  But for firm 1, choosing $P_1=${params.p1.toFixed(2)}$ is not
+                  a best response to $P_2=${params.p2.toFixed(2)}$. Since $P_2>MC$, firm 1 could
+                  earn a positive profit by choosing a price lower than $P_2$ but higher than $MC$, for example 
+                  $ P_1=${calcs.dev2.toFixed(2)}$. This would still allow it to capture the whole market, selling
+                  $$
+                  Q = 5000-1000 \\\\times ${calcs.dev2.toFixed(2)} = ${calcs.Qdev2.toFixed(0)}
+                  $$
+                  units and earning a profit of
+                  $$
+                  (${calcs.dev2.toFixed(2)} - 2 ) \\\\times ${calcs.Qdev2.toFixed(0)}
+                  =${calcs.profitdev2.toFixed(2)}>0
+                  $$
+                  The selected price configuration is therefore not a Nash equilibrium.
+                `"
+          show: params.p1 < params.p2 && params.p1 == 2
+
+        - html: "`
+                  Since $P_2=${params.p2.toFixed(2)}$ is lower than $P_1=${params.p1.toFixed(2)}$,
+                  firm 2 captures the entire market, earning zero profit because $P_2=MC$,
+                  while firm 1 sells nothing.
+                  But for firm 2, choosing $P_2=${params.p2.toFixed(2)}$ is not
+                  a best response to $P_1=${params.p1.toFixed(2)}$. Since $P_1>MC$, firm 2 could
+                  earn a positive profit by choosing a price lower than $P_1$ but higher than $MC$, for example 
+                  $ P_2=${calcs.dev2.toFixed(2)}$. This would still allow it to capture the whole market, selling
+                  $$
+                  Q = 5000-1000 \\\\times ${calcs.dev2.toFixed(2)} = ${calcs.Qdev2.toFixed(0)}
+                  $$
+                  units and earning a profit of
+                  $$
+                  (${calcs.dev2.toFixed(2)} - 2 ) \\\\times ${calcs.Qdev2.toFixed(0)}
+                  =${calcs.profitdev2.toFixed(2)}>0
+                  $$
+                  The selected price configuration is therefore not a Nash equilibrium.
+                `"
+          show: params.p2 < params.p1 && params.p2 == 2
+
+        - html: "`
+                Since $P_1=P_2=MC$, the firms split the market and each earns zero profit.
+                Neither has an incentive to reduce the price (they would gain the whole market but incur a loss) or increase it (they would lose all demand and still earn zero).
+                This is the only Nash equilibrium of the game!
+                `"
+          show: params.p2 == params.p1 && params.p2 == 2
+
+        - html: <br><br><br><br>

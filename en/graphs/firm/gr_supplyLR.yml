@@ -1,0 +1,227 @@
+params:
+- {name: showCS, value: false}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: a, value: 80, min: 40, max: 100}
+- {name: w, value: 64, min: 40, max: 80}
+- {name: p, value: 2.5, min: 0.5, max: 5, round: 0.01}
+- {name: fc, value: 100, min: 50, max: 200}
+
+calcs:
+  xopt: ( params.a * params.a / ( 2 * params.w ) ) * params.p
+  tr: params.p * calcs.xopt
+  vc: (calcs.xopt)^(2) / 100
+  tc: calcs.vc + (params.fc)
+  econprofit: calcs.tr - calcs.vc
+  accprofit: calcs.tr - calcs.tc
+  mc: calcs.xopt / 50
+  avc: (calcs.xopt) / 100
+  atc: calcs.xopt / 100 + (params.fc) / calcs.xopt
+  qeff: params.a * sqrt((params.fc)/(params.w))
+  acmin: params.w * (calcs.qeff) / ((params.a)^2) + params.fc / (calcs.qeff)
+  zzz: max(calcs.mc,calcs.atc)
+
+aspectRatio: 1.2
+
+layout:
+  OneGraphPlusSidebar:
+
+    graph: 
+      xAxis:
+        max: 210
+        min: -3
+        ticks: 4
+      yAxis:
+        max: 6
+        ticks: 10
+      label: a
+
+      objects:
+
+        - Label:
+                coordinates: [210, 0]
+                text: "` \\\\text{Output (kg)} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 6]
+                text: "` \\\\text{Euro/kg}  `"
+                xPixelOffset: 0
+
+# optimal choice
+        - Point:
+            coordinates: [calcs.xopt, params.p]
+            color: Red
+            r: 7
+            droplines:
+              vertical: calcs.xopt.toFixed(2)
+            show: params.p > calcs.acmin
+
+        - Point:
+            coordinates: [0, params.p]
+            color: Red
+            r: 7
+            droplines:
+              vertical: calcs.xopt.toFixed(2)
+            show: params.p < calcs.acmin
+
+        - Point:
+            coordinates: [0, params.p]
+            color: Red
+            r: 7
+            droplines:
+              vertical: 0.00
+            show: params.p.toFixed(2) == calcs.acmin.toFixed(2)
+
+        - Point:
+            coordinates: [calcs.qeff, params.p]
+            color: Red
+            r: 7
+            droplines:
+              vertical: calcs.qeff.toFixed(2)
+            show: params.p.toFixed(2) == calcs.acmin.toFixed(2)
+
+
+# price line
+        - Line:
+            yIntercept: params.p
+            color: Green
+            label:
+              text: P
+              x: 210
+              position: l
+            strokeWidth: 2
+            bgcolor: none
+            drag:
+              - vertical: p
+
+# LR supply curve
+        - Curve:
+            fn: ( 2 * params.w / ( params.a * params.a ) ) * (x)
+            color: Red
+            label:
+              text: S
+              x: 210
+              position: l
+            strokeWidth: 3
+            min: calcs.qeff
+
+        - Segment:
+            a: [0.5,0]
+            b: [0.5,calcs.acmin]
+            color: Red
+            strokeWidth: 3
+
+        - Point:
+            coordinates: [0.5, calcs.acmin]
+            color: Red
+            r: 3.5
+
+        - Point:
+            coordinates: [calcs.qeff, calcs.acmin]
+            color: Red
+            r: 3.5
+
+# marginal cost curve
+        - Curve:
+            fn: ( 2 * params.w / ( params.a * params.a ) ) * (x)
+            color: Red
+            label:
+              text: MC
+              x: 50
+              position: bl
+            strokeWidth: 0.7
+            lineStyle: dashed
+
+# average variable cost curve
+        - Curve:
+            fn: ( params.w / ( params.a * params.a ) ) * (x)
+            color: Orange
+            label:
+              text: AVC
+              x: 210
+              position: l
+            strokeWidth: 0.7
+            lineStyle: dashed
+
+# average cost curve
+        - Curve:
+            fn: ( params.fc / (x) ) + ( params.w / ( params.a * params.a ) ) * (x)
+            color: Brown
+            label:
+              text: AC
+              x: 20
+              position: l
+            strokeWidth: 0.7
+            min: 0.5
+            lineStyle: dashed
+
+# Qeff & ACmin
+        - Point: {coordinates: [calcs.qeff, calcs.acmin], droplines: {vertical: , horizontal: }, color: Gray, r: 0}
+
+        - Label:
+                coordinates: [calcs.qeff, 0]
+                text: "` Q^{\\\\text{eff}} = ${calcs.qeff.toFixed(2)} `"
+                yPixelOffset: -32
+                xPixelOffset: 
+                position: c
+                color: Blue
+
+        - Label:
+                coordinates: [0, calcs.acmin]
+                text: "` AC_{\\\\text{min}} = ${calcs.acmin.toFixed(2)} `"
+                yPixelOffset: 
+                xPixelOffset: -75
+                position: c
+                color: Blue
+
+    sidebar:
+      controls:
+      - title: FIGURE 3.19
+        sliders:
+        - param: p
+          label: P
+        - param: a
+          label: A
+        - param: w
+          label: W
+        - param: fc
+          label: FC
+        divs:
+        - html: "` The production function is $Q=A\\\\sqrt{L}=${params.a}\\\\sqrt{L}$, `"
+        - html: "` the inverse production function $L=Q^2/A^2$. `"
+        - html: "` The total cost function is therefore
+                $C=FC+WQ^2/A^2$, so
+                $$
+                MC(Q)=2WQ/A^2
+                $$
+                $$
+                Q^\\\\text{eff}=A\\\\sqrt{FC/W}
+                $$
+                $$
+                AC^\\\\text{min}=2\\\\sqrt{FC}\\\\sqrt{W} / A
+                $$ `"
+        - html: "` In the long run the firm's optimal choice is to produce the quantity at which 
+                $MC(Q)=P$ if $P> AC_{\\\\text{min}}$, produce $Q=0$ if $P< AC_{\\\\text{min}}$, and either of the two
+                if $P= AC_{\\\\text{min}}$. `"
+
+
+
+
+    explanation:
+      divs:
+        - html: "` Like in the short run, in the long run, too, an increase in the output market price $P$
+                   causes a movement <i>along the supply curve</i>. `"
+        - html: "` An improvement in technology ($A$ increases) causes a <i>shift of the supply 
+                  curve</i>. The increasing part of the curve (the one coinciding with marginal cost)
+                   shifts to the right. The vertical part of the curve (the one coinciding with the vertical axis)
+                   becomes shorter, given that an increase in $A$ decreases the minimum average cost $AC_{\\\\text{min}}$. `"
+        - html: "` An increase in labor cost, $W$, has effects precisely opposite to those of an improvement in
+                  productivity.   `"
+        - html: "` Contrary to what happens in the short run, in the long run a change in the fixed cost $FC$
+                causes a shift of the supply function. In particular, an increase in $FC$ has no impact on the
+                marginal cost function, but it reduces the part of supply coinciding with it. Indeed, the vertical part
+                of the supply function (the one coinciding with the vertical axis)
+                   becomes longer, given that an increase in $FC$ increases the minimum average cost $AC_{\\\\text{min}}$.  `"

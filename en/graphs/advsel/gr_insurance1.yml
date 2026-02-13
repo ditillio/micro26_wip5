@@ -1,0 +1,173 @@
+---
+schema: EconSchema
+version: 1
+params:
+
+- {name: showTS, value: 0} # show total surplus
+
+calcs:
+
+  dummy: (1)
+
+# aspectRatio: 1
+
+layout:
+
+  type: TwoHorizontalGraphsPlusSidebar
+
+  def:
+
+    leftGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 1000
+        ticks: 0
+        title: Group 𝐴
+      yAxis:
+        orient: left
+        min: 0
+        max: 12000
+        ticks: 0
+
+      objects:
+
+      - Label:
+            coordinates: [1000, 0]
+            text: "` \\\\;\\\\; \\\\text{policies} `"
+            position: c
+      - Label:
+            coordinates: [0,12000]
+            text: "` \\\\text{euros/policy} `"
+
+# demand group A
+      - Line:
+          yIntercept: 10000
+          slope: -(1000)*((0.75)/(50))
+          color: Blue
+          strokeWidth: 1
+      - Point:
+          coordinates: [0, 10000]
+          droplines:
+            horizontal: 10000
+          color: Blue
+          r: 0
+
+# price line group A
+      - Line:
+          yIntercept: (2500)
+          color: Red
+          strokeWidth: 1
+          position: c
+          label:
+            text: "` FP_A `"
+            x: 1000
+
+# equilibrium
+      - Point:
+          coordinates: [500, 2500]
+          droplines:
+            vertical: 500
+            horizontal: 2500
+          color: Green
+          r: 3
+          strokeWidth: 0.5
+
+# surplus
+      - Area:
+          fn1: (10000)-(1000)*((0.75)/(50))*(x)
+          fn2: (2500)
+          fill: blue
+          min: 0
+          max: 500
+          show: params.showTS == 1
+
+    rightGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 1000
+        ticks: 0
+        title: Group 𝐵
+      yAxis:
+        orient: left
+        min: 0
+        max: 12000
+        ticks: 0
+
+      objects:
+
+      - Label:
+            coordinates: [1000, 0]
+            text: "` \\\\;\\\\; \\\\text{policies} `"
+            position: c
+      - Label:
+            coordinates: [0,12000]
+            text: "` \\\\text{euros/policy} `"
+
+# demand group B
+      - Line:
+          yIntercept: 10000
+          slope: -(1000)*((0.25)/(50))
+          color: Blue
+          strokeWidth: 1
+      - Point:
+          coordinates: [0, 10000]
+          droplines:
+            horizontal: 10000
+          color: Blue
+          r: 0
+
+# price line group B
+      - Line:
+          yIntercept: (7500)
+          color: Red
+          strokeWidth: 1
+          position: c
+          label:
+            text: "` FP_B `"
+            x: 1000
+
+# equilibrium
+      - Point:
+          coordinates: [500, 7500]
+          droplines:
+            vertical: 500
+            horizontal: 7500
+          color: Green
+          r: 3
+          strokeWidth: 0.5
+
+# surplus
+      - Area:
+          fn1: (10000)-(1000)*((0.25)/(50))*(x)
+          fn2: (7500)
+          fill: blue
+          min: 0
+          max: 500
+          show: params.showTS == 1
+
+    sidebar:
+      controls:
+
+      - title: FIGURE 12.1
+
+        checkboxes:
+        - param: showTS
+          label: "` \\\\text{Show total surplus} `"
+
+        divs:
+        - html: <br>
+        - html: "` Since insurance companies make zero profits, total surplus coincides
+                   with the surplus of the insured, and equals 2.5 million euros (sum of blue areas).
+                  `"
+          show: params.showTS == 1
+
+    explanation:
+      divs:
+        - html: <br>
+        - html: "` Companies, competing with each other, offer policies for
+                    low risks at a price equal to the corresponding marginal cost, that is,
+                    the fair premium $FP_A = 2500$. Similarly, they offer policies for
+                    high risks at the corresponding fair premium $FP_B = 7500$.
+                  `"

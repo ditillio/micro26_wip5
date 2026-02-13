@@ -1,0 +1,203 @@
+
+schema: EconSchema
+params:
+- {name: numimp, value: 500, min: 300, max: 700, round: 50}
+- {name: p, value: 2, min: 1, max: 5, round: 0.5}
+- {name: w, value: 100, min: 25, max: 150, round: 5}
+- {name: showCS, value: false}
+
+
+calcs:
+  s: (100)*(params.p)/(params.w)
+  S: (params.numimp)*(100)*(params.p)/(params.w)
+  sslope: (params.w)/(100)
+  Sslope: (calcs.sslope)/(params.numimp)
+
+
+
+
+
+
+aspectRatio: 2
+
+layout:
+  TwoHorizontalGraphsPlusSidebar:
+    leftGraph:
+      xAxis:
+        ticks: 0
+        max: 5
+        title: Individual Supply
+      yAxis:
+        max: 6
+        ticks: 0
+      objects:
+
+      - Label:
+              coordinates: [5, 0]
+              text: "` \\\\text{kg} `"
+              yPixelOffset: 0
+              position: l
+      - Label:
+              coordinates: [0, 6]
+              text: "` \\\\text{euro/kg}  `"
+              xPixelOffset: 0
+
+# individual supply
+      - Line:
+          slope: calcs.sslope
+          color: Red
+          strokeWidth: 1.5
+
+
+# price line
+      - Line:
+          yIntercept: params.p
+          color: Green
+          label:
+            text: P
+            x: 5
+            position: l
+          drag:
+            - vertical: p
+          strokeWidth: 1
+      - Point:
+          coordinates: [0, params.p]
+          droplines:
+            horizontal: params.p.toFixed(2)
+          color: Green
+          r: 0
+
+# optimum
+      - Point:
+          coordinates: [calcs.s, params.p]
+          droplines:
+            vertical: calcs.s.toFixed(2)
+          color: Red
+          r: 3.5
+          strokeWidth: 0.5
+
+
+
+
+
+
+
+
+
+
+    rightGraph:
+      xAxis:
+        max: 3000
+        ticks: 0
+        title: Market Supply
+      yAxis:
+        max: 6
+        ticks: 0
+      objects:
+
+      - Label:
+              coordinates: [3000, 0]
+              text: "` \\\\text{kg} `"
+              yPixelOffset: 0
+              position: l
+      - Label:
+              coordinates: [0, 6]
+              text: "` \\\\text{euro/kg}  `"
+              xPixelOffset: 0
+
+# market supply
+      - Line:
+          slope: calcs.Sslope
+          color: Red
+          strokeWidth: 1.5
+
+# price line
+      - Line:
+          yIntercept: params.p
+          color: Green
+          label:
+            text: P
+            x: 3000
+            position: l
+          drag:
+            - vertical: p
+          strokeWidth: 1
+
+# optimum
+      - Point:
+          coordinates: [calcs.S, params.p]
+          droplines:
+            vertical: calcs.S.toFixed(0)
+          color: Red
+          r: 3.5
+          strokeWidth: 0.5
+
+
+# # consumer surplus blue
+#       - Area: {fn1: (12-4*(x)/(params.numimp)), fn2: params.p, fill: Blue, opacity: params.ops, min: 0.001, max: calcs.D, show: params.showCS == true }
+
+
+
+
+
+
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURE 1.3
+        # checkboxes:
+        # - param: showCS
+        #   label: "\\text{Mostra e calcola surplus dei consumatori.}"
+        sliders:
+        - param: p
+          label: P_\text{pasta}
+        - param: numimp
+          label: N_\text{firms}
+        - param: w
+          label: P_\text{input}
+        # divs:
+        # - html: "`Quando il prezzo è $P=${params.p}$ euro/kg, la quantità domandata 
+        #         da ciascun consumatore è $Q=${calcs.d}$. La quantità complessivamente
+        #         domandata nel mercato è quindi $Q=${calcs.D}$.
+        #           `"
+
+
+
+
+
+
+
+
+    explanation:
+      divs:
+        - html: <br>
+        - html: "`
+                The market supply curve (right-hand graph) is
+                $$
+                Q_{\\\\text{pasta}} =
+                \\\\underbrace{${params.numimp.toFixed(0)}}_{N_{\\\\text{firms}}}
+                \\\\times
+                \\\\big( 100 \\\\times P_{\\\\text{pasta}} \\\\big)
+                \\\\big/
+                \\\\underbrace{${params.w.toFixed(0)}}_{P_{\\\\text{input}}}
+                $$
+                Depending on the values assigned to $N_{\\\\text{firms}}$
+                and $P_{\\\\text{input}}$, the relationship between $P_{\\\\text{pasta}}$
+                and $Q_{\\\\text{pasta}}$ will vary.
+                Here too we can distinguish two types of changes:
+                if the price of the good produced by firms changes, we move <i>along the curve</i>.
+                If instead one of the variables we had fixed changes,
+                the <i>curve itself shifts</i>.
+                `"
+
+
+
+
+
+
+
+
+
+

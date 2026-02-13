@@ -1,0 +1,200 @@
+params:
+- {name: showCS, value: false}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: a, value: 80, min: 40, max: 100}
+- {name: w, value: 64, min: 40, max: 80}
+- {name: p, value: 2.5, min: 0.5, max: 5, round: 0.1}
+- {name: fc, value: 100, min: 50, max: 200}
+- {name: x, value: 105, min: 0, max: 200, round: 5}
+
+calcs:
+  xopt: ( params.a * params.a / ( 2 * params.w ) ) * params.p
+  tr: params.p * params.x
+  vc: ( params.w / ( params.a * params.a ) ) * (params.x * params.x)
+  ps: calcs.tr - calcs.vc
+  tc: calcs.vc + (params.fc)
+  mc: ( 2 * params.w / ( params.a * params.a ) ) * (params.x)
+  econprofit: calcs.tr - calcs.vc
+  accprofit: calcs.tr - calcs.tc
+  avc: (calcs.xopt) / 100
+  atc: calcs.xopt / 100 + (params.fc) / calcs.xopt
+  zzz: max(calcs.mc,calcs.atc)
+
+aspectRatio: 1.2
+
+layout:
+  OneGraphPlusSidebar:
+
+    graph: 
+      xAxis:
+        max: 210
+        min: -3
+        ticks: 4
+      yAxis:
+        max: 6
+        ticks: 10
+      label: a
+
+      objects:
+
+        - Label:
+                coordinates: [210, 0]
+                text: "` \\\\text{Output (kg)} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 6]
+                text: "` \\\\text{Euro/kg}  `"
+                xPixelOffset: 0
+
+# points
+        - Point:
+            coordinates: [params.x, params.p]
+            color: Darkgreen
+            r: 5
+            droplines:
+              vertical: params.x.toFixed(2)
+        - Point:
+            coordinates: [params.x, calcs.mc]
+            color: red
+            r: 5
+
+
+# price line
+        - Line:
+            yIntercept: params.p
+            color: Green
+            label:
+              text: P
+              x: 210
+              position: l
+            strokeWidth: 2
+            bgcolor: none
+            drag:
+              - vertical: p
+
+# individual supply curve
+        - Curve:
+            fn: ( 2 * params.w / ( params.a * params.a ) ) * (x)
+            color: Red
+            label:
+              text: S \; ( = MC )
+              x: 210
+              position: l
+            strokeWidth: 2
+
+# # average variable cost curve
+#         - Curve:
+#             fn: ( params.w / ( params.a * params.a ) ) * (x)
+#             color: Orange
+#             label:
+#               text: AVC
+#               x: 210
+#               position: l
+#             strokeWidth: 0.7
+#             lineStyle: dashed
+
+# # average cost curve
+#         - Curve:
+#             fn: ( params.fc / (x) ) + ( params.w / ( params.a * params.a ) ) * (x)
+#             color: Brown
+#             label:
+#               text: AC
+#               x: 20
+#               position: l
+#             strokeWidth: 0.7
+#             min: 0.5
+#             lineStyle: dashed
+
+# total revenue
+        - Rectangle:
+            x1: 0.05
+            x2: params.x
+            y1: 0.01
+            y2: params.p
+            fill: none
+            strokeWidth: 4
+            stroke: green
+        - Arrow:
+            begin: [(0.5*params.x), (params.p + 1)]
+            end: [(0.5*params.x), (params.p + 0.1)]
+            color: green
+        - Label:
+            coordinates: [(0.5*params.x), (params.p + 1)]
+            text: "` R = ${calcs.tr.toFixed(2)} `"
+            color: Darkgreen
+            fontSize: 12
+
+# variable cost
+        - Area:
+            fn: ( 2 * params.w / ( params.a * params.a ) ) * (x)
+            max: params.x
+            color: red
+        - Label:
+            coordinates: [(0.75*params.x), (0.25*calcs.mc)]
+            text: "` VC = ${calcs.vc.toFixed(2)} `"
+            color: red
+            bgcolor: none
+            fontSize: 12
+
+# producer surplus
+        - Area:
+            fn1: ( 2 * params.w / ( params.a * params.a ) ) * (x)
+            fn2: params.p
+            min: 0
+            max: min ( params.x , calcs.xopt )
+            color: green
+        - Label:
+            coordinates: [(0.3*params.x), (0.75*params.p)]
+            text: "` PS = ${calcs.ps.toFixed(2)} `"
+            color: Darkgreen
+            bgcolor: none
+            fontSize: 12
+
+
+    sidebar:
+      controls:
+      - title: FIGURE 3.20
+        sliders:
+        - param: p
+          label: P
+        - param: x
+          label: Q
+        divs:
+        - html: "` The production function is $Q=A\\\\sqrt{L}=${params.a}\\\\sqrt{L}$, the inverse production 
+                function $L=Q^2/A^2=Q^2/${ params.a * params.a }$. The total cost function is therefore
+                $C=FC+WQ^2/A^2=${params.fc}+${params.w}Q^2/${ params.a * params.a }$, hence 
+                the marginal cost function is
+                $$MC=2WQ/A^2=${ 2 * params.w } Q / ${ params.a * params.a }
+                =${ 2 * params.w  /  ( params.a * params.a )  } Q $$ `"
+        - html: "` Thus, the firm's short-run supply function is
+                $$Q=(${ params.a * params.a } / ${ 2 * params.w })P$$ `"
+
+
+
+
+
+    explanation:
+      divs:
+        - html: "` When the output market price is $P=${params.p.toFixed(2)}$ and the firm produces
+                     $Q=${params.x}$ units, revenue is $R=${calcs.tr.toFixed(2)}$ (green-bordered rectangle). `"
+        - html: "` The avoidable cost (area below the supply curve), which in the short run is the variable cost,
+                  is $VC=${calcs.vc.toFixed(2)}$.  `"
+        - html: "` Producer surplus (area between market price and supply function),
+                     is $PS=${calcs.ps.toFixed(2)}$.  `"
+        - html: "` Given that at $Q=${params.x}$ we have $MC(Q)< P$, producing $Q=${params.x}$ is not the firm's
+                  optimal choice. It is possible to increase surplus by increasing the quantity of output produced. `"
+          show: params.x < calcs.xopt.toFixed(0)
+        - html: "` Given that at $Q=${params.x}$ we have $MC(Q)> P$, producing $Q=${params.x}$ is not the firm's
+                  optimal choice. It is possible to increase surplus by decreasing the quantity of output produced. `"
+          show: params.x > calcs.xopt.toFixed(0)
+        - html: "` Given that at $Q=${params.x}$ we have $MC(Q)= P$, producing $Q=${params.x}$ is  the firm's
+                  optimal choice. Producer surplus is maximized. `"
+          show: params.x == calcs.xopt.toFixed(0)
+        - html: "` In the long run, producer surplus is
+                $PS=${calcs.ps.toFixed(2)}-FC=${calcs.ps.toFixed(2)-params.fc}$ (to compute it, we just subtract
+                the fixed cost from the surplus computed above, given that the fixed cost becomes  
+                avoidable in the long run). `"

@@ -1,0 +1,89 @@
+{% assign path = page.path | split: '/' %}
+{% assign depth = 0 %}
+{% assign language = path[depth] %}
+<!doctype html>
+<html lang="en">
+<head>
+    <title>{{ page.title }}</title>
+    {% include stylesheets.html KGversion="0.3.1" bootstrap=false textbook=true %}
+    <link href="{{ site.baseurl }}/static/css/toc-accordion.css" rel="stylesheet" type="text/css">
+    {% include favicons.html %}
+    <style>
+      /* Indentazione coerente con lo screenshot */
+      .big_toc_sections { margin-left: 60px; margin-top: 6px; margin-bottom: 14px; }
+      .big_toc_sections ul { margin: 0; padding: 0; }
+      .big_toc_sections .chapter_section_row { list-style: none; margin: 6px 0; }
+      .big_toc_sections .section_number {
+        display: inline-block;
+        width: 60px;
+        text-align: right;
+        padding-right: 14px;
+        color: #444;
+      }
+    </style>
+</head>
+<body>
+    {% include header.html language=language %}
+    {% assign textbook = site.data.toc %}
+    <article>
+        <h1>{{ textbook.title[language] }}</h1>
+        <p>{{ textbook.author }}</p>
+        <hr/>
+
+        <div style="padding: 20px">
+            <div class="chapter">
+                <div class="number"></div>
+                <a href="./pr.html">{% if language == 'it' %}Prefazione{% else %}Preface{% endif %}</a>
+            </div>
+        </div>
+
+        {% for part in textbook.parts %}
+        <div style="padding: 20px">
+            <div class="subtitle" style="padding-top:30px; padding-bottom:20px">
+                {% if part.folder %}
+                Part{% if language == "it" %}e{% endif %} {{ part.folder }}: {{ part.title[language] }}
+                {% else %}
+                {{ part.title[language] }}
+                {% endif %}
+            </div>
+
+            <div style="padding: 5px; margin-left: 15px">
+                {% for chapter in part.chapters %}
+                <div class="chapter_link">
+                    <div class="number">{{ chapter.folder }} </div>
+                    <a href="./{{ part.folder }}/{{ chapter.folder }}">{{ chapter.title[language] }}</a>
+                </div>
+
+                {% if chapter.sections %}
+                <div class="chapter_sections big_toc_sections" aria-hidden="false">
+                    <ul class="chapter_sections_list">
+                        {% for section in chapter.sections %}
+                        <li class="chapter_section_row">
+                            <span class="section_number">{{ chapter.folder }}.{{ forloop.index }}</span>
+                            {% if section.draft %}
+                              <span>{{ section.title[language] }}</span>
+                            {% else %}
+                              <!-- NIENTE slash finale: ./I/2/2 -->
+                              <a href="./{{ part.folder }}/{{ chapter.folder }}/{{ forloop.index }}">{{ section.title[language] }}</a>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- IMPORTANTISSIMO: qui entra il contenuto del markdown (toc-big.md) -->
+        {{ content }}
+
+    </article>
+
+{% include footer.html language=language %}
+{% include scripts.html KGversion='0.3.1' bootstrap=true renderMath=true %}
+<script src="{{ site.baseurl }}/static/js/toc-accordion.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+params:
+- {name: T, value: 0, min: 0, max: 5, round: 0.5}
+- {name: SHOW, value: false}
+
+calcs:
+  eqQ: ((10)-(params.T))/(2)
+  eqP: (10)-(calcs.eqQ)
+  EC: (calcs.eqQ)*(calcs.eqQ)/(4)
+  CS: ((10)-(calcs.eqP))*(calcs.eqQ)/(2)
+  PS: ((calcs.eqP)-(params.T))*(calcs.eqQ)/(2)
+  TAXREV: (params.T)*(calcs.eqQ)
+  TS: (calcs.CS)+(calcs.PS)+(calcs.TAXREV)-(calcs.EC)
+
+aspectRatio: 1.6
+
+layout:
+  OneGraphPlusSidebar:
+
+    graph: 
+      xAxis:
+        max: 11
+        ticks: 0
+      yAxis:
+        max: 11
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [11, 0]
+                text: "` \\\\text{fardelli}  `"
+                yPixelOffset: 8
+        - Label:
+                coordinates: [11, 0]
+                text: "` \\\\text{(milioni)}  `"
+                yPixelOffset: -8
+        - Label:
+                coordinates: [0, 11]
+                text: "` \\\\text{euro/fardello} `"
+
+# demand function
+        - Line:
+            point: [0,10]
+            slope: -(1)
+            color: Blue
+            strokeWidth: 1.5
+            label:
+              text: "` D = MPB = MSB `"
+              x: 1
+              position: bl
+
+# MEC function
+        - Line:
+            point: [0,0]
+            slope: (0.5)
+            color: Violet
+            strokeWidth: 1.5
+            max: 9.5
+            label:
+              text: "` MEC = Q/2 `"
+              x: 9.5
+              position: bl
+
+# MPC function
+        - Line:
+            point: [0,params.T]
+            slope: (1)
+            color: Red
+            strokeWidth: 1.5
+            max: (8.5)-(params.T)/2
+            label:
+              text: "` MPC + T  `"
+              x: (8.5)-(params.T)/2
+              position: l
+
+# shadow market supply and arrow
+        - Line:
+            yIntercept: 0
+            slope: (1)
+            color: Red
+            max: 8.5
+            strokeWidth: 0.75
+            lineStyle: dashed
+            label:
+              text: "` MPC  `"
+              x: (8.5)
+              position: tl
+            show: params.T > 0
+        - Arrow:
+            begin: [6,6]
+            end: [6,(6)+(params.T)]
+  #          double: true
+            color: black
+            strokeWidth: 1
+            trim: 0.1
+            show: params.T > 0
+
+
+
+# MSC function
+        - Line:
+            point: [0,0]
+            slope: (1.5)
+            color: Purple
+            strokeWidth: 1.5
+            label:
+              text: "` MSC = MPC + MEC  `"
+              x: 7
+              position: bl
+
+# points
+        - Point:
+            coordinates: [calcs.eqQ, calcs.eqP]
+            droplines: {vertical: calcs.eqQ.toFixed(2), horizontal: calcs.eqP.toFixed(2)}
+            color: Green
+            r: 3.5
+            strokeWidth: 0.5
+        - Point:
+            coordinates: [0, params.T]
+            droplines: {horizontal: params.T.toFixed(1)}
+            color: Red
+            r: 0
+            show: params.T > 0
+        - Point:
+            coordinates: [4, 6]
+            droplines: {vertical: 4}
+            color: Purple
+            r: 0
+            strokeWidth: 0.5
+            show: params.T !== 2
+        - Point:
+            coordinates: [4, 2]
+            droplines: {horizontal: }
+            color: violet
+            r: 0
+            strokeWidth: 0.5
+            show: params.T == 2
+
+# surplus
+        - Area:
+            fn1: (10)-(x)
+            fn2: (calcs.eqP)
+            fill: blue
+            opacity: 0.25
+            min: 0
+            max: calcs.eqQ
+            show: params.SHOW == 1
+
+        - Area:
+            fn1: (calcs.eqP)
+            fn2: (x)+(params.T)
+            fill: Green
+            opacity: 0.2
+            min: 0
+            max: calcs.eqQ
+            show: params.SHOW == 1
+
+# tax revenue
+        - Area:
+            fn1: (x)+(params.T)
+            fn2: (x)
+            fill: yellow
+            opacity: 0.25
+            min: 0
+            max: calcs.eqQ
+            show: params.SHOW == 1 && params.T !== 2
+
+# tax revenue
+        - Area:
+            fn1: (x)+(params.T)
+            fn2: (1.5)*(x)
+            fill: yellow
+            opacity: 0.2
+            min: 0
+            max: calcs.eqQ
+            show: params.SHOW == 1 && params.T == 2
+        - Area:
+            fn1: (1.5)*(x)
+            fn2: (x)
+            fill: orange
+            opacity: 0.25
+            min: 0
+            max: calcs.eqQ
+            show: params.SHOW == 1 && params.T == 2
+
+# external cost
+        - Area:
+            fn: (x)/(2)
+            fill: violet
+            opacity: 0.25
+            min: 0
+            max: calcs.eqQ
+            show: params.SHOW == 1
+
+
+
+
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURA 8.3
+        description: " Spostare il cursore fino a trovare la tassa pigouviana, cioè l'accisa
+                      che rende la quantità di equilibrio pari alla quantità socialmente
+                      efficiente.  "
+        sliders:
+        - param: T
+          label: T
+
+        checkboxes:
+        - param: SHOW
+          label: "` \\\\text{Mostra surplus} `"
+
+        divs:
+        - html: <br>
+        - html: "` In assenza di interventi, la quantità di equilibrio è $Q=5$. La quantità
+                socialmente efficiente è invece $Q=4$. `"
+          show: params.T == 0
+        - html: "` Un'accisa pari a $ ${params.T} $ euro/fardello avvicina la quantità di equilibrio
+                a quella socialmente efficiente, ma non è sufficiente. `"
+          show: params.T > 0 && params.T < 2
+        - html: "` Un'accisa pari a $ $params.T$ $ euro/fardello riduce la quantità di equilibrio
+                al di sotto del livello socialmente efficiente. `"
+          show: params.T > 2
+        - html: "` $\\\\color{${colors.red}} \\\\LARGE{ \\\\text{BINGO!} } $   `"
+          show: params.T == 2
+        - html: "` La tassa pigouviana è un'accisa di aliquota pari al costo marginale
+                  esterno calcolato in corrispondenza della quantità socialmente ottima $Q=4$.
+                  Dato che $MEC(Q)=Q/2$, in corrispondenza di $Q=4$ abbiamo $MEC=2$.
+                  La tassa pigouviana è quindi pari a $T=2$ euro a fardello.  `"
+          show: params.T == 2
+
+
+
+
+
+    explanation:
+      divs:
+        - html: <br><br><br><br><br><br><br><br><br><br><br><br>
+          show: params.SHOW == 0
+        - html: "` Il surplus totale è dato da
+                $$
+                CS + PS + \\\\text{Gettito fiscale} - EC = ${calcs.TS}
+                $$
+                dove
+                $$
+                CS = \\\\text{surplus consumatore} = \\\\text{area azzurra} = ${calcs.CS.toFixed(2)}
+                $$
+                $$
+                PS = \\\\text{surplus produttore} = \\\\text{area verde} = ${calcs.PS.toFixed(2)}
+                $$
+                $$
+                \\\\text{Gettito fiscale} = \\\\text{area gialla} = ${calcs.TAXREV.toFixed(2)}
+                $$
+                $$
+                EC = \\\\text{costo esterno} = \\\\text{area rosa} = ${calcs.EC.toFixed(2)}
+                $$
+                `"
+          show: params.SHOW == 1 && params.T !== 2
+
+        - html: "` Il surplus totale è dato da
+                $$
+                CS + PS + \\\\text{Gettito fiscale} - EC = ${calcs.TS}
+                $$
+                dove
+                $$
+                CS = \\\\text{surplus consumatore} = \\\\text{area azzurra} = ${calcs.CS.toFixed(2)}
+                $$
+                $$
+                PS = \\\\text{surplus produttore} = \\\\text{area verde} = ${calcs.PS.toFixed(2)}
+                $$
+                $$
+                \\\\text{Gettito fiscale} = \\\\text{area gialla $+$ area arancione} = ${calcs.TAXREV.toFixed(2)}
+                $$
+                $$
+                EC = \\\\text{costo esterno} = \\\\text{area rosa} = \\\\text{area arancione} = ${calcs.EC.toFixed(2)}
+                $$
+                `"
+          show: params.SHOW == 1 && params.T == 2
+
+
+
+
+
+
+
+
+
+
+
+
+

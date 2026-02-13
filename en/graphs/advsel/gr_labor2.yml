@@ -1,0 +1,286 @@
+---
+schema: EconSchema
+version: 1
+params:
+
+- {name: showTS, value: 1} # show surplus etc.
+
+calcs:
+
+  dummy: (params.showTS)
+
+# aspectRatio: 1
+
+layout:
+
+  type: TwoHorizontalGraphsPlusSidebar
+
+  def:
+
+    leftGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 30
+        ticks: 0
+        title: Group $A$
+      yAxis:
+        orient: left
+        min: 0
+        max: 130
+        ticks: 0
+
+      objects:
+
+      - Label:
+          coordinates: [27, 0]
+          text: "` \\\\text{workers} `"
+          position: l
+          yPixelOffset: 9
+      - Label:
+          coordinates: [27, 0]
+          text: "` \\\\text{(thousands)} `"
+          position: l
+          yPixelOffset: -9
+      - Label:
+          coordinates: [0,130]
+          text: "` \\\\text{wage} `"
+
+# supply group A
+      - Line:
+          yIntercept: 50
+          slope: (2)
+          color: Red
+          strokeWidth: 1
+          position: c
+          label:
+            text: "` W=50+2Q_A `"
+            x: 30
+      - Point:
+          coordinates: [0, 50]
+          droplines:
+            horizontal: 50
+          color: Red
+          r: 0
+
+# price line full info group A
+      - Line:
+          yIntercept: (90)
+          color: Blue
+          strokeWidth: 0.7
+      - Point:
+          coordinates: [0, 90]
+          droplines:
+            horizontal: 90
+          color: Blue
+          r: 0
+      - Point:
+          coordinates: [20, 90]
+          droplines:
+            vertical: 20
+          color: Darkgrey
+          r: 0
+          strokeWidth: 0.5
+
+# equilibrium
+      - Line:
+          yIntercept: (70)
+          color: Green
+          strokeWidth: 1
+      - Point:
+          coordinates: [10, 70]
+          droplines:
+            vertical: 10
+            horizontal: 70
+          color: Green
+          r: 3
+          strokeWidth: 0.5
+
+# surplus
+      - Area:
+          fn1: (70)
+          fn2: (50)+(2)*(x)
+          fill: blue
+          min: 0
+          max: 10
+          show: params.showTS == 1
+
+# profit/loss
+      - Area:
+          fn1: (90)
+          fn2: (70)
+          fill: green
+          min: 0
+          max: 10
+          show: params.showTS == 0
+
+# deadweight loss
+      - Area:
+          fn1: (90)
+          fn2: (50)+(2)*(x)
+          fill: Darkgrey
+          opacity: 0.7
+          min: 10
+          max: 20
+          show: params.showTS == 2
+
+    rightGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 30
+        ticks: 0
+        title: Group $B$
+      yAxis:
+        orient: left
+        min: 0
+        max: 130
+        ticks: 0
+
+      objects:
+
+      - Label:
+          coordinates: [27, 0]
+          text: "` \\\\text{workers} `"
+          position: l
+          yPixelOffset: 9
+      - Label:
+          coordinates: [27, 0]
+          text: "` \\\\text{(thousands)} `"
+          position: l
+          yPixelOffset: -9
+      - Label:
+          coordinates: [0,130]
+          text: "` \\\\text{wage} `"
+
+# supply group B
+      - Line:
+          yIntercept: 50
+          slope: (1)
+          color: Red
+          strokeWidth: 1
+          position: c
+          label:
+            text: "` W=50+Q_B `"
+            x: 30
+      - Point:
+          coordinates: [0, 50]
+          droplines:
+            horizontal: 50
+          color: Red
+          r: 0
+
+# price line full info group B
+      - Line:
+          yIntercept: (60)
+          color: Blue
+          strokeWidth: 0.7
+      - Point:
+          coordinates: [0, 60]
+          droplines:
+            horizontal: 60
+          color: Blue
+          r: 0
+      - Point:
+          coordinates: [10, 60]
+          droplines:
+            vertical: 10
+          color: Darkgrey
+          r: 0
+          strokeWidth: 0.5
+
+# equilibrium
+      - Line:
+          yIntercept: (70)
+          color: Green
+          strokeWidth: 1
+      - Point:
+          coordinates: [20, 70]
+          droplines:
+            vertical: 20
+            horizontal: 70
+          color: Green
+          r: 3
+          strokeWidth: 0.5
+
+# surplus
+      - Area:
+          fn1: (70)
+          fn2: (50)+(x)
+          fill: blue
+          min: 0
+          max: 20
+          show: params.showTS == 1
+
+# profit/loss
+      - Area:
+          fn1: (70)
+          fn2: (60)
+          fill: red
+          min: 0
+          max: 20
+          show: params.showTS == 0
+
+# deadweight loss
+      - Area:
+          fn1: (50)+(x)
+          fn2: (60)
+          fill: Darkgrey
+          opacity: 0.7
+          min: 10
+          max: 20
+          show: params.showTS == 2
+
+    sidebar:
+      controls:
+
+      - title: FIGURE 12.4
+
+        radioGroup:
+          param: showTS
+          options:
+            - Show profits ( = zero)
+            - Show total surplus
+            - Show deadweight loss
+
+        divs:
+        - html: <br>
+        - html: "` In expected terms, firms earn $20$ euros of profit from each worker
+                   in group $A$, and lose $10$ euros from each worker in group $B$.
+                   Their profit (difference between green and red area) is therefore zero.
+                  `"
+          show: params.showTS == 0
+
+        - html: "` Since firms earn zero profits, total surplus coincides
+                   with the workers' surplus, and equals
+                   $$
+                   \\\\text{$300$ thousand euros}
+                   $$
+                   Compared to the case with observable productivity (surplus 450 thousand euros),
+                   there is a deadweight loss of $150$ thousand euros. Group $A$ is worse off,
+                   group $B$ is better off: the unobservability of productivity creates an implicit
+                   subsidy in favor of group $B$, at the expense of group $A$.
+                  `"
+          show: params.showTS == 1
+
+        - html: "` The unobservability of productivity means that trades which would have
+                  generated surplus do not occur. The corresponding deadweight loss is the grey
+                  area in the left graph. Moreover, trades that generate negative surplus do occur.
+                  The corresponding deadweight loss is the grey area in the right graph.
+                  The total deadweight loss amounts to $150$ thousand euros.
+                  `"
+          show: params.showTS == 2
+
+    explanation:
+      divs:
+        - html: <br>
+        - html: "` At any given wage, the number of group $B$ individuals willing
+                  to work at that wage is exactly twice the number of group $A$ individuals
+                  willing to do so. From the firms' point of view, each worker thus has
+                  a probability of $1/3$ of belonging to group $A$, and $2/3$ of
+                  belonging to group $B$. Firms therefore, competing with each other, offer
+                  employment at a wage equal to the expected marginal revenue, that is
+                  $$
+                  \\\\dfrac{1}{3}\\\\times 90 + \\\\dfrac{2}{3}\\\\times 60 = 70
+                  $$
+                  `"

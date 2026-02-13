@@ -1,0 +1,225 @@
+---
+schema: EconSchema
+version: 1
+params:
+
+- {name: fc, value: 100} # fixed cost per plant
+- {name: a, value: 80} # plant productivity parameter
+- {name: w, value: 64} # wage
+
+- {name: Q, value: 800, min: 100, max: 2000, round: 100} # output level
+- {name: np, value: 4, min: 1, max: 25} # number of plants
+
+- {name: maxQ, value: 2200} #  half-length of tangent line
+- {name: maxEUR, value: 4400} #  half-length of tangent line
+- {name: showCOST, value: 0}
+
+
+
+calcs:
+
+  Qeff: (params.a) * sqrt( (params.fc)/(params.w) )
+
+  ACmin: (2) * sqrt( ((params.fc)*(params.w)) ) / (params.a)
+
+  cost: (params.np) * (params.fc) + ( (params.w) / (params.np) ) * ( ((params.Q)^2) / ((params.a)^2) )
+
+
+
+
+aspectRatio: 1.5
+
+layout:
+
+  type: OneGraphPlusSidebar
+
+  def:
+
+
+    graph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: params.maxQ
+        ticks: 0
+      yAxis:
+        orient: left
+        min: 0
+        max: params.maxEUR
+        ticks: 0
+
+      objects:
+
+      - Label:
+            coordinates: [params.maxQ, 0]
+            text: "` \\\\text{kg} `"
+            xPixelOffset: 1
+      - Label:
+            coordinates: [0, params.maxEUR]
+            text: "` \\\\text{euro}  `"
+
+# cost functions with 1,2,3, ... plants
+
+      - Curve: {fn: (1) * (params.fc) + ( (params.w) / (1) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (2) * (params.fc) + ( (params.w) / (2) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (3) * (params.fc) + ( (params.w) / (3) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (4) * (params.fc) + ( (params.w) / (4) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (5) * (params.fc) + ( (params.w) / (5) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (6) * (params.fc) + ( (params.w) / (6) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (7) * (params.fc) + ( (params.w) / (7) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (8) * (params.fc) + ( (params.w) / (8) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (9) * (params.fc) + ( (params.w) / (9) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (10) * (params.fc) + ( (params.w) / (10) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (11) * (params.fc) + ( (params.w) / (11) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (12) * (params.fc) + ( (params.w) / (12) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (13) * (params.fc) + ( (params.w) / (13) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (14) * (params.fc) + ( (params.w) / (14) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (15) * (params.fc) + ( (params.w) / (15) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (16) * (params.fc) + ( (params.w) / (16) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (17) * (params.fc) + ( (params.w) / (17) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (18) * (params.fc) + ( (params.w) / (18) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (19) * (params.fc) + ( (params.w) / (19) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (20) * (params.fc) + ( (params.w) / (20) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (21) * (params.fc) + ( (params.w) / (21) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (22) * (params.fc) + ( (params.w) / (22) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (23) * (params.fc) + ( (params.w) / (23) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (24) * (params.fc) + ( (params.w) / (24) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (25) * (params.fc) + ( (params.w) / (25) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (26) * (params.fc) + ( (params.w) / (26) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (27) * (params.fc) + ( (params.w) / (27) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (28) * (params.fc) + ( (params.w) / (28) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (29) * (params.fc) + ( (params.w) / (29) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (30) * (params.fc) + ( (params.w) / (30) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (31) * (params.fc) + ( (params.w) / (31) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (32) * (params.fc) + ( (params.w) / (32) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (33) * (params.fc) + ( (params.w) / (33) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (34) * (params.fc) + ( (params.w) / (34) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (35) * (params.fc) + ( (params.w) / (35) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (36) * (params.fc) + ( (params.w) / (36) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (37) * (params.fc) + ( (params.w) / (37) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (38) * (params.fc) + ( (params.w) / (38) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (39) * (params.fc) + ( (params.w) / (39) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (40) * (params.fc) + ( (params.w) / (40) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (41) * (params.fc) + ( (params.w) / (41) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (42) * (params.fc) + ( (params.w) / (42) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+      - Curve: {fn: (43) * (params.fc) + ( (params.w) / (43) ) * ( ((x)^2) / ((params.a)^2) ), color: Red, strokeWidth: 0.1, position: c}
+
+      - Curve:
+          fn: (params.np) * (params.fc) + ( (params.w) / (params.np) ) * ( ((x)^2) / ((params.a)^2) )
+          color: Red
+          strokeWidth: 1
+          position: c
+          label:
+            text: "` C_{${params.np}} `"
+            x: (0.99)*min(params.maxQ,sqrt((((params.maxEUR)-(params.np)*(params.fc))*(params.np)*((params.a)^2))/(params.w)))
+
+# number of plants * Qeff
+      - Point:
+          coordinates: [(params.Q), (calcs.cost)]
+          droplines:
+            vertical: (params.Q)
+            horizontal: calcs.cost.toFixed(2)
+          color: Red
+          r: 3.5
+
+
+
+
+
+
+# cost function
+      - Line:
+          yIntercept: 0
+          slope: calcs.ACmin
+          color: Red
+          strokeWidth: 1.5
+          position: c
+          label:
+            # text: "` C = ${params.fc} + ${params.mc} Q `"
+            text: "` C = ${calcs.ACmin} Q `"
+            x: min((params.maxQ),(params.maxEUR)/(calcs.ACmin))
+          show: params.showCOST == 1
+
+
+
+
+
+
+
+# # tangent to R at monopolistic choice
+#       - Segment:
+#           a: [(calcs.Qmon)-(params.tgl),((calcs.Pmon)*(calcs.Qmon))-((params.dint)-(2)*(params.dslope)*(calcs.Qmon))*(params.tgl)]
+#           b: [(calcs.Qmon)+(params.tgl),((calcs.Pmon)*(calcs.Qmon))+((params.dint)-(2)*(params.dslope)*(calcs.Qmon))*(params.tgl)]
+#           color: grey
+#           lineStyle: dotted
+
+
+
+
+
+
+
+
+
+    sidebar:
+      controls:
+
+      - title: FIGURA 5.3
+        sliders:
+        - param: Q
+          label: Q
+        - param: np
+          label: "` n `"
+
+        divs:
+
+        - html: <br>
+        - html: "` $AC_\\\\text{min} = ${calcs.ACmin}$ `"
+        - html: "` $Q^\\\\text{eff} = ${calcs.Qeff}$ `"
+        - html: <br>
+        - html: "` Se il monopolista vuole produrre ${params.Q} unità di output, utilizzare
+                ${params.np} unità produttiva non è la scelta che minimizza i costi.
+                 `"
+          show: params.np == 1 && params.np !== (params.Q)/(calcs.Qeff)
+
+        - html: "` <font color=red><b>BINGO!</b></font> Se il monopolista vuole produrre
+                 ${params.Q} unità di output, utilizzare ${params.np} unità produttive è 
+                 la scelta che minimizza i costi.
+                 `"
+          show: params.np == 1 && params.np == (params.Q)/(calcs.Qeff)
+
+        - html: "` Se il monopolista vuole produrre ${params.Q} unità di output, utilizzare
+                ${params.np} unità produttive non è la scelta che minimizza i costi.
+                 `"
+          show: params.np > 1 && params.np !== (params.Q)/(calcs.Qeff)
+
+        - html: "` <font color=red><b>BINGO!</b></font> Se il monopolista vuole produrre
+                ${params.Q} unità di output, utilizzare ${params.np} unità produttive è
+                la scelta che minimizza i costi.
+                `"
+          show: params.np > 1 && params.np == (params.Q)/(calcs.Qeff)
+
+        checkboxes:
+        - param: showCOST
+          label: "` \\\\text{Mostra funzione di costo del monopolista} `"
+
+    # explanation:
+    #   divs:
+    #     - html: "` In presenza di un prezzo massimo $P_\\\\text{max}=${params.cap}$ la curva di ricavo 
+    #               marginale $MR$ è piatta fino alla quantità domandata al prezzo massimo, ovvero
+    #                $Q=${((params.dint)-(params.cap))/(params.dslope)}$. 
+    #               In corrispondenza di quella quantità, la curva $MR$ presenta una discontinuità.
+    #               Oltre quella quantità, la curva coincide con la curva $MR$ in assenza di interventi.   `"
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,245 @@
+params:
+
+- {name: p, value: 5, min: 2, max: 9}
+
+calcs:
+
+  q1: (15)/(params.p)
+  q2: (10)-(params.p)
+
+  E1: -(1)
+  E2: -(params.p)/((10)-(params.p))
+
+
+# aspectRatio: 2
+
+layout:
+  TwoHorizontalGraphsPlusSidebar:
+
+
+
+
+    leftGraph: 
+      xAxis:
+        max: 12
+        ticks: 0
+      yAxis:
+        max: 12
+        ticks: 0
+      label: a
+
+      objects:
+
+        - Label:
+                coordinates: [12, 0]
+                text: "` \\\\text{t} `"
+        - Label:
+                coordinates: [0, 12]
+                text: "` \\\\text{euro/kg}  `"
+
+# demand
+        - Curve:
+            fn: (15)/(x)
+            color: Blue
+            label:
+              text: Q=15/P
+              x: 11
+              position: bl
+              bgcolor: none
+            strokeWidth: 2
+
+        - Point:
+            coordinates: [calcs.q1, params.p]
+            color: Blue
+            r: 3.5
+            droplines:
+              horizontal: params.p.toFixed(1)
+              vertical: calcs.q1.toFixed(2)
+            strokeWidth: 0.5
+
+# expenditure
+        - Rectangle:
+            x1: 0
+            y1: 0
+            x2: calcs.q1
+            y2: params.p
+            fill: green
+
+# label
+        - Label:
+                coordinates: [8, 9.5]
+                text: "` E^D = ${calcs.E1.toFixed(2)} `"
+        - Arrow:
+            begin: [8,9.5]
+            end: [calcs.q1,params.p]
+            color: blue
+            strokeWidth: 0.7
+            trim: 0.1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    rightGraph: 
+      xAxis:
+        max: 12
+        ticks: 0
+      yAxis:
+        max: 12
+        ticks: 0
+      label: a
+
+      objects:
+
+        - Label:
+                coordinates: [12, 0]
+                text: "` \\\\text{t} `"
+        - Label:
+                coordinates: [0, 12]
+                text: "` \\\\text{euro/kg}  `"
+
+# demand
+        - Line:
+            point: [0,10]
+            slope: -(1)
+            color: Blue
+            label:
+              text: Q=10-P
+              x: 9.5
+              position: bl
+              bgcolor: none
+            strokeWidth: 2
+        - Point:
+            coordinates: [0, 10]
+            color: Blue
+            r: 0
+            droplines:
+              horizontal: "` 10 `"
+        - Point:
+            coordinates: [calcs.q2, params.p]
+            color: Blue
+            r: 3.5
+            droplines:
+              horizontal: params.p.toFixed(1)
+              vertical: calcs.q2.toFixed(2)
+            strokeWidth: 0.5
+
+# expenditure
+        - Rectangle:
+            x1: 0
+            y1: 0
+            x2: calcs.q2
+            y2: params.p
+            fill: green
+
+# label
+        - Label:
+                coordinates: [8, 9.5]
+                text: "` E^D = ${calcs.E2.toFixed(2)} `"
+        - Arrow:
+            begin: [8,9.5]
+            end: [calcs.q2,params.p]
+            color: blue
+            strokeWidth: 0.7
+            trim: 0.1
+
+
+
+
+
+
+
+
+    leftControls:
+      title: 𝑄 = 15 / 𝑃
+      divs:
+      - html: "` In questo caso abbiamo
+                $$
+                dQ/dP=-15/P^2
+                $$
+                da cui calcoliamo
+                $$
+                E^D=(dQ/dP)(P/Q)=-1
+                $$
+                In corrispondenza di $P=${params.p}$ abbiamo quindi $E^D=${calcs.E1.toFixed(2)}$.
+                `"
+      # sliders:
+      #   - param: p
+      #     label: P
+
+      # checkboxes:
+      # - param: split
+      #   label: "` \\\\text{Riduci quota a 20} \\\\% `"
+
+    rightControls:
+      title: 𝑄 = 10 − 𝑃
+      divs:
+      - html: "` In questo caso abbiamo
+                $$
+                dQ/dP=-1
+                $$
+                da cui calcoliamo
+                $$
+                E^D=(dQ/dP)(P/Q)=-P/(10-P)
+                $$
+                In corrispondenza di $P=${params.p}$ abbiamo quindi $E^D=${calcs.E2.toFixed(2)}$.
+                `"
+
+      # sliders:
+      #   - param: p
+      #     label: P
+
+
+
+
+
+
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURA 4.9
+        sliders:
+        - param: p
+          label: P
+        divs:
+        - html: <br>
+        - html: "` Le funzioni di domanda di tipo Cobb-Douglas sono <i>isoelastiche</i>.
+                  L'elasticità della domanda è pari a $-1$ in ogni punto della curva.
+                  La spesa dei consumatori quindi non varia al variare del prezzo
+                  (sapevamo questo già dal Capitolo 2). 
+                    `"
+        - html: <br>
+        - html: "` Le funzioni di domanda lineari sono elastiche nella parte alta della
+                  curva, e rigide nella parte bassa.
+                  La spesa dei consumatori è massima nel punto a metà della curva ($P=5$),
+                  dove l'elasticità è pari a $-1$. 
+                    `"
+
+    explanation:
+      divs:
+        - html: <br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,585 @@
+/* Contenitore principale dello split */
+.toc-split{
+  display: flex;
+  height: 100vh;
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+/* COLONNA SINISTRA: TOC a larghezza FISSA */
+.toc-split-left {
+  flex: 0 0 260px;        /* larghezza fissa */
+  max-width: 260px;
+  min-width: 260px;
+  overflow-y: auto;
+  border-right: 1px solid #ddd;
+  box-sizing: border-box;
+  padding-left: 12px !important;
+}
+
+/* COLONNA DESTRA: contenuto */
+.toc-split-right {
+  flex: 1 1 auto;         /* prende tutto lo spazio restante */
+  min-width: 0;           /* IMPORTANTISSIMO con flex + iframe */
+  box-sizing: border-box;
+}
+
+/* iframe sempre a tutta colonna */
+.toc-split-right iframe {
+  width: 100%;
+  height: 100vh;
+  border: none;
+  display: block;
+}
+
+
+
+
+
+
+/* ===== Split TOC page: disattiva layout Tufte sul documento “contenitore” ===== */
+html, body{
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;        /* <-- questo elimina il padding-left 12.5% di Tufte */
+}
+
+/* (opzionale ma utile) evita che <article> reintroduca margini/padding */
+.toc-split-left article{
+  margin: 0 !important;
+  padding: 0 !important;
+  max-width: none !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Ora sì: riduci i padding inline della TOC */
+.toc-split-left article > div[style*="padding: 20px"]{
+  padding-left: 6px !important;
+  padding-right: 6px !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+
+.toc-split-left article div[style*="margin-left: 15px"]{
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+
+
+/* niente bullet per le sezioni nella TOC di sinistra */
+.toc-split-left ul{
+  list-style: none !important;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+.toc-split-left li{
+  list-style: none !important;
+}
+
+
+
+/* dimensione font - "Prefazione" nella TOC di sinistra */
+.toc-split-left .chapter a{
+  font-size: 1.1rem;      /* prova 0.85–0.95 */
+  line-height: 1.2;
+}
+
+/* dimensione font - titolo libro TOC di sinistra */
+.toc-split-left h1{
+  font-size: 1.8rem;   /* prova 1.4–1.7 */
+}
+
+/* dimensione font - autore libro TOC di sinistra */
+.toc-split-left article > p{
+  font-size: 1.1rem;   /* prova 0.85–0.95 */
+}
+
+/* dimensione font - numero e nome parti TOC di sinistra */
+.toc-split-left .subtitle{
+  font-size: 0.75rem;   /* prova 0.7–0.8 */
+  letter-spacing: 0.04em;
+}
+
+/* dimensione font - nome capitoli TOC di sinistra */
+.toc-split-left .chapter_link a{
+  font-size: 1.1rem;   /* prova 0.85–1.0 */
+}
+
+/* dimensione font - numero sezioni TOC di sinistra */
+.toc-split-left .section_number{
+  font-size: 1rem;    /* prova 0.75–0.85 */
+}
+
+/* dimensione font - nome sezioni TOC di sinistra */
+.toc-split-left .section_link a{
+  font-size: 1rem;    /* prova 0.75–0.85 */
+}
+
+
+/* spaziatura verticale - TOC di sinistra */
+.toc-split-left{
+  line-height: 1;    /* default Tufte è più alto */
+}
+
+.toc-split-left .chapter_link{
+  margin-bottom: 1px;   /* prova 2–6px */
+}
+
+.toc-split-left .section_link{
+  margin-bottom: 1px;
+}
+
+/* dimensione font - numero capitoli TOC di sinistra */
+/* NB overridden da comando in toc-split.css !!! */
+.toc-split-left .chapter_link .number{
+  font-size: 1.1rem;   /* prova 0.85–1.0 */
+}
+
+/* =========================================================
+   FIX capitoli TOC sinistra:
+   - allineamento numero/titolo
+   - elimina underline "strane" (linee lunghe tipo underscore)
+   ========================================================= */
+
+/* 1) layout riga capitolo: non far "stirare" il link */
+.toc-split-left .chapter_link{
+  display: inline-flex;          /* invece di flex */
+  align-items: baseline;
+  gap: 0rem;
+  padding-left: 0;
+  margin-left: 0;
+}
+
+/* 2) il numero: stabilizza baseline */
+.toc-split-left .chapter_link .number{
+  display: inline-block;
+  line-height: 1;
+  position: relative;
+  top: 0em;                   /* micro: abbassa un filo il numero (regola 0.06–0.14em) */
+  flex: 0 0 auto;
+  margin-right: 0rem;
+}
+
+/* 3) il link NON deve crescere a tutta larghezza */
+.toc-split-left .chapter_link a{
+  display: inline;               /* importante: evita underline a larghezza riga */
+  flex: 0 1 auto;
+
+  /* spegni underline "finta" del tema */
+  background: none !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  text-shadow: none !important;
+
+  /* underline pulita */
+  text-decoration-line: underline !important;
+  text-decoration-thickness: 1px !important;
+  text-underline-offset: 0.10em !important;  /* se la vuoi più lontana: 0.12–0.16em */
+  text-decoration-skip-ink: auto !important;
+}
+
+/* Parti: riduci letter-spacing nella TOC split */
+.toc-split-left .subtitle{
+  letter-spacing: 0.01em;   /* prova 0.02–0.04 */
+}
+
+
+
+
+
+
+
+/* =========================================================
+   TOC split: griglia unica + indent coerente
+   - capitoli allineati a sinistra (come "PARTE ...")
+   - sezioni leggermente più a destra dei capitoli
+   ========================================================= */
+
+.toc-split-left{
+  --toc-chapter-indent: -12px;     /* capitoli: quanto spostarli a destra (prova 0–6px) */
+  --toc-section-indent: 22px;    /* sezioni: extra indent rispetto ai capitoli (prova 10–18px) */
+  --toc-num-col: 1.55em;         /* larghezza colonna numeri (prova 1.4–1.8em) */
+  --toc-gap: 0.35em;             /* spazio tra numero e titolo (prova 0.25–0.45em) */
+}
+
+/* --- CAPITOLI --- */
+.toc-split-left .chapter_link{
+  display: flex !important;
+  align-items: baseline !important;
+
+  margin-left: var(--toc-chapter-indent) !important;
+  padding-left: 0 !important;
+
+  /* evita “indent fantasma” */
+  text-indent: 0 !important;
+}
+
+.toc-split-left .chapter_link .number{
+  width: var(--toc-num-col) !important;
+  min-width: var(--toc-num-col) !important;
+  text-align: right !important;
+
+  margin-right: var(--toc-gap) !important;
+  padding-right: 0 !important;
+
+  /* NON toccare top/position qui: baseline vera */
+  position: static !important;
+  top: auto !important;
+}
+
+/* --- SEZIONI --- */
+/* (robusto: qualunque ul/ol dentro la colonna sinistra) */
+.toc-split-left .chapter ul,
+.toc-split-left .chapter ol{
+  margin: 0 !important;
+  padding: 0 !important;   /* niente indent di lista */
+}
+
+.toc-split-left .section_link{
+  display: flex !important;
+  align-items: baseline !important;
+
+  margin-left: calc(var(--toc-chapter-indent) + var(--toc-section-indent)) !important;
+  padding-left: 0 !important;
+
+  text-indent: 0 !important;
+}
+
+.toc-split-left .section_number{
+  width: var(--toc-num-col) !important;
+  min-width: var(--toc-num-col) !important;
+  text-align: right !important;
+
+  margin-right: var(--toc-gap) !important;
+
+  position: static !important;
+  top: auto !important;
+}
+
+
+
+/* Allinea "Prefazione" come i capitoli (riduce indent) */
+.toc-split-left .chapter{
+  margin-left: var(--toc-chapter-indent) !important;
+  padding-left: 0 !important;
+}
+
+
+
+
+
+/* =========================================================
+   FIX underline SEZIONI (no underline "finta" tipo Tufte)
+   ========================================================= */
+.toc-split-left .section_link a,
+.toc-split-left .section_link a:link,
+.toc-split-left .section_link a:visited,
+.toc-split-left .section_link a:hover,
+.toc-split-left .section_link a:active{
+  /* spegni underline "finta" (background) */
+  background: none !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  text-shadow: none !important;
+
+  /* evita che l'underline si "stiri" a tutta riga */
+  display: inline !important;
+
+  /* underline vera e consistente su ogni riga */
+  text-decoration-line: underline !important;
+  text-decoration-thickness: 1px !important;
+  text-underline-offset: 0.10em !important;  /* regola 0.10–0.16em */
+  text-decoration-skip-ink: auto !important;
+}
+
+/* se qualche stile disegna la linea con pseudo-elementi */
+.toc-split-left .section_link a::before,
+.toc-split-left .section_link a::after{
+  content: none !important;
+}
+
+
+/* Riduci interlinea dei titoli di SEZIONE su più righe */
+.toc-split-left .section_link a{
+  line-height: 1.15;   /* prova 1.1 – 1.2 */
+}
+
+
+
+
+
+
+
+
+/* =========================================================
+   Accordion: spazi verticali tra capitolo e sue sezioni
+   (il JS crea: ul.chapter_sections_list > li.section_link)
+   ========================================================= */
+
+.toc-split-left {
+  /* manopole */
+  --toc-gap-chapter-to-sections: 6px;  /* distanza "Monopolio" -> prima sezione */
+  --toc-gap-between-sections: 6px;     /* distanza tra sezioni */
+}
+
+/* il UL che contiene le sezioni del capitolo aperto */
+.toc-split-left ul.chapter_sections_list{
+  list-style: none !important;
+  padding: 0 !important;
+
+  /* top gap + ripristino indent sezioni */
+  margin-top: var(--toc-gap-chapter-to-sections) !important;
+  margin-right: 0 !important;
+  margin-bottom: 0 !important;
+  margin-left: var(--toc-section-indent, 22px) !important;
+}
+
+/* ogni riga-sezione (li) */
+.toc-split-left li.section_link{
+  /* riduce spazio “fantasma” che viene dal CSS base (tufte) */
+  padding: 0 !important;
+
+  /* QUESTO è il gap tra sezioni */
+  margin: 0 0 var(--toc-gap-between-sections) 0 !important;
+
+  /* opzionale ma spesso necessario per far “sentire” la riduzione */
+  line-height: 1.15 !important;
+}
+
+/* evita margine extra sull’ultima sezione */
+.toc-split-left li.section_link:last-child{
+  margin-bottom: 0 !important;
+}
+
+
+
+/* Spazio extra tra ultimo item di sezione e capitolo successivo */
+.toc-split-left li.section_link:last-child{
+  margin-bottom: calc(var(--toc-gap-between-sections, 6px) + 6px) !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* ===========================
+   Sidebar hide/show (DEVE stare in fondo)
+   =========================== */
+
+body.sidebar-hidden .toc-split-left{
+  display: none !important;
+}
+
+body.sidebar-hidden .toc-split-right{
+  width: 100% !important;
+  flex: 1 1 auto !important;
+}
+
+
+
+
+
+
+
+
+
+
+/* ===========================
+   Toggle sidebar (☰ / ✕)
+   =========================== */
+
+/* base */
+.toc-sidebar-toggle{
+  position: absolute;
+  z-index: 50;
+
+  font-variant: normal;
+  letter-spacing: 0;
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 800;
+
+  color: #555;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toc-sidebar-toggle:hover{
+  text-decoration: underline;
+}
+
+/* posizionamento: quando sidebar nascosta -> toggle in colonna destra */
+.toc-split-right .toc-sidebar-toggle{
+  top: 16px;
+  left: 16px;
+}
+
+
+/* serve per far funzionare position:absolute dentro le colonne */
+.toc-split-left{ position: relative; }
+.toc-split-right{ position: relative; }
+
+
+
+
+
+
+
+
+
+/* sposta il titolo del libro più in alto nella TOC laterale */
+.toc-split-left h1{
+  margin-top: 14px !important;    /* riduci spazio sopra il titolo (prova 0–8px) */
+  margin-bottom: 6px !important; /* spazio sotto il titolo (regola a piacere) */
+  padding-top: 0 !important;
+}
+
+/* regola lo spazio tra titolo e autore se vuoi meno distanza */
+.toc-split-left article > p{
+  margin-top: 2px !important;    /* prova 0–6px */
+}
+
+/* se vuoi fare un controllo più fine su tutto il blocco superiore,
+   regola il padding-top del primo blocco interno (se presente) */
+.toc-split-left article > div[style*="padding: 20px"]:first-of-type{
+  padding-top: 8px !important;   /* prova 4–12px */
+}
+
+
+/* spazio di respiro in fondo alla TOC laterale */
+.toc-split-left{
+  padding-bottom: 48px;
+}
+
+
+
+
+
+
+
+
+
+/* ===========================
+   Reload content (iframe only)
+   =========================== */
+
+.content-reload{
+  position: fixed;
+  right: 20px !important;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+
+  font-size: 36px;      /* dimensione icona */
+  font-weight: 100;
+  line-height: 1;
+
+  color: #555;
+  cursor: pointer;
+  user-select: none;
+}
+
+.content-reload:hover{
+  color: #000;
+  text-decoration: none;
+}
+
+
+
+
+
+
+
+
+
+
+/* ===========================
+   Home icon (iframe only)
+   =========================== */
+
+.go-big-toc{
+  position: fixed;
+  right: 18px !important;
+  top: 40%;
+  z-index: 60;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* SVG icon: stesso look “lineare” degli altri controlli */
+.go-big-toc-icon{
+  width: 28px;
+  height: 28px;
+  display: block;
+}
+
+.go-big-toc-icon path{
+  fill: none;
+  stroke: #555;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.go-big-toc:hover .go-big-toc-icon path{
+  stroke: #000;
+}
+
+
+
+
+
+
+
+
+
+/* ===========================
+   Print button (iframe only)
+   =========================== */
+
+.content-print{
+  position: fixed;
+  right: 18px !important;
+
+  /* sotto al reload (che è circa al 50%) */
+  top: 58%;
+
+  z-index: 60;
+  cursor: pointer;
+  user-select: none;
+}
+
+.content-print-icon{
+  width: 28px;
+  height: 28px;
+  display: block;
+}
+
+.content-print-icon path{
+  fill: none;
+  stroke: #555;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.content-print:hover .content-print-icon path{
+  stroke: #000;
+}
+
+
+
+
+

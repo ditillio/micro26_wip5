@@ -1,0 +1,189 @@
+params:
+
+- {name: w2, value: 10000, min: 0, max: 10000} # wealth if loss does not occur
+- {name: p, value: 0.4, min: 0.2, max: 0.6, round: 0.1}  # probability of loss
+
+- {name: pi, value: 0.5, min: 0.1, max: 4, round: 0.1} # one minus relative risk aversion coefficient
+
+- {name: d, value: 10000, min: 1900, max: 10000, round: 100} # possible loss
+
+- {name: showTS, value: 0} # show surplus etc.
+
+calcs:
+
+  r: (1)-(params.pi)
+
+  w1: (10000)-(params.d)
+  w2: params.w2
+
+  a: (1)-(calcs.r)
+
+  p1: (params.p)
+  p2: (1)-(calcs.p1)
+
+  u1: (calcs.w1)^(calcs.a)
+  u2: (calcs.w2)^(calcs.a)
+
+  EP: (calcs.p1)*(calcs.w1)+(calcs.p2)*(calcs.w2)
+
+  EU: (calcs.p1)*(calcs.u1)+(calcs.p2)*(calcs.u2)
+  CE: (calcs.EU)^((1)/(calcs.a))
+
+  WTP: (calcs.w2)-(calcs.CE)
+  FP: (params.p)*(params.d)
+
+  Q: ((10000)-(calcs.FP))/(10)
+
+  maxU: (1.1)*(calcs.u2)
+
+  TS: ((10000-calcs.FP)*(1000)/(2))/(1000000) # total surplus (million euros)
+
+aspectRatio: 2
+
+layout:
+  TwoHorizontalGraphsPlusSidebar:
+
+    leftGraph: 
+      xAxis:
+        max: 5
+        ticks: 0
+        title: Risk preference $\pi$
+      yAxis:
+        max: 12000
+        ticks: 0
+
+      objects:
+
+        - Label:
+            coordinates: [5, 0]
+            text: "` \\\\pi `"
+        - Label:
+            coordinates: [0, 12000]
+            text: "` \\\\text{euros/policy}  `"
+
+        - Curve:
+            fn: (params.d) * ( (1) - ( (1) - (params.p) ) ^ ( (1) / (x) ) )
+            color: Blue
+            max: 4.5
+            label:
+              text: "` WTP `"
+              x: 4.5
+              position: b
+            strokeWidth: 1.5
+        - Point:
+            coordinates: [0, 10000]
+            droplines: {horizontal: 10000}
+            strokeWidth: 0.5
+            color: Blue
+            r: 0
+
+        - Point:
+            coordinates: [1,calcs.FP]
+            droplines: {vertical: 1, horizontal: calcs.FP.toFixed(0)}
+            strokeWidth: 0.5
+            color: Green
+            r: 2.5
+
+        - Line:
+            point: [0,calcs.FP]
+            slope: 0
+            color: Green
+            label:
+              text: "` FP `"
+              x: 5
+            strokeWidth: 0.5
+
+    rightGraph: 
+      xAxis:
+        max: 1500
+        ticks: 0
+        title: Policies
+      yAxis:
+        max: 12000
+        ticks: 0
+
+      objects:
+
+        - Label:
+              coordinates: [1500, 0]
+              text: "` \\\\;\\\\; \\\\text{policies} `"
+              position: c
+        - Label:
+            coordinates: [0, 12000]
+            text: "` \\\\text{euros/policy}  `"
+
+        - Line:
+            point: [0,10000]
+            slope: -(10)*((1)-(params.p))
+            max: 1200
+            color: Blue
+            label:
+              text: "` D `"
+              x: 1200
+            strokeWidth: 1.5
+        - Point:
+            coordinates: [0, 10000]
+            droplines: {horizontal: 10000}
+            strokeWidth: 0.5
+            color: Blue
+            r: 0
+
+        - Line:
+            point: [0,calcs.FP]
+            slope: 0
+            color: Red
+            label:
+              text: "` S `"
+              x: 1500
+            strokeWidth: 1.5
+
+        - Point:
+            coordinates: [1000, calcs.FP]
+            droplines: {vertical: 1000}
+            strokeWidth: 0.5
+            color: Green
+            r: 2.5
+
+        - Area:
+            fn1: (10000)-(10)*((1)-(params.p))*(x)
+            fn2: (params.p)*(params.d)
+            fill: blue
+            min: 0
+            max: 1000
+            show: params.showTS == 1
+
+    sidebar:
+
+      controls:
+
+      - title: FIGURE 11.5
+        description: Move the slider to select the probability 
+                      of loss and display the market equilibrium point. 
+
+        sliders:
+        - param: p
+          label: p
+
+        checkboxes:
+        - param: showTS
+          label: "` \\\\text{Show total surplus} `"
+
+        divs:
+        - html: <br>
+        - html: "`
+                  Total surplus (equal to the surplus of the insured) is
+                  $ ${calcs.TS.toFixed(1)} $ million euros (blue area).
+                `"
+          show: params.showTS == 1
+
+    explanation:
+      divs:
+        - html: "` 
+                In equilibrium, the price equals the fair premium, and $1000$ 
+                individuals buy insurance — exactly those whose willingness to pay is 
+                at least equal to the fair premium, that is, the risk-averse.
+                Risk-loving individuals choose not to buy the policy, because they 
+                value it less than its price. The number of policies sold does not 
+                depend on the probability of loss $p$: regardless of $p$, the quantity 
+                is always $1000$, i.e. the number of risk-averse individuals in the market.
+                `"

@@ -1,0 +1,165 @@
+params:
+- {name: SHOW, value: 0}      # 0: private surplus; 1: external benefit; 2: deadweight loss
+- {name: EB, value: 0}        # 0: linear EB (constant MEB); 1: concave EB (decreasing MEB)
+
+calcs:
+  dummy: (0)
+
+aspectRatio: 1.6
+
+layout:
+  OneGraphPlusSidebar:
+
+
+    graph: 
+      xAxis:
+        max: 11
+        ticks: 0
+      yAxis:
+        max: 14
+        ticks: 0
+
+      objects:
+
+        - Label:
+            coordinates: [11, 0]
+            text: "` \\\\text{kg} `"
+        - Label:
+            coordinates: [0, 14]
+            text: "` \\\\text{euros/kg} `"
+
+# MPB
+        - Line:
+            point: [0,10]
+            slope: -(1)
+            color: Blue
+            strokeWidth: 1.5
+            max: 9
+            label:
+              text: "` D = MPB `"
+              x: 9
+              position: c
+
+# MEB 
+        - Line:
+            yIntercept: 3
+            color: Green
+            strokeWidth: 1.5
+            max: 10
+            label:
+              text: "` MEB = 3 `"
+              x: 10
+              position: l
+            show: params.EB == 0
+
+
+# MPC
+        - Line:
+            point: [0,0]
+            slope: (1)
+            color: Red
+            strokeWidth: 1.5
+            max: 10
+            label:
+              text: "` MPC = MSC = Q `"
+              x: 10
+              position: c
+
+# MSB
+        - Line:
+            point: [0,13]
+            slope: -(1)
+            color: Purple
+            strokeWidth: 1.5
+            max: 9
+            label:
+              text: "` MSB = MPB + MEB `"
+              x: 9
+              position: c
+
+
+# points
+        - Point:
+            coordinates: [5, 5]
+            droplines: {vertical: 5, horizontal: 5}
+            color: Green
+            r: 4
+            strokeWidth: 0.5
+        - Point:
+            coordinates: [6.5, 6.5]
+            droplines: {vertical: 6.5}
+            color: Purple
+            r: 0
+            strokeWidth: 0.5
+
+# surplus
+        - Area:
+            fn1: (10)-(x)
+            fn2: (5)
+            fill: blue
+            opacity: 0.25
+            min: 0
+            max: 5
+            show: params.SHOW == 0
+        - Area:
+            fn1: (5)
+            fn2: (x)
+            fill: Green
+            opacity: 0.2
+            min: 0
+            max: 5
+            show: params.SHOW == 0
+
+# external benefit
+        - Area:
+            fn1: (13)-(x)
+            fn2: (10)-(x)
+            fill: pink
+            opacity: 0.25
+            min: 0
+            max: 5
+            show: params.SHOW == 1
+
+# deadweight loss
+        - Area:
+            fn1: (13)-(x)
+            fn2: (x)
+            fill: Gray
+            opacity: 0.4
+            min: 5
+            max: 6.5
+            show: params.SHOW == 2
+
+
+
+
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURE 8.2
+        description: "The external benefit function is 𝐸𝐵 = 3𝑄. "
+
+      - title: Positive externality
+        radioGroup:
+          param: SHOW
+          options:
+            - Show private surplus
+            - Show external benefit
+            - Show deadweight loss
+
+        divs:
+        - html: <br>
+
+
+
+
+
+explanation:
+  divs:
+    - html: "` In the honey market, the market demand function is $P=10-Q$, where $P$ denotes
+              the price per kg and $Q$ the millions of kg purchased each year. The market supply
+              curve is $P=Q$ and the external benefit is $EB=3Q$. The marginal benefit is therefore
+              constant, meaning each additional kg generates the same advantage for society: $MEB=3$.
+              The equilibrium quantity is $Q=5$, while the socially efficient quantity is $Q=6.5$. `"

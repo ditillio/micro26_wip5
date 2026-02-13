@@ -1,0 +1,368 @@
+---
+schema: EconSchema
+version: 1
+aspectRatio: 0.8
+params:
+
+- {name: p1, value: 9}
+- {name: p1new, value: 36, min: 6, max: 40, round: 1}
+- {name: p2, value: 18}
+- {name: m, value: 360}
+
+- {name: a, value: 1}
+- {name: b, value: 1}
+
+- {name: showCVEV, value: 0}
+
+- {name: s, value: 60, min: 0, max: 480, round: 60}
+- {name: t, value: 60, min: 0, max: 240, round: 30}
+
+
+calcs:
+
+  s1: (params.a)/((params.a)+(params.b)) # share of income spent on good 1
+  s2: (1)-(calcs.s1) # share of income spent on good 2
+
+  x1old: (calcs.s1)*(params.m)/(params.p1) # optimal qty good 1 at old prices
+  x2old: (calcs.s2)*(params.m)/(params.p2) # optimal qty good 2 at old prices
+  uold: ((calcs.x1old)^(params.a))*((calcs.x2old)^(params.b)) # max utility at old prices
+
+  x1new: (calcs.s1)*(params.m)/(params.p1new) # optimal qty good 1 at new prices
+  x2new: (calcs.s2)*(params.m)/(params.p2) # optimal qty good 2 at new prices
+  unew: ((calcs.x1new)^(params.a))*((calcs.x2new)^(params.b)) # max utility at new prices
+
+  deltaCS: (calcs.s1)*(params.m)*log((params.p1new)/(params.p1))
+
+  maxXnew: (params.m)/(params.p1new)
+
+
+
+layout:
+  TwoVerticalGraphsPlusSidebar:
+
+    topGraph:
+      xAxis:
+        max: 33
+        ticks: 0
+      yAxis:
+        max: 23
+        ticks: 0
+
+
+
+      objects:
+
+      - Label:
+            coordinates: [33, 0]
+            text: "` \\\\text{Consumption (kg)} `"
+            position: l
+      - Label:
+            coordinates: [0, 23]
+            text: "` \\\\text{Housing (tens of m$^2$)}  `"
+
+
+# old optimal bundle
+      - Point:
+          coordinates: [calcs.x1old, calcs.x2old]
+          droplines:
+            horizontal: calcs.x2old.toFixed(2)
+            vertical: calcs.x1old.toFixed(2)
+          strokeWidth: 0.5
+          color: Blue
+          r: 3
+          label:
+            text: "` \\\\large A `"
+            position: bl
+
+# indifference curve at old optimal bundle
+      - Curve:
+          fn: ((calcs.uold)/((x)^(params.a)))^(1/(params.b))
+          color: Black
+          strokeWidth: 1.25
+      
+# old budget constraint 
+      - Line:
+          yIntercept: (params.m)/(params.p2)
+          slope: -(params.p1)/(params.p2)
+          color: Darkgreen
+          strokeWidth: 1.25
+      - Point:
+          coordinates: [(params.m)/(params.p1), 0]
+          droplines:
+            vertical: (params.m)/(params.p1)
+          strokeWidth: 0.5
+          color: grey
+          r: 0
+      - Point:
+          coordinates: [0,(params.m)/(params.p2)]
+          droplines:
+            horizontal: (params.m)/(params.p2)
+          strokeWidth: 0.5
+          color: grey
+          r: 0
+      
+# new budget constraint 
+      - Line:
+          yIntercept: (params.m)/(params.p2)
+          slope: -(params.p1new)/(params.p2)
+          color: Darkgreen
+          strokeWidth: 1.25
+      - Point:
+          coordinates: [(params.m)/(params.p1new), 0]
+          droplines:
+            vertical: calcs.maxXnew.toFixed(2)
+          strokeWidth: 0.5
+          color: grey
+          r: 0
+
+# new optimal bundle
+      - Point:
+          coordinates: [calcs.x1new, calcs.x2new]
+          droplines:
+            # horizontal: calcs.x2new.toFixed(0)
+            vertical: calcs.x1new.toFixed(2)
+          strokeWidth: 0.5
+          color: Blue
+          r: 3
+          label:
+            text: "` \\\\large B `"
+            position: bl
+
+# indifference curve at new optimal bundle
+      - Curve:
+          fn: ((calcs.unew)/((x)^(params.a)))^(1/(params.b))
+          color: Black
+          strokeWidth: 1.25
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    bottomGraph:
+      xAxis:
+        max: 33
+        ticks: 0
+      yAxis:
+        max: 43
+        ticks: 0
+
+      objects:
+
+      - Label:
+            coordinates: [33, 0]
+            text: "` \\\\text{Consumption (kg)} `"
+            position: l
+            yPixelOffset: -8
+      - Label:
+            coordinates: [0, 43]
+            text: "` \\\\text{euro/kg}  `"
+
+
+# demand for good 1
+
+      - Curve:
+          fn: (calcs.s1)*(params.m)/(x)
+          color: Blue
+          strokeWidth: 1.5
+          label:
+            text: "` X = ${(params.m)/2} / P_X `"
+            x: 33
+            position: l
+            bgcolor: none
+
+      - Point:
+          coordinates: [calcs.x1old, params.p1]
+          droplines:
+            horizontal: params.p1
+          strokeWidth: 0.5
+          color: Blue
+          r: 3
+          label:
+            text: "` A `"
+            position: bl
+            bgcolor: none
+      - Point:
+          coordinates: [calcs.x1old, 1000]
+          droplines:
+            vertical: calcs.x1old.toFixed(0)
+          strokeWidth: 0.5
+          color: Blue
+
+      - Point:
+          coordinates: [calcs.x1new, params.p1new]
+          droplines:
+            horizontal: params.p1new
+          strokeWidth: 0.5
+          color: Blue
+          r: 3
+          label:
+            text: "` B `"
+            position: bl
+            bgcolor: none
+      - Point:
+          coordinates: [calcs.x1new, 1000]
+          droplines:
+            vertical: calcs.x1new.toFixed(2)
+          strokeWidth: 0.5
+          color: Blue
+
+# consumer surplus variation (negative)
+      - Area:
+          fn1: min((params.p1new),((params.m)/(2))/(x))
+          fn2: params.p1
+          fill: red
+          min: 0
+          max: calcs.x1old
+          show: params.p1new > params.p1
+      - Label:
+          coordinates: [(90)/(((params.p1)+(params.p1new))/2),((params.p1)+(params.p1new))/2]
+          text: "` \\\\large{\\\\Delta CS}<0  `"
+          color: Red
+          bgcolor: none
+          show: params.p1new > params.p1
+
+# consumer surplus variation (positive)
+      - Area:
+          fn1: min((params.p1),((params.m)/(2))/(x))
+          fn2: params.p1new
+          fill: blue
+          min: 0
+          max: calcs.x1new
+          show: params.p1new < params.p1
+      - Label:
+          coordinates: [(90)/(((params.p1)+(params.p1new))/2),((params.p1)+(params.p1new))/2]
+          text: "` \\\\large{\\\\Delta CS}>0  `"
+          color: Blue
+          bgcolor: none
+          show: params.p1new < params.p1
+
+
+
+
+
+
+
+
+
+
+
+    sidebar:
+      controls:
+
+      - title: FIGURE 2.14
+
+        sliders:
+        - param: p1new
+          label: "` P_X `"
+
+        # description: Scegliere il tipo di compensazione per visualizzare 
+        #               vincolo di bilancio e scelta ottima corrispondenti ai nuovi prezzi e al 
+        #               reddito compensato.
+
+        # radioGroup:
+        #   param: showCVEV
+        #   options:
+        #     - Mostra solo scelta ottima
+        #     - Calcola variazione compensativa
+        #     - Calcola variazione equivalente
+
+        # checkboxes:
+        # - param: showCV
+        #   label: "\\text{Mostra variazione compensativa}"
+        # - param: showEV
+        #   label: "\\text{Mostra variazione equivalente}"
+
+        divs:
+          - html: "`  `"
+          - html: "` `"
+          - html: "`
+                    The income of the consumer is $M=${params.m}$.
+                     `"
+          - html: "`
+                    The price of housing (good $Y$) is $P_Y=${params.p2}$.
+                     `"
+
+          - html: <br>
+
+          - html: "`
+                    If the price of consumption (good $X$) is $P_X=${params.p1}$, the optimal choice
+                    is bundle  $A$ in the top graph, corresponding to 
+                    point $A$ on the demand function in the bottom graph.
+                  `"
+
+          - html: <br>
+
+          - html: "`
+                    If the price of consumption increases to $P_X=${params.p1new}$, the optimal choice
+                    becomes  bundle  $B$ in the top graph, corresponding to 
+                    point $B$ on the demand function in the bottom graph.
+                    `"
+            show: params.p1new > params.p1
+
+          - html: <br>
+            show: params.p1new > params.p1
+
+          - html: "`
+                    The surplus of the  consumer decreases by a quantity of euros equal to the 
+                    red area in the bottom graph:
+                    $$
+                    \\\\color{Red} \\\\Delta CS = - ${calcs.deltaCS.toFixed(2)}
+                    $$                        
+                    `"
+            show: params.p1new > params.p1
+
+          - html: "`
+                    If the price of consumption decreases to $P_X=${params.p1new}$, the optimal choice
+                    becomes  bundle  $B$ in the top graph, corresponding to 
+                    point $B$ on the demand function in the bottom graph.
+                    `"
+            show: params.p1new < params.p1
+
+          - html: <br>
+
+          - html: "`
+                    The surplus of the  consumer increases by a quantity of euros equal to the 
+                    blue area in the bottom graph:
+                    $$
+                    \\\\color{Blue} \\\\Delta CS = ${-calcs.deltaCS.toFixed(2)}
+                    $$                        
+                    `"
+            show: params.p1new < params.p1
+
+
+
+    # explanation:
+
+    #     divs:
+
+    #       - html: <br><br><br><br><br><br><br><br>
+    #         show: params.showCVEV == 0
+
+
+
+
+
+
+
+
+

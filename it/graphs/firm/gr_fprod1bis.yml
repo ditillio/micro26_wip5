@@ -1,0 +1,116 @@
+params:
+- {name: showCS, value: false}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: alpha, value: 0.5, min: 0.3, max: 0.7, round: 0.1}
+- {name: A, value: 80, min: 60, max: 100, round: 10}
+- {name: l, value: 4, min: 0.1, max: 6, round: 0.1}
+
+calcs:
+  x: (params.A)*((params.l)^(params.alpha))
+  ap: (calcs.x) / (params.l)
+  aaa: (params.alpha) - 1
+
+aspectRatio: 1
+
+layout:
+  TwoVerticalGraphsPlusSidebar:
+
+    topGraph: 
+      xAxis:
+        max: 6
+        ticks: 5
+      yAxis:
+        max: 300
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [6, 0]
+                text: "` \\\\text{Lavoro (gg)} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 300]
+                text: "` \\\\text{Output (kg)}  `"
+                xPixelOffset: -6
+
+# points
+        - Point:
+            coordinates: [params.l, calcs.x]
+            droplines: {vertical: params.l.toFixed(1), horizontal: calcs.x.toFixed(1)}
+            color: Blue
+            r: 5
+            drag:
+            - horizontal: l
+
+# production function
+
+        - Curve:
+            fn: (params.A)*((x)^(params.alpha))
+            color: Blue
+            label:
+              text: "` Q=${params.A}\\\\sqrt{L} `"
+              x: 6
+              position: c
+            strokeWidth: 1.7
+
+    bottomGraph: 
+      xAxis:
+        max: 6
+        ticks: 5
+      yAxis:
+        max: 200
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [6, 0]
+                text: "` \\\\text{Lavoro (gg)} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 200]
+                text: "` \\\\text{kg/gg}  `"
+                xPixelOffset: -6
+
+# points
+        - Point:
+            coordinates: [params.l, calcs.ap]
+            droplines: {vertical: params.l.toFixed(1), horizontal: calcs.ap.toFixed(1)}
+            color: Brown
+            r: 5
+            drag:
+            - horizontal: l
+
+# AP_L
+
+        - Curve:
+            fn: ((params.A)*((x)^(params.alpha)))/(x)
+            color: Brown
+            label:
+              text: "` AP_L = ${params.A} / \\\\sqrt{L} `"
+              x: 6
+              position: c
+            strokeWidth: 1.7
+
+    sidebar:
+      controls:
+      - title: FIGURA 3.4
+        sliders:
+        # - param: alpha
+        #   label: \alpha
+        - param: A
+          label: A
+        - param: l
+          label: L
+        divs:
+        - html: "` Quando l'impresa impiega $L=${params.l.toFixed(1)}$ unità di lavoro,
+                  la quantità di output ed il prodotto medio
+                    sono rispettivamente $Q=${calcs.x.toFixed(1)}$ e $AP_L=${calcs.ap.toFixed(1)}$. `"
+          show: params.alpha > 0

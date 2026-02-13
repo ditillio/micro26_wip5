@@ -1,0 +1,242 @@
+params:
+
+- {name: a, value: 5, min: 3, max: 7, round: 1}
+
+- {name: A, value: 80, min: 40, max: 100, round: 10}
+- {name: w, value: 64, min: 40, max: 80}
+- {name: p, value: 2.5, min: 0.5, max: 5, round: 0.05}
+- {name: fc, value: 100, min: 50, max: 200, round: 10}
+- {name: numimp, value: 20, min: 10, max: 40, round: 5}
+- {name: numcons, value: 1000, min: 500, max: 1500, round: 100}
+
+calcs:
+
+  b: (1)/(params.numcons) # abs value slope of inverse market demand
+
+  AA: (params.A)*(params.A)
+
+  ACmin: (2)*(sqrt((params.fc)*(params.w)))/(params.A)
+
+  mktsupplyslope: (2)*(params.w)/((params.numimp)*(calcs.AA))
+
+  eqQ: (params.a) / ( (calcs.mktsupplyslope) + (calcs.b) )   
+
+  eqP: (params.a)-(calcs.b)*(calcs.eqQ)
+
+  xopt: ((calcs.AA)/((2)*(params.w)))*(calcs.eqP)
+
+  mktsupply: (params.numimp)*(calcs.xopt)
+
+  afc: (params.fc)/(calcs.xopt) 
+  avc: ((params.w)/(calcs.AA))*(calcs.xopt) 
+  atc: (calcs.afc)+(calcs.avc)
+  mc: ((2)*(params.w)/(calcs.AA))*(calcs.xopt) 
+
+
+aspectRatio: 2
+
+layout:
+  TwoHorizontalGraphsPlusSidebar:
+
+    leftGraph: 
+      xAxis:
+        max: 210
+        min: -3
+        ticks: 0
+      yAxis:
+        max: 5.5
+        ticks: 0
+      label: a
+
+      objects:
+
+        - Label:
+                coordinates: [210, 0]
+                text: "` \\\\text{kg} `"
+        - Label:
+                coordinates: [0, 5.5]
+                text: "` \\\\text{euro/kg}  `"
+
+# points
+        - Point:
+            coordinates: [calcs.xopt, calcs.eqP]
+            color: Red
+            r: 4
+            droplines:
+              vertical: calcs.xopt.toFixed(2)
+            strokeWidth: 0.5
+
+# price line
+        - Point:
+            coordinates: [5000000, calcs.eqP]
+            color: Green
+            droplines:
+              horizontal: calcs.eqP.toFixed(2)
+            strokeWidth: 1
+
+# individual supply curve
+        - Curve:
+            fn: ( 2 * params.w / ( params.A * params.A ) ) * (x)
+            color: Red
+            label:
+              text: S^i_{SR}
+              x: 210
+            strokeWidth: 2
+
+# average cost curve
+        - Curve:
+            fn: (params.fc)/(x) + ((params.w)/(calcs.AA))*(x)
+            color: Brown
+            label:
+              text: AC
+              x: 21
+            strokeWidth: 0.7
+            min: 0.5
+            lineStyle: dashed
+
+# profit / loss
+        - Area:
+            fn1: calcs.eqP
+            fn2: calcs.atc
+            fill: blue
+            opacity: 0.2
+            min: 0
+            max: calcs.xopt
+            show: calcs.eqP > calcs.ACmin
+        - Area:
+            fn1: calcs.eqP
+            fn2: calcs.atc
+            fill: red
+            opacity: 0.2
+            min: 0
+            max: calcs.xopt
+            show: calcs.eqP < calcs.ACmin
+        - Segment:
+            a: [0,calcs.atc]
+            b: [calcs.xopt,calcs.atc]
+            color: red
+            strokeWidth: 1
+            lineStyle: dotted
+            show: calcs.eqP < calcs.ACmin
+
+
+
+
+
+
+
+
+
+
+
+
+    rightGraph: 
+      xAxis:
+        max: 5000
+        min: -3
+        ticks: 0
+      yAxis:
+        max: 5.5
+        ticks: 0
+      label: a
+
+      objects:
+
+        - Label:
+                coordinates: [5000, 0]
+                text: "` \\\\text{kg} `"
+        - Label:
+                coordinates: [0, 5.5]
+                text: "` \\\\text{euro/kg}  `"
+
+# points
+        - Point:
+            coordinates: [calcs.eqQ, calcs.eqP]
+            color: Green
+            r: 4
+            droplines:
+              horizontal: calcs.eqP.toFixed(2)
+              vertical: calcs.eqQ.toFixed(2)
+            strokeWidth: 0.5
+
+
+# price line
+        - Line:
+            yIntercept: calcs.eqP
+            color: Green
+            label:
+              text: P
+              x: 5000
+              position: l
+            strokeWidth: 0.5
+            bgcolor: none
+
+
+
+
+
+# market supply curve
+        - Curve:
+            fn: ( (2)*(params.w) / ( (params.numimp)*(calcs.AA) ) ) * (x)
+            color: Red
+            label:
+              text: S_{SR}
+              x: min(5000,(params.numimp) * (5.5) / ( 2 * params.w / ( params.A * params.A ) )) 
+            strokeWidth: 2
+
+# market demand curve
+        - Line:
+            yIntercept: params.a
+            slope: -(calcs.b)
+            color: Blue
+            label:
+              text: D
+              x: 4700
+            position: bl
+            strokeWidth: 1.5
+
+
+
+
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURA 4.3
+        sliders:
+        - param: numcons
+          label: \text{num. cons.}
+        - param: A
+          label: A
+        - param: w
+          label: W
+        - param: fc
+          label: FC
+        - param: numimp
+          label: \text{num. imp.}
+        # divs:
+        # - html: "` Profit = $( ${calcs.eqP} - ${calcs.atc} ) \\\\times ${calcs.xopt}$
+        #                  $=$ $ ${((calcs.eqP)-(calcs.atc))*(calcs.xopt)} $`"
+
+    explanation:
+      divs:
+        - html: "` In equilibrio il prezzo è $P=${calcs.eqP.toFixed(2)}$ e
+                  la quantità $Q=${calcs.eqQ.toFixed(2)}$. Ciascuna delle ${params.numimp}
+                  imprese presenti sul mercato produce ${calcs.xopt.toFixed(2)} unità.
+                  Il grafico di sinistra mostra il corrispondente profitto 
+                  (area azzurra) o perdita (area rossa).   `"
+
+
+
+
+
+
+
+
+
+
+
+
+
+

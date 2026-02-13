@@ -1,0 +1,464 @@
+---
+schema: EconSchema
+version: 1
+aspectRatio: 0.7
+params:
+
+- {name: dlt, value: 0.5} # dotted drop lines thickness
+
+- {name: p1, value: 40}
+- {name: p1new, value: 90}
+- {name: p2, value: 40}
+- {name: m, value: 360}
+
+- {name: a, value: 1}
+- {name: b, value: 1}
+
+- {name: showCVEV, value: 0}
+
+- {name: s, value: 80, min: 0, max: 300, round: 10}
+- {name: t, value: 40, min: 0, max: 320, round: 10}
+
+
+calcs:
+  s1: (params.a)/((params.a)+(params.b)) # share of income spent on good 1
+  s2: (1)-(calcs.s1) # share of income spent on good 2
+  x1old: (calcs.s1)*(params.m)/(params.p1) # optimal qty good 1 at old prices
+  x2old: (calcs.s2)*(params.m)/(params.p2) # optimal qty good 2 at old prices
+  uold: ((calcs.x1old)^(params.a))*((calcs.x2old)^(params.b)) # max utility at old prices
+
+  x1new: (calcs.s1)*(params.m)/(params.p1new) # optimal qty good 1 at new prices
+  x2new: (calcs.s2)*(params.m)/(params.p2) # optimal qty good 2 at new prices
+  unew: ((calcs.x1new)^(params.a))*((calcs.x2new)^(params.b)) # max utility at new prices
+
+  deltaCS: (calcs.s1)*(params.m)*log((params.p1new)/(params.p1))
+  x1deltaCS: (calcs.s1)*((params.m)+(calcs.deltaCS))/(params.p1new) 
+  x2deltaCS: (calcs.s2)*((params.m)+(calcs.deltaCS))/(params.p2) 
+  udeltaCS: ((calcs.x1deltaCS)^(params.a))*((calcs.x2deltaCS)^(params.b))
+
+
+  # expenditure function at old utility and old prices (=income)
+  expuoldpold: ((calcs.uold)^(1/((params.a)+(params.b))))*(((params.p1)/(calcs.s1))^(calcs.s1))*(((params.p2)/(calcs.s2))^(calcs.s2))
+
+  # expenditure function at new utility and old prices
+  expunewpold: ((calcs.unew)^(1/((params.a)+(params.b))))*(((params.p1)/(calcs.s1))^(calcs.s1))*(((params.p2)/(calcs.s2))^(calcs.s2))
+
+  # expenditure function at old utility and new prices
+  expuoldpnew: ((calcs.uold)^(1/((params.a)+(params.b))))*(((params.p1new)/(calcs.s1))^(calcs.s1))*(((params.p2)/(calcs.s2))^(calcs.s2))
+
+  # expenditure function at new utility and new prices (=income)
+  expunewpnew: ((calcs.unew)^(1/((params.a)+(params.b))))*(((params.p1new)/(calcs.s1))^(calcs.s1))*(((params.p2)/(calcs.s2))^(calcs.s2))
+
+
+
+# tax
+  x1t: (calcs.s1)*((params.m)-(params.t))/(params.p1) # demand of good 1 with tax at old prices
+  x2t: (calcs.s2)*((params.m)-(params.t))/(params.p2) # demand of good 2 with tax at old prices
+  xmaxT: ((params.m)-(params.t))/params.p1
+  ymaxT: ((params.m)-(params.t))/params.p2
+  MplusT: (params.m)-(params.t)
+  tcheck: (params.t)-(calcs.EV.toFixed(0))
+  utax: ((calcs.x1t)^(params.a))*((calcs.x2t)^(params.b)) # max utility with tax
+
+# tax = EV
+  EV: (calcs.expunewpnew)-(calcs.expunewpold)
+  x1cunew: (calcs.s1)*((params.m)-(calcs.EV))/(params.p1) # hicksian demand of good 1 at new util and old prices
+  x2cunew: (calcs.s2)*((params.m)-(calcs.EV))/(params.p2) # hicksian demand of good 2 at new util and old prices
+  xmaxEV: ((params.m)-(calcs.EV))/params.p1
+  ymaxEV: ((params.m)-(calcs.EV))/params.p2
+  MminusEV: (params.m)-(calcs.EV)
+
+# subsidy
+  x1s: (calcs.s1)*((params.m)+(params.s))/(params.p1new) # demand of good 1 with subsidy at new prices
+  x2s: (calcs.s2)*((params.m)+(params.s))/(params.p2) # demand of good 2 with subsidy at new prices
+  xmaxS: ((params.m)+(params.s))/params.p1new
+  ymaxS: ((params.m)+(params.s))/params.p2
+  MplusS: (params.m)+(params.s)
+  scheck: (params.s)-(calcs.CV.toFixed(0))
+  usub: ((calcs.x1s)^(params.a))*((calcs.x2s)^(params.b)) # max utility with subsidy
+
+# subsidy = CV
+  CV: (calcs.expuoldpnew)-(calcs.expuoldpold)
+  x1cuold: (calcs.s1)*((params.m)+(calcs.CV))/(params.p1new) # hicksian demand of good 1 at old util and new prices
+  x2cuold: (calcs.s2)*((params.m)+(calcs.CV))/(params.p2) # hicksian demand of good 2 at old util and new prices
+  xmaxCV: ((params.m)+(calcs.CV))/params.p1new
+  ymaxCV: ((params.m)+(calcs.CV))/params.p2
+  MplusCV: (params.m)+(calcs.CV)
+
+
+  maxX: (1.1)*(params.m)/(params.p1) # max displayed qty good 1
+  maxY: (1.1)*(params.m)/(params.p2) # max displayed qty good 2
+  maxEUR: (1.5)*(params.p1new) # max displayed price good 1 (bottom graph)
+  maxE: (1.3)*((params.m)+(calcs.CV)) # max displayed expenditure (bottom graph)
+
+layout:
+  TwoVerticalGraphsPlusSidebar:
+
+
+
+    topGraph:
+      xAxis:
+        max: calcs.maxEUR
+        ticks: 0
+      yAxis:
+        max: calcs.maxE
+        ticks: 0
+      objects:
+
+      - Label:
+            coordinates: [calcs.maxEUR, 0]
+            text: "` \\\\text{€/kg}  `"
+            position: l
+      - Label:
+            coordinates: [0, calcs.maxE]
+            text: "` \\\\text{€} `"
+
+# expenditure function at old utility
+      - Curve:
+          fn: ((calcs.uold)^(1/((params.a)+(params.b))))*(((x)/(calcs.s1))^(calcs.s1))*(((params.p2)/(calcs.s2))^(calcs.s2))
+          color: Green
+          strokeWidth: 1.5
+          label:
+            text: "` E = 180 \\\\sqrt{P_X} `"
+            x: calcs.maxEUR
+            position: c
+
+# expenditure function at new utility
+      - Curve:
+          fn: ((calcs.unew)^(1/((params.a)+(params.b))))*(((x)/(calcs.s1))^(calcs.s1))*(((params.p2)/(calcs.s2))^(calcs.s2))
+          color: Green
+          strokeWidth: 1.5
+          label:
+            text: "` E = 120 \\\\sqrt{P_X} `"
+            x: calcs.maxEUR
+            position: c
+
+# old and new optima
+      - Point:
+          coordinates: [params.p1, params.m]
+          droplines:
+            vertical: params.p1
+          color: Green
+          strokeWidth: params.dlt
+          r: 4
+      - Point:
+          coordinates: [params.p1new, params.m]
+          droplines:
+            vertical: params.p1new
+            horizontal: params.m
+          color: Green
+          strokeWidth: params.dlt
+          r: 4
+
+# compensating variation
+      - Arrow:
+          begin: [0.4, (120)*sqrt(params.p1new)]
+          end: [0.4, (180)*sqrt(params.p1new)]
+          color: Red
+          strokeWidth: 2
+          trim: 0.05
+          double: true
+          show: params.showCVEV == 1 || params.showCVEV == 3
+      - Label:
+          coordinates: [0.3, (150)*sqrt(params.p1new)]
+          text: "` CV  `"
+          color: Red
+          position: l
+          bgcolor: none
+          show: params.showCVEV == 1 || params.showCVEV == 3
+      - Point:
+          coordinates: [params.p1new, (180)*sqrt(params.p1new)]
+          droplines:
+            horizontal: (180)*sqrt(params.p1new)
+            vertical: 
+          color: Red
+          strokeWidth: params.dlt
+          r: 4
+          show: params.showCVEV == 1 || params.showCVEV == 3
+
+# equivalent variation
+      - Arrow:
+          begin: [0.4, (120)*sqrt(params.p1)]
+          end: [0.4, (180)*sqrt(params.p1)]
+          color: Red
+          strokeWidth: 2
+          trim: 0.1
+          double: true
+          show: params.showCVEV == 2 || params.showCVEV == 3
+      - Label:
+          coordinates: [0.3, (150)*sqrt(params.p1)]
+          text: "` EV  `"
+          color: Red
+          position: l
+          bgcolor: none
+          show: params.showCVEV == 2 || params.showCVEV == 3
+      - Point:
+          coordinates: [params.p1, (120)*sqrt(params.p1)]
+          droplines:
+            horizontal: (120)*sqrt(params.p1)
+          color: Red
+          strokeWidth: params.dlt
+          r: 4
+          show: params.showCVEV == 2 || params.showCVEV == 3
+
+
+
+
+
+
+
+
+    bottomGraph:
+      xAxis:
+        max: calcs.maxEUR
+        ticks: 0
+      yAxis:
+        max: calcs.maxX
+        ticks: 0
+      objects:
+
+      - Label:
+            coordinates: [calcs.maxEUR, 0]
+            text: "` \\\\text{€/kg}  `"
+            position: l
+      - Label:
+            coordinates: [0,calcs.maxX]
+            text: "` \\\\text{kg} `"
+
+# inverse demand for good 1
+      - Curve:
+          fn: (calcs.s1)*(params.m)/(x)
+          color: Blue
+          strokeWidth: 1.5
+          label:
+            text: "` X = 180 / P_X `"
+            x: calcs.maxEUR
+            position: tl
+
+# old demand for good 1
+      - Point:
+          coordinates: [params.p1, calcs.x1old]
+          droplines:
+            vertical: params.p1
+            horizontal: "` ${calcs.x1old.toFixed(0)} `"
+          color: Blue
+          strokeWidth: params.dlt
+          r: 3.5
+
+# new demand for good 1
+      - Point:
+          coordinates: [params.p1new, calcs.x1new]
+          droplines:
+            vertical: params.p1new
+            horizontal: "` ${calcs.x1new.toFixed(0)} `"
+          color: Blue
+          strokeWidth: params.dlt
+          r: 3.5
+
+# hicksian demand at old utility
+      - Curve:
+          fn: sqrt((calcs.uold)*(params.p2)/(x))
+          color: Red
+          strokeWidth: 0.75
+          label:
+            text: "` X = 180 / (2\\\\sqrt{P_X}) `"
+            x: calcs.maxEUR
+            position: l
+          show: params.showCVEV == 1 || params.showCVEV == 3
+      - Point:
+          coordinates: [params.p1new, calcs.x1cuold]
+          droplines:
+            horizontal: "` ${calcs.x1cuold.toFixed(0)} `"
+          color: Red
+          strokeWidth: params.dlt
+          r: 3.5
+          show: params.showCVEV == 1 || params.showCVEV == 3
+
+# compensating variation
+      - Area:
+          fn: min(calcs.x1old,sqrt((calcs.uold)*(params.p2)/(x)))
+          fill: red
+          min: params.p1
+          max: params.p1new
+          show: params.showCVEV == 1
+      - Label:
+          coordinates: [((params.p1)+(params.p1new))/2, (calcs.x1new)]
+          text: "` \\\\large{CV}  `"
+          color: Red
+          bgcolor: none
+          show: params.showCVEV == 1
+
+# hicksian demand at new utility
+      - Curve:
+          fn: sqrt((calcs.unew)*(params.p2)/(x))
+          color: Red
+          strokeWidth: 0.75
+          label:
+            text: "` X = 120 / (2\\\\sqrt{P_X}) `"
+            x: calcs.maxEUR
+            position: l
+          show: params.showCVEV == 2 || params.showCVEV == 3
+      - Point:
+          coordinates: [params.p1, calcs.x1cunew]
+          droplines:
+            horizontal: "` ${calcs.x1cunew.toFixed(0)} `"
+          color: Red
+          strokeWidth: params.dlt
+          r: 3.5
+          show: params.showCVEV == 2 || params.showCVEV == 3
+
+# equivalent variation
+      - Area:
+          fn: sqrt((calcs.unew)*(params.p2)/(x))
+          fill: red
+          min: params.p1
+          max: params.p1new
+          show: params.showCVEV == 2
+      - Label:
+          coordinates: [((params.p1)+(params.p1new))/2, (0.7)*(calcs.x1new)]
+          text: "` \\\\large{EV}  `"
+          color: Red
+          bgcolor: none
+          show: params.showCVEV == 2
+
+# consumer surplus variation
+      - Area:
+          fn: (calcs.s1)*(params.m)/(x)
+          fill: blue
+          min: params.p1
+          max: params.p1new
+          show: params.showCVEV == 0
+      - Label:
+          coordinates: [((params.p1)+(params.p1new))/2, (0.8)*(calcs.x1new)]
+          text: "` \\\\large{\\\\Delta CS}  `"
+          color: Blue
+          bgcolor: none
+          show: params.showCVEV == 0
+
+
+# three areas cv ev cs
+      - Area:
+          fn2: min(calcs.x1old,sqrt((calcs.uold)*(params.p2)/(x)))
+          fn1: (calcs.s1)*(params.m)/(x)
+          fill: green
+          min: params.p1
+          max: params.p1new
+          show: params.showCVEV == 3
+      - Area:
+          fn: sqrt((calcs.unew)*(params.p2)/(x))
+          fill: red
+          min: params.p1
+          max: params.p1new
+          show: params.showCVEV == 3
+      - Area:
+          fn1: (calcs.s1)*(params.m)/(x)
+          fn2: sqrt((calcs.unew)*(params.p2)/(x))
+          fill: blue
+          min: params.p1
+          max: params.p1new
+          show: params.showCVEV == 3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    sidebar:
+      controls:
+
+      - title: Variazione compensativa, variazione equivalente e surplus del consumatore
+        # description: Scegliere il tipo di compensazione per visualizzare 
+        #               vincolo di bilancio e scelta ottima corrispondenti ai nuovi prezzi e al 
+        #               reddito compensato.
+        radioGroup:
+          param: showCVEV
+          options:
+            - Mostra variazione surplus consumatore
+            - Mostra variazione compensativa
+            - Mostra variazione equivalente
+            - Mostra tutte e tre
+        divs:
+          - html: "`  `"
+          - html: "`  `"
+          - html: "` `"
+          - html: "` Quando $P_X=${params.p1}$ e $P_Y=${params.p2}$, la scelta ottima è  
+                       $$X=${calcs.x1old} \\\\qquad Y=${calcs.x2old}$$ `"
+            show: params.showCVEV < 3
+          - html: "` La corrispondente utilità è
+                       $$U(${calcs.x1old},${calcs.x2old})=${calcs.uold}$$ `"
+            show: params.showCVEV < 3
+          - html: "` `"
+
+            show: params.showCVEV < 3
+          - html: "`Quando il prezzo del cibo aumenta a $P_X=${params.p1new}$, 
+                    la variazione di surplus del consumatore è pari al negativo dell'area azzurra
+                    nel grafico di sotto:
+                      $$ \\\\Delta CS = - ${calcs.deltaCS.toFixed(1)} $$ `"
+            show: params.showCVEV == 0
+
+          - html: "` La funzione di spesa corrispondente a questo livello di utilità è
+                      $$ E = 180\\\\sqrt{P_X} $$ `"
+            show: params.showCVEV == 1
+          - html: "` Quando il prezzo del cibo aumenta a $P_X=${params.p1new}$, per raggiungere
+                      il livello di utilità $U=${calcs.uold}$ sono quindi necessari
+                      $180\\\\sqrt{9}=540$ euro di spesa. `"
+            show: params.showCVEV == 1
+          - html: "` La variazione compensativa è dunque $$CV=540-${params.m}=${540-(params.m)}$$ `"
+            show: params.showCVEV == 1
+
+          - html: "` Quando il prezzo del cibo aumenta a $P_X=${params.p1new}$, la scelta ottima è  
+                       $$X=${calcs.x1new} \\\\qquad Y=${calcs.x2new}$$ `"
+            show: params.showCVEV == 2
+          - html: "` La corrispondente utilità è
+                       $$U(${calcs.x1new},${calcs.x2new})=${calcs.unew}$$ `"
+            show: params.showCVEV == 2
+          - html: "` La funzione di spesa corrispondente a questo livello di utilità è
+                      $$ E = 120\\\\sqrt{P_X} $$ `"
+            show: params.showCVEV == 2
+          - html: "` Se il prezzo del cibo fosse ancora $P_X=${params.p1}$, per raggiungere
+                      il livello di utilità $U=${calcs.unew}$ sarebbero quindi necessari
+                      $120\\\\sqrt{4}=240$ euro di spesa. `"
+            show: params.showCVEV == 2
+          - html: "` La variazione equivalente è dunque $$EV=360-240=120$$ `"
+            show: params.showCVEV == 2
+
+          - html: "`  `"
+            show: params.showCVEV == 3
+          - html: "`  `"
+            show: params.showCVEV == 3
+          - html: "` La variazione equivalente è pari all'area rossa.    `"
+            show: params.showCVEV == 3
+          - html: "` La riduzione di surplus è pari alla somma delle aree rossa e blu. `"
+            show: params.showCVEV == 3
+          - html: "` La variazione compensativa è pari alla somma delle aree rossa, blu e verde `"
+            show: params.showCVEV == 3
+
+
+        # checkboxes:
+        # - param: showCV
+        #   label: "\\text{Mostra variazione compensativa}"
+        # - param: showEV
+        #   label: "\\text{Mostra variazione equivalente}"
+        # sliders:
+        # - param: a
+        #   label: a
+        # - param: b
+        #   label: b
+        # divs:
+        #   - html: "` `"
+        #   - html: "` `"
+        #   - html: "` `"
+        #   - html: "` `"
+        #     show: params.showCV == 1
+

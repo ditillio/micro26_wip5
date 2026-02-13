@@ -1,0 +1,244 @@
+
+schema: EconSchema
+params:
+- {name: numcons, value: 1000, min: 500, max: 1500, round: 100}
+- {name: p, value: 2, min: 1, max: 5, round: 0.5}
+- {name: m, value: 500, min: 300, max: 700, round: 50}
+- {name: p2, value: 2, min: 1, max: 3, round: 0.5}
+- {name: showCS, value: false}
+
+
+calcs:
+  d: max(0.02,(0.002)*(params.m)-(0.3)*(params.p)+(0.1)*(params.p2))
+  D: (params.numcons)*(calcs.d)
+
+
+
+
+
+
+aspectRatio: 2
+
+layout:
+  TwoHorizontalGraphsPlusSidebar:
+    leftGraph:
+      xAxis:
+        ticks: 0
+        max: 3
+        title: Individual Demand
+      yAxis:
+        max: 6
+        ticks: 0
+      objects:
+
+      - Label:
+              coordinates: [3, 0]
+              text: "` \\\\text{kg} `"
+              yPixelOffset: 0
+              position: l
+      - Label:
+              coordinates: [0, 6]
+              text: "` \\\\text{euro/kg}  `"
+              xPixelOffset: 0
+
+# individual demand
+      - Curve:
+          fn: max(0.02,(0.002)*(params.m)-(0.3)*(y)+(0.1)*(params.p2))
+          ind: y
+          color: Blue
+          strokeWidth: 1.5
+          label:
+            text: D^i
+            x: 4.6
+            position: l
+
+
+# price line
+      - Line:
+          yIntercept: params.p
+          color: Green
+          label:
+            text: P
+            x: 3
+            position: l
+          drag:
+            - vertical: p
+          strokeWidth: 1
+      - Point:
+          coordinates: [0, params.p]
+          droplines:
+            horizontal: params.p.toFixed(2)
+          color: Green
+          r: 0
+
+# optimum
+      - Point:
+          coordinates: [calcs.d, params.p]
+          droplines:
+            vertical: calcs.d.toFixed(2)
+          color: Blue
+          r: 3.5
+          strokeWidth: 0.5
+          show: calcs.d > 0.02
+      - Point:
+          coordinates: [calcs.d, params.p]
+          color: Blue
+          r: 3.5
+          strokeWidth: 0.5
+          show: calcs.d == 0.02
+      - Point:
+          coordinates: [0,0]
+          droplines:
+            vertical: 0.0
+          color: Blue
+          r: 0
+          strokeWidth: 0.5
+          show: calcs.d == 0.02
+
+
+
+
+
+
+
+
+
+
+    rightGraph:
+      xAxis:
+        max: 3000
+        ticks: 0
+        title: Market Demand
+      yAxis:
+        max: 6
+        ticks: 0
+      objects:
+
+      - Label:
+              coordinates: [3000, 0]
+              text: "` \\\\text{kg} `"
+              yPixelOffset: 0
+              position: l
+      - Label:
+              coordinates: [0, 6]
+              text: "` \\\\text{euro/kg}  `"
+              xPixelOffset: 0
+
+# market demand
+      - Curve:
+          fn: (params.numcons)*max(0.02,(0.002)*(params.m)-(0.3)*(y)+(0.1)*(params.p2))
+          color: Blue
+          strokeWidth: 1.5
+          label:
+            text: D
+            x: (params.numcons)*(4.6)
+            position: l
+
+# price line
+      - Line:
+          yIntercept: params.p
+          color: Green
+          label:
+            text: P
+            x: 3000
+            position: l
+          drag:
+            - vertical: p
+          strokeWidth: 1
+
+# optimum
+      - Point:
+          coordinates: [calcs.D, params.p]
+          droplines:
+            vertical: calcs.D.toFixed(0)
+          color: Blue
+          r: 3.5
+          strokeWidth: 0.5
+          show: calcs.d > 0.02
+      - Point:
+          coordinates: [calcs.D, params.p]
+          color: Blue
+          r: 3.5
+          strokeWidth: 0.5
+          show: calcs.d == 0.02
+      - Point:
+          coordinates: [0,0]
+          droplines:
+            vertical: 0.0
+          color: Blue
+          r: 0
+          strokeWidth: 0.5
+          show: calcs.d == 0.02
+
+# # consumer surplus blue
+#       - Area: {fn1: (12-4*(x)/(params.numcons)), fn2: params.p, fill: Blue, opacity: params.ops, min: 0.001, max: calcs.D, show: params.showCS == true }
+
+
+
+
+
+
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURE 1.2
+        # checkboxes:
+        # - param: showCS
+        #   label: "\\text{Mostra e calcola surplus dei consumatori.}"
+        sliders:
+        - param: p
+          label: P_\text{pasta}
+        - param: numcons
+          label: N_\text{cons}
+        - param: m
+          label: M
+        - param: p2
+          label: P_\text{rice}
+        # divs:
+        # - html: "`Quando il prezzo è $P=${params.p}$ euro/kg, la quantità domandata 
+        #         da ciascun consumatore è $Q=${calcs.d}$. La quantità complessivamente
+        #         domandata nel mercato è quindi $Q=${calcs.D}$.
+        #           `"
+
+
+
+
+
+
+
+
+    explanation:
+      divs:
+        - html: <br>
+        - html: "`
+                The market demand curve (right-hand graph) is
+                $$
+                Q_{\\\\text{pasta}} =
+                \\\\underbrace{${params.numcons.toFixed(0)}}_{N_{\\\\text{cons}}}
+                \\\\times \\\\big( 0.002
+                \\\\times
+                \\\\underbrace{${params.m.toFixed(0)}}_{M}
+                - 0.3\\\\times P_{\\\\text{pasta}} + 0.1\\\\times
+                \\\\underbrace{${params.p2.toFixed(2)}}_{P_{\\\\text{rice}}}
+                \\\\big)
+                $$
+                Depending on the values assigned to $N_{\\\\text{cons}}$, $M$
+                and $P_{\\\\text{rice}}$, the relationship between $P_{\\\\text{pasta}}$ 
+                and $Q_{\\\\text{pasta}}$ will vary.
+                We can therefore distinguish two types of changes:
+                if the price of the good changes, we move <i>along the curve</i>.
+                If instead one of the variables we had fixed changes,
+                the <i>curve itself shifts</i>.
+                `"
+
+
+
+
+
+
+
+
+
+

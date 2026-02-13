@@ -1,0 +1,284 @@
+---
+schema: EconSchema
+version: 1
+params:
+
+- {name: showTS, value: 1} # show surplus etc.
+
+calcs:
+
+  dummy: (1)
+
+# aspectRatio: 1
+
+layout:
+
+  type: TwoHorizontalGraphsPlusSidebar
+
+  def:
+
+    leftGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 1000
+        ticks: 0
+        title: Group 𝐴
+      yAxis:
+        orient: left
+        min: 0
+        max: 12000
+        ticks: 0
+
+      objects:
+
+      - Label:
+            coordinates: [1000, 0]
+            text: "` \\\\;\\\\; \\\\text{policies} `"
+            position: c
+      - Label:
+            coordinates: [0,12000]
+            text: "` \\\\text{euros/policy} `"
+
+# demand group A
+      - Line:
+          yIntercept: 10000
+          slope: -(1000)*(0.75)/(50)
+          color: Blue
+          strokeWidth: 1
+      - Point:
+          coordinates: [0, 10000]
+          droplines:
+            horizontal: 10000
+          color: Blue
+          r: 0
+
+# price line group A
+      - Line:
+          yIntercept: (6250)
+          color: Green
+          strokeWidth: 1
+
+# equilibrium
+      - Point:
+          coordinates: [250, 6250]
+          droplines:
+            vertical: 250
+            horizontal: 6250
+          color: Green
+          r: 3
+          strokeWidth: 0.5
+
+# surplus
+      - Area:
+          fn1: (10000)-(x)*(1000)*(0.75)/(50)
+          fn2: (6250)
+          fill: blue
+          min: 0
+          max: 250
+          show: params.showTS == 1
+
+# marginal cost group A
+      - Line:
+          yIntercept: (2500)
+          color: Red
+          strokeWidth: 0.5
+          position: c
+          label:
+            text: "` FP_A `"
+            x: 1000
+      - Point:
+          coordinates: [0, 2500]
+          droplines:
+            horizontal: 2500
+          color: Red
+          r: 0
+      - Point:
+          coordinates: [500, 2500]
+          droplines:
+            vertical: 500
+          color: Darkgrey
+          r: 0
+          strokeWidth: 0.5
+
+# profit/loss
+      - Area:
+          fn1: (6250)
+          fn2: (2500)
+          fill: green
+          min: 0
+          max: 250
+          show: params.showTS == 0
+
+# deadweight loss
+      - Area:
+          fn1: (10000)-(x)*(1000)*(0.75)/(50)
+          fn2: (2500)
+          fill: Darkgrey
+          opacity: 0.7
+          min: 250
+          max: 500
+          show: params.showTS == 2
+
+    rightGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 1000
+        ticks: 0
+        title: Group 𝐵
+      yAxis:
+        orient: left
+        min: 0
+        max: 12000
+        ticks: 0
+
+      objects:
+
+      - Label:
+            coordinates: [1000, 0]
+            text: "` \\\\;\\\\; \\\\text{policies} `"
+            position: c
+      - Label:
+            coordinates: [0,12000]
+            text: "` \\\\text{euros/policy} `"
+
+# demand group B
+      - Line:
+          yIntercept: 10000
+          slope: -(1000)*(0.25)/(50)
+          color: Blue
+          strokeWidth: 1
+      - Point:
+          coordinates: [0, 10000]
+          droplines:
+            horizontal: 10000
+          color: Blue
+          r: 0
+      - Point:
+          coordinates: [10000, 0]
+          droplines:
+            vertical: 10
+          color: Blue
+          r: 0
+
+# price line group B
+      - Line:
+          yIntercept: (6250)
+          color: Green
+          strokeWidth: 1
+
+# equilibrium
+      - Point:
+          coordinates: [750, 6250]
+          droplines:
+            vertical: 750
+            horizontal: 6250
+          color: Green
+          r: 3
+          strokeWidth: 0.5
+
+# surplus
+      - Area:
+          fn1: (10000)-(x)*(1000)*(0.25)/(50)
+          fn2: (6250)
+          fill: blue
+          min: 0
+          max: 750
+          show: params.showTS == 1
+
+# marginal cost group B
+      - Line:
+          yIntercept: (7500)
+          color: Red
+          strokeWidth: 0.5
+          position: c
+          label:
+            text: "` FP_B `"
+            x: 1000
+      - Point:
+          coordinates: [0, 7500]
+          droplines:
+            horizontal: 7500
+          color: Red
+          r: 0
+      - Point:
+          coordinates: [500, 7500]
+          droplines:
+            vertical: 500
+          color: Darkgrey
+          r: 0
+          strokeWidth: 0.5
+
+# profit/loss
+      - Area:
+          fn1: (7500)
+          fn2: (6250)
+          fill: red
+          min: 0
+          max: 750
+          show: params.showTS == 0
+
+# deadweight loss
+      - Area:
+          fn1: (7500)
+          fn2: (10000)-(x)*(1000)*(0.25)/(50)
+          fill: Darkgrey
+          opacity: 0.7
+          min: 500
+          max: 750
+          show: params.showTS == 2
+
+    sidebar:
+      controls:
+
+      - title: FIGURE 12.2
+
+        radioGroup:
+          param: showTS
+          options:
+            - Show profits ( = zero)
+            - Show total surplus
+            - Show deadweight loss
+
+        divs:
+        - html: <br>
+        - html: "` In expected terms, insurers earn $3750$ euros from each
+                   insured individual in group $A$, and lose $1250$ euros
+                   from each individual in group $B$. Their profit
+                   (difference between green and red area) is therefore zero.
+                  `"
+          show: params.showTS == 0
+
+        - html: "` Since insurers earn zero profits, total surplus coincides
+                   with the surplus of the insured, and equals $1.875$ million euros.
+                   Compared to the observable-risk case (surplus 2.5 million),
+                   there is therefore a deadweight loss of $625000$ euros.
+                   Group $A$ is worse off, group $B$ is better off:
+                   unobservability of risk creates an implicit subsidy
+                   in favor of group $B$, at the expense of group $A$.
+                  `"
+          show: params.showTS == 1
+
+        - html: "` The unobservability of risk leads to the absence of
+                  trades that would have created surplus. The corresponding
+                  deadweight loss is represented by the grey area in the
+                  left graph. Additionally, trades that generate negative
+                  surplus do occur. The corresponding deadweight loss is
+                  represented by the grey area in the right graph.
+                  The total deadweight loss amounts to $625000$ euros.
+                  `"
+          show: params.showTS == 2
+
+    explanation:
+      divs:
+        - html: <br>
+        - html: "` At any given policy price, the number of individuals from
+                  group $B$ willing to buy the policy is exactly three times
+                  the number from group $A$. From the insurer’s perspective,
+                  each insured individual therefore has a probability of $1/4$
+                  of belonging to group $A$, and $3/4$ of belonging to group $B$.
+                  Insurers, competing with each other, offer policies at a
+                  price equal to expected marginal cost, that is:
+                  $$ \\\\dfrac{1}{4}\\\\times 2500 + \\\\dfrac{3}{4}\\\\times 7500 = 6250 $$
+                  `"

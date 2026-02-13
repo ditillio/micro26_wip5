@@ -1,0 +1,240 @@
+params:
+
+- {name: w2, value: 10000, min: 0, max: 10000} # wealth if loss does not occur
+- {name: p, value: 0.4, min: 0.2, max: 0.6, round: 0.1}  # probability of loss
+
+- {name: pi, value: 0.5, min: 0.1, max: 4, round: 0.1} # one minus relative risk aversion coefficient
+
+
+- {name: d, value: 10000, min: 1900, max: 10000, round: 100} # possible loss
+
+
+
+calcs:
+
+  r: (1)-(params.pi)
+
+  w1: (10000)-(params.d)
+  w2: params.w2
+
+  a: (1)-(calcs.r)
+
+  p1: (params.p)
+  p2: (1)-(calcs.p1)
+
+  u1: (calcs.w1)^(calcs.a)
+  u2: (calcs.w2)^(calcs.a)
+
+  EP: (calcs.p1)*(calcs.w1)+(calcs.p2)*(calcs.w2)
+
+  EU: (calcs.p1)*(calcs.u1)+(calcs.p2)*(calcs.u2)
+  CE: (calcs.EU)^((1)/(calcs.a))
+
+  RP: (calcs.EP)-(calcs.CE)
+
+  WTP: (calcs.w2)-(calcs.CE)
+
+  FP: (params.p)*(params.d)
+
+  maxU: (1.1)*(calcs.u2)
+
+
+
+aspectRatio: 1.3
+
+layout:
+  OneGraphPlusSidebar:
+
+    graph: 
+      xAxis:
+        max: 11500
+        ticks: 0
+      yAxis:
+        max: calcs.maxU
+        ticks: 0
+
+      objects:
+
+        - Label:
+            coordinates: [11500, 0]
+            text: "` \\\\text{Payoff} `"
+        - Label:
+            coordinates: [0, calcs.maxU]
+            text: "` \\\\text{Utilità}  `"
+
+# bernoulli utility function
+
+        - Curve:
+            fn: (x)^(1-(calcs.r))
+            color: Blue
+            max: 10500
+            label:
+              text: "` u(W)=W^{${calcs.a.toFixed(1)}} `"
+              x: 10500
+              position: l
+            strokeWidth: 1.5
+
+# points & segment
+        - Point:
+            coordinates: [calcs.w1, calcs.u1]
+            droplines: {vertical: calcs.w1.toFixed(0), horizontal: calcs.u1.toFixed(2)}
+            strokeWidth: 0.5
+            color: Blue
+            r: 3.5
+        - Point:
+            coordinates: [calcs.w2, calcs.u2]
+            droplines: {vertical: calcs.w2.toFixed(0), horizontal: calcs.u2.toFixed(2)}
+            strokeWidth: 0.5
+            color: Blue
+            r: 3.5
+        - Point:
+            coordinates: [calcs.EP, calcs.EU]
+            # droplines: {vertical: "` EP=${calcs.EP.toFixed(0)} `", horizontal: "` EU=${calcs.EU.toFixed(2)} `"}
+            droplines: {vertical: "` EP `", horizontal: "` EU=${calcs.EU.toFixed(2)} `"}
+            strokeWidth: 0.5
+            color: Red
+            r: 2.5
+        - Point:
+            coordinates: [calcs.CE, calcs.EU]
+            # droplines: {vertical: "` CE=${calcs.CE.toFixed(2)} `"}
+            droplines: {vertical: "` CE `"}
+            strokeWidth: 0.5
+            color: Blue
+            r: 2.5
+            show: params.pi !== 1
+        - Point:
+            coordinates: [calcs.CE, calcs.EU]
+            # droplines: {vertical: "` CE=${calcs.CE.toFixed(2)} `"}
+            droplines: {vertical: "` CE=EP `"}
+            strokeWidth: 0.5
+            color: Blue
+            r: 2.5
+            show: params.pi == 1
+        - Segment:
+            a: [calcs.w1, calcs.u1]
+            b: [calcs.w2, calcs.u2]
+            color: Red
+            strokeWidth: 1
+            lineStyle: dashed
+        - Segment:
+            a: [calcs.CE, calcs.EU]
+            b: [calcs.EP, calcs.EU]
+            color: Purple
+            strokeWidth: 0.5
+            lineStyle: dotted
+            show: calcs.RP < 0
+
+# risk premium (when positive)
+        - Label:
+            coordinates: [((calcs.EP)+(calcs.CE))/2, (calcs.maxU)/(16)]
+            text: "` RP `"
+            color: Purple
+            show: calcs.RP > 0
+        - Arrow:
+            begin: [calcs.CE, (calcs.maxU)/(30)]
+            end: [calcs.EP, (calcs.maxU)/(30)]
+            double: true
+            color: Purple
+            strokeWidth: 1
+            show: calcs.RP > 0
+
+# risk premium (when negative)
+        - Label:
+            coordinates: [((calcs.EP)+(calcs.CE))/2, (calcs.maxU)/(6.5)]
+            text: "` -RP `"
+            color: Purple
+            show: calcs.RP < 0
+        - Arrow:
+            begin: [calcs.CE, (calcs.maxU)/(8.5)]
+            end: [calcs.EP, (calcs.maxU)/(8.5)]
+            double: true
+            color: Purple
+            strokeWidth: 1
+            show: calcs.RP < 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    sidebar:
+
+      controls:
+
+      - title: FIGURA 11.2
+        description: Muovere il primo cursore per selezionare le preferenze dell'individuo. Muovere il secondo per selezionare la probabilità che si verifichi l'esito 𝑊 = 0. 
+
+        # radioGroup:
+        #   param: which
+        #   options:
+        #     - Mantieni 𝐸𝑃 = 50 costante
+        #     - Mantieni 𝐸𝑈 = 5 costante
+
+        sliders:
+        - param: pi
+          label: \pi
+        - param: p
+          label: p_1
+        # - param: d
+        #   label: D
+
+        divs:
+        - html: <br>
+        - html: "`  L'individuo è avverso al rischio: $CE< EP$ e quindi $RP>0$. Riducendo $\\\\pi$ si
+                  verifica che $CE$ diminuisce e $RP$ aumenta.
+                      `"
+          show: params.pi < 1
+
+        - html: "`  L'individuo è neutrale al rischio: $CE=EP$ e quindi $RP=0$.
+                      `"
+          show: params.pi == 1
+
+        - html: "`  L'individuo è propenso al rischio: $CE>EP$ e quindi $RP< 0$. Aumentando $\\\\pi$ si
+                  verifica che $CE$ aumenta e $RP$ diminuisce (aumenta in valore assoluto).
+                      `"
+          show: params.pi > 1
+
+
+
+
+
+
+
+    explanation:
+      divs:
+        - html: "`  $ EP = ${params.p.toFixed(1)}\\\\times 0 + ${calcs.p2.toFixed(1)}\\\\times 10000 = ${calcs.EP.toFixed(0)} $
+                      `"
+        - html: "`  $ EU = ${params.p.toFixed(1)}\\\\times 0^{${params.pi.toFixed(1)}} + ${calcs.p2.toFixed(1)}\\\\times 10000^{${params.pi.toFixed(1)}} = ${calcs.EU.toFixed(2)} $
+                      `"
+        - html: "`  $ CE = EU^{1/${params.pi.toFixed(1)}} = ${calcs.CE.toFixed(2)} $
+                      `"
+        - html: "`  $ RP = EP - CE = ${calcs.RP.toFixed(2)} $
+                      `"
+
+        - html: <br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

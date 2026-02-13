@@ -1,0 +1,132 @@
+---
+schema: EconSchema
+version: 1
+aspectRatio: 1.5
+params:
+- {name: x, value: 4, min: 0, max: 9, round: 0.1}
+- {name: y, value: 4, min: 0, max: 9, round: 0.1}
+- {name: showINDIFF, value: 0}
+
+
+- {name: e, value: 0.5}
+
+
+calcs:
+  z: ((params.x)*(params.y))^(params.e)
+  maxU: ((9)*(9))^(params.e)
+
+layout:
+  MathboxPlusSidebar:
+    mathbox:
+      xAxis:
+        min: 0
+        max: 9
+        step: 1
+        title: X
+      yAxis:
+        min: 0
+        max: 9
+        step: 1
+        title: Y
+      zAxis:
+        min: 0
+        max: calcs.maxU
+        step: 1
+        title: U
+      objects:
+      - MathboxFunctionSurface:
+          fn:
+            fn: "((x)*(y))^(params.e)"
+            samplePoints: 20
+          shaded: false
+          fill: colors.blue
+          opacity: 0.4
+      - MathboxPoint:
+          x: params.x
+          y: params.y
+          z: calcs.z
+          stroke: colors.blue
+      - MathboxLine:
+          x1: params.x
+          x2: params.x
+          y2: params.y
+          stroke: colors.black
+          strokeWidth: 10
+          lineStyle: dotted
+      - MathboxLine:
+          y1: params.y
+          x2: params.x
+          y2: params.y
+          stroke: colors.black
+          strokeWidth: 10
+          lineStyle: dotted
+      - MathboxLine:
+          x1: params.x
+          y1: params.y
+          x2: params.x
+          y2: params.y
+          z2: calcs.z
+          stroke: colors.black
+          strokeWidth: 10
+          lineStyle: dotted
+
+# plane at utility level U(X,Y)
+      - MathboxPlane:
+          z: calcs.z
+          fill: blue
+          opacity: 0.3
+          show: params.showINDIFF == 1
+
+# indifference curve
+      - MathboxCurve:
+          fn:
+            fn: "((calcs.z)^(1/(params.e)))/(x)"
+            fnZ: calcs.z
+          strokeWidth: 10
+          stroke: blue
+          opacity: 0.4
+          show: params.showINDIFF == 1
+
+# projection of indifference curve
+      - MathboxCurve:
+          fn:
+            fn: "((calcs.z)^(1/(params.e)))/(x)"
+            fnZ: 0
+          strokeWidth: 5
+          stroke: black
+          opacity: 0.4
+          show: params.showINDIFF == 1
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURE 2.5
+        description: 
+        sliders:
+          - param: x
+            label: X
+          - param: y
+            label: Y
+        checkboxes:
+        - param: showINDIFF
+          label: "\\text{Show indifference curve}"
+
+        divs:
+          - html: "` `"
+          - html: "` `"
+          - html: "` `"
+          - html: "`The preferences of the consumer are represented by the utility function
+                    $$ U(X,Y) = X^{0.5} Y^{0.5} $$`"
+          - html: "`The utility of bundle $(${params.x.toFixed(1)},${params.y.toFixed(1)})$
+                    is therefore`"
+          - html: "`$$U(${params.x.toFixed(1)},${params.y.toFixed(1)}) = ${calcs.z.toFixed(1)}$$`"
+
+
+
+
+
+
+
+
+

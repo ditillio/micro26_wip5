@@ -1,0 +1,360 @@
+---
+schema: EconSchema
+version: 1
+params:
+
+
+- {name: showTS, value: 1} # show surplus etc.
+
+
+
+
+
+
+calcs:
+
+  dummy: (1)
+
+
+
+
+
+# aspectRatio: 1
+
+layout:
+
+  type: TwoHorizontalGraphsPlusSidebar
+
+  def:
+
+
+    leftGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 1000
+        ticks: 0
+        title: Gruppo 𝐴
+      yAxis:
+        orient: left
+        min: 0
+        max: 12000
+        ticks: 0
+
+
+      objects:
+
+      - Label:
+            coordinates: [1000, 0]
+            text: "` \\\\;\\\\; \\\\text{polizze   } `"
+            position: c
+      # - Label:
+      #       coordinates: [1000, 0]
+      #       text: "` \\\\;\\\\; \\\\text{polizze   } `"
+      #       position: c
+      #       yPixelOffset: 9
+      # - Label:
+      #       coordinates: [1000, 0]
+      #       text: "` \\\\text{(migliaia)} `"
+      #       position: c
+      #       yPixelOffset: -9
+      - Label:
+            coordinates: [0,12000]
+            text: "` \\\\text{euro/polizza} `"
+
+# demand group A
+      - Line:
+          yIntercept: 10000
+          slope: -(1000)*(0.75)/(50)
+          color: Blue
+          strokeWidth: 1
+      - Point:
+          coordinates: [0, 10000]
+          droplines:
+            horizontal: 10000
+          color: Blue
+          r: 0
+
+# price line group A
+      - Line:
+          yIntercept: (6250)
+          color: Green
+          strokeWidth: 1
+          # position: c
+          # label:
+          #   text: "` FP_1 `"
+          #   x: 10500
+
+# equilibrium
+      - Point:
+          coordinates: [250, 6250]
+          droplines:
+            vertical: 250
+            horizontal: 6250
+          color: Green
+          r: 3
+          strokeWidth: 0.5
+
+# surplus
+      - Area:
+          fn1: (10000)-(x)*(1000)*(0.75)/(50)
+          fn2: (6250)
+          fill: blue
+          min: 0
+          max: 250
+          show: params.showTS == 1
+
+# marginal cost group A
+      - Line:
+          yIntercept: (2500)
+          color: Red
+          strokeWidth: 0.5
+          position: c
+          label:
+            text: "` FP_A `"
+            x: 1000
+      - Point:
+          coordinates: [0, 2500]
+          droplines:
+            horizontal: 2500
+          color: Red
+          r: 0
+      - Point:
+          coordinates: [500, 2500]
+          droplines:
+            vertical: 500
+          color: Darkgrey
+          r: 0
+          strokeWidth: 0.5
+
+# profit/loss
+      - Area:
+          fn1: (6250)
+          fn2: (2500)
+          fill: green
+          min: 0
+          max: 250
+          show: params.showTS == 0
+
+# deadweight loss
+      - Area:
+          fn1: (10000)-(x)*(1000)*(0.75)/(50)
+          fn2: (2500)
+          fill: Darkgrey
+          opacity: 0.7
+          min: 250
+          max: 500
+          show: params.showTS == 2
+
+
+
+
+
+
+
+
+
+
+    rightGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 1000
+        ticks: 0
+        title: Gruppo 𝐴
+      yAxis:
+        orient: left
+        min: 0
+        max: 12000
+        ticks: 0
+
+
+      objects:
+
+      - Label:
+            coordinates: [1000, 0]
+            text: "` \\\\;\\\\; \\\\text{polizze   } `"
+            position: c
+      # - Label:
+      #       coordinates: [1000, 0]
+      #       text: "` \\\\;\\\\; \\\\text{polizze   } `"
+      #       position: c
+      #       yPixelOffset: 9
+      # - Label:
+      #       coordinates: [1000, 0]
+      #       text: "` \\\\text{(migliaia)} `"
+      #       position: c
+      #       yPixelOffset: -9
+      - Label:
+            coordinates: [0,12000]
+            text: "` \\\\text{euro/polizza} `"
+
+# demand group B
+      - Line:
+          yIntercept: 10000
+          slope: -(1000)*(0.25)/(50)
+          color: Blue
+          strokeWidth: 1
+      - Point:
+          coordinates: [0, 10000]
+          droplines:
+            horizontal: 10000
+          color: Blue
+          r: 0
+      - Point:
+          coordinates: [10000, 0]
+          droplines:
+            vertical: 10
+          color: Blue
+          r: 0
+
+# price line group B
+      - Line:
+          yIntercept: (6250)
+          color: Green
+          strokeWidth: 1
+          # position: c
+          # label:
+          #   text: "` FP_B `"
+          #   x: 10500
+
+# equilibrium
+      - Point:
+          coordinates: [750, 6250]
+          droplines:
+            vertical: 750
+            horizontal: 6250
+          color: Green
+          r: 3
+          strokeWidth: 0.5
+
+# surplus
+      - Area:
+          fn1: (10000)-(x)*(1000)*(0.25)/(50)
+          fn2: (6250)
+          fill: blue
+          min: 0
+          max: 750
+          show: params.showTS == 1
+
+# marginal cost group B
+      - Line:
+          yIntercept: (7500)
+          color: Red
+          strokeWidth: 0.5
+          position: c
+          label:
+            text: "` FP_B `"
+            x: 1000
+      - Point:
+          coordinates: [0, 7500]
+          droplines:
+            horizontal: 7500
+          color: Red
+          r: 0
+      - Point:
+          coordinates: [500, 7500]
+          droplines:
+            vertical: 500
+          color: Darkgrey
+          r: 0
+          strokeWidth: 0.5
+
+# profit/loss
+      - Area:
+          fn1: (7500)
+          fn2: (6250)
+          fill: red
+          min: 0
+          max: 750
+          show: params.showTS == 0
+
+# deadweight loss
+      - Area:
+          fn1: (7500)
+          fn2: (10000)-(x)*(1000)*(0.25)/(50)
+          fill: Darkgrey
+          opacity: 0.7
+          min: 500
+          max: 750
+          show: params.showTS == 2
+
+
+
+
+
+
+
+
+
+
+    sidebar:
+      controls:
+
+      - title: FIGURA 12.2
+        # sliders:
+        # - param: P1
+        #   label: P_1
+        # - param: P2
+        #   label: P_2
+
+        radioGroup:
+          param: showTS
+          options:
+            - Mostra profitti ( = zero)
+            - Mostra surplus totale
+            - Mostra perdita secca
+
+        # - param: showPS
+        #   label: "` \\\\text{Mostra surplus del monopolista} `"
+        # - param: showDWL
+        #   label: "` \\\\text{Mostra perdita secca} `"
+
+        divs:
+        - html: <br>
+        - html: "` In termini attesi, le compagnie guadagnano $3750$ euro da ciascun assicurato
+                   del gruppo $A$, e perdono $1250$ euro da ciascun assicurato del gruppo $B$.
+                   Il loro profitto (differenza tra area verde e area rossa) è quindi pari a zero.
+                  `"
+          show: params.showTS == 0
+
+        - html: "` Dato che le compagnie fanno zero profitti, il surplus totale coincide
+                   con il surplus dell'assicurato, ed è pari a $1.875$ milioni di euro.
+                   Rispetto al caso di rischio osservabile (surplus 2.5 milioni)
+                   si ha quindi una perdita secca di $625000$ euro. Il gruppo $A$ sta peggio,
+                   il gruppo $B$ sta meglio: la non osservabilità del rischio crea un sussidio
+                   implicito a favore del gruppo $B$, a spese del gruppo $A$.
+                  `"
+          show: params.showTS == 1
+
+        - html: "` La non osservabilità del rischio fa sì che scambi che avrebbero creato
+                  surplus non avvengono. La corrispondente perdita secca è pari all'area grigia
+                  nel grafico di sinistra. Inoltre, scambi che creano un surplus negativo avvengono.
+                  La corrispondente perdita secca è pari all'area grigia nel grafico di destra.
+                  In totale la perdita secca è pari a $625000$ euro.
+                  `"
+          show: params.showTS == 2
+
+
+    explanation:
+      divs:
+        - html: <br>
+        - html: "` Qualunque sia il prezzo della polizza, il numero di individui del gruppo $B$ disposti
+                  a comprare la polizza a quel prezzo è esattamente il triplo del numero di individui
+                  del gruppo $A$ disposti a farlo. Dal punto di vista delle compagnie, ogni assicurato
+                  ha quindi una probabilità pari a $1/4$ di appartenere al gruppo $A$, e $3/4$ di
+                  appartenere al gruppo $B$. Le compagnie, quindi, in concorrenza tra loro, offrono
+                  polizze ad un prezzo pari al costo marginale atteso, ovvero
+                    $$ \\\\dfrac{1}{4}\\\\times 2500 + \\\\dfrac{3}{4}\\\\times 7500 = 6250 $$
+                  `"
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,248 @@
+params:
+
+- {name: w1, value: 0, min: 0, max: 4000, round: 500} 
+- {name: w2, value: 10000, min: 6000, max: 10000, round: 500} 
+- {name: p, value: 0.5, min: 0.2, max: 0.8, round: 0.1}  # probability of payoff w1
+- {name: pi, value: 0.5, min: 0.1, max: 4, round: 0.1} # one minus relative risk aversion coefficient
+
+calcs:
+
+  r: (1)-(params.pi)
+  w1: params.w1
+  w2: params.w2
+  a: (1)-(calcs.r)
+  p1: (params.p)
+  p2: (1)-(calcs.p1)
+  u1: (calcs.w1)^(calcs.a)
+  u2: (calcs.w2)^(calcs.a)
+  u2max: (10000)^(calcs.a)
+  EP: (calcs.p1)*(calcs.w1)+(calcs.p2)*(calcs.w2)
+  uEP: (calcs.EP)^(params.pi)
+  EU: (calcs.p1)*(calcs.u1)+(calcs.p2)*(calcs.u2)
+  CE: (calcs.EU)^((1)/(calcs.a))
+  maxU: (1.1)*(calcs.u2max)
+
+aspectRatio: 1.3
+
+layout:
+  OneGraphPlusSidebar:
+
+    graph: 
+      xAxis:
+        max: 11500
+        ticks: 0
+      yAxis:
+        max: calcs.maxU
+        ticks: 0
+
+      objects:
+
+        - Label:
+            coordinates: [11500, 0]
+            text: "` \\\\text{Payoff} `"
+        - Label:
+            coordinates: [0, calcs.maxU]
+            text: "` \\\\text{Utility}  `"
+
+        - Curve:
+            fn: (x)^(1-(calcs.r))
+            color: Blue
+            max: 10500
+            label:
+              text: "` u(W)=W^{${calcs.a.toFixed(1)}} `"
+              x: 10500
+              position: l
+            strokeWidth: 1.5
+
+        - Point:
+            coordinates: [calcs.w1, calcs.u1]
+            droplines: {vertical: calcs.w1.toFixed(0), horizontal: calcs.u1.toFixed(2)}
+            strokeWidth: 0.5
+            color: Blue
+            r: 3.5
+        - Point:
+            coordinates: [calcs.w2, calcs.u2]
+            droplines: {vertical: calcs.w2.toFixed(0), horizontal: calcs.u2.toFixed(2)}
+            strokeWidth: 0.5
+            color: Blue
+            r: 3.5
+        - Point:
+            coordinates: [calcs.EP, calcs.EU]
+            droplines: {vertical: "` EP=${calcs.EP.toFixed(0)} `", horizontal: "` EU=${calcs.EU.toFixed(2)} `"}
+            strokeWidth: 0.5
+            color: Red
+            r: 2.5
+
+        - Point:
+            coordinates: [calcs.EP, calcs.uEP]
+            droplines: {horizontal: "` u(EP)=${calcs.uEP.toFixed(2)} `"}
+            strokeWidth: 0.5
+            color: Green
+            r: 2.5
+        - Segment:
+            a: [calcs.EP, calcs.EU]
+            b: [calcs.EP, calcs.uEP]
+            color: Green
+            strokeWidth: 0.7
+            lineStyle: dotted
+            show: params.pi < 1
+
+        - Segment:
+            a: [calcs.w1, calcs.u1]
+            b: [calcs.w2, calcs.u2]
+            color: Red
+            strokeWidth: 1
+            lineStyle: dashed
+
+    sidebar:
+
+      controls:
+
+      - title: FIGURE 11.1
+        description: Move the first slider to select the individual's preferences. Move the second and third sliders to select the possible outcomes, and the fourth to set the probability that the first outcome occurs. 
+
+        sliders:
+        - param: pi
+          label: \pi
+        - param: w1
+          label: W_1
+        - param: w2
+          label: W_2
+        - param: p
+          label: p_1
+
+        divs:
+        - html: <br>
+
+        - html: "`  The individual is <b>risk averse</b>: $$u(EP)>EU$$ `"
+          show: params.pi < 1
+
+        - html: "`  The individual is <b>risk neutral</b>: $$u(EP)=EU$$ `"
+          show: params.pi == 1
+
+        - html: "`  The individual is <b>risk loving</b>: $$u(EP) < EU$$ `"
+          show: params.pi > 1
+
+    explanation:
+
+      divs:
+
+        - html: "` The two blue points on the curve represent the possible situations:
+                  payoff $W_1=${params.w1}$ and utility $u(W_1)=${calcs.u1.toFixed(2)}$, or 
+                  payoff $W_2=${params.w2}$ and utility $u(W_2)=${calcs.u2.toFixed(2)}$.
+                  `"
+
+        - html: "` Since $W_1$ has probability $2/10$, the expected payoff lies at $8/10$ of the distance between $W_1$ and $W_2$. Indeed:
+                  $$
+                  EP=(2/10)\\\\times W_1+(8/10)\\\\times W_2=W_1+(8/10)\\\\times(W_2-W_1)
+                  =${calcs.EP.toFixed(0)}
+                  $$
+                  `"
+          show: params.p == 0.2
+
+        - html: "` Since $W_1$ has probability $3/10$, the expected payoff lies at $7/10$ of the distance between $W_1$ and $W_2$. Indeed:
+                  $$
+                  EP=(3/10)\\\\times W_1+(7/10)\\\\times W_2=W_1+(7/10)\\\\times(W_2-W_1)
+                  =${calcs.EP.toFixed(0)}
+                  $$
+                  `"
+          show: params.p == 0.3
+
+        - html: "` Since $W_1$ has probability $4/10$, the expected payoff lies at $6/10$ of the distance between $W_1$ and $W_2$. Indeed:
+                  $$
+                  EP=(4/10)\\\\times W_1+(6/10)\\\\times W_2=W_1+(6/10)\\\\times(W_2-W_1)
+                  =${calcs.EP.toFixed(0)}
+                  $$
+                  `"
+          show: params.p == 0.4
+
+        - html: "` Since $W_1$ has probability $5/10$, the expected payoff lies halfway between $W_1$ and $W_2$. Indeed:
+                  $$
+                  EP=(5/10)\\\\times W_1+(5/10)\\\\times W_2=W_1+(5/10)\\\\times(W_2-W_1)
+                  =${calcs.EP.toFixed(0)}
+                  $$
+                  `"
+          show: params.p == 0.5
+
+        - html: "` Since $W_1$ has probability $6/10$, the expected payoff lies at $4/10$ of the distance between $W_1$ and $W_2$. Indeed:
+                  $$
+                  EP=(6/10)\\\\times W_1+(4/10)\\\\times W_2=W_1+(4/10)\\\\times(W_2-W_1)
+                  =${calcs.EP.toFixed(0)}
+                  $$
+                  `"
+          show: params.p == 0.6
+
+        - html: "` Since $W_1$ has probability $7/10$, the expected payoff lies at $3/10$ of the distance between $W_1$ and $W_2$. Indeed:
+                  $$
+                  EP=(7/10)\\\\times W_1+(3/10)\\\\times W_2=W_1+(3/10)\\\\times(W_2-W_1)
+                  =${calcs.EP.toFixed(0)}
+                  $$
+                  `"
+          show: params.p == 0.7
+
+        - html: "` Since $W_1$ has probability $8/10$, the expected payoff lies at $2/10$ of the distance between $W_1$ and $W_2$. Indeed:
+                  $$
+                  EP=(8/10)\\\\times W_1+(2/10)\\\\times W_2=W_1+(2/10)\\\\times(W_2-W_1)
+                  =${calcs.EP.toFixed(0)}
+                  $$
+                  `"
+          show: params.p == 0.8
+
+        - html: "` The red dashed line helps visualize the expected utility, which corresponds to the height of the red point. `"
+
+        - html: "` Expected utility is computed using the same probabilities used for expected payoff, so it lies at 
+                  $8/10$ of the distance between $u(W_1)$ and $u(W_2)$. Indeed:
+                  $$
+                  EU=(2/10)\\\\times u(W_1)+(8/10)\\\\times u(W_2)=u(W_1)+(8/10)\\\\times(u(W_2)-u(W_1))
+                  =${calcs.EU.toFixed(2)}
+                  $$
+                  `"
+          show: params.p == 0.2
+
+        - html: "` Expected utility lies at $7/10$ of the distance between $u(W_1)$ and $u(W_2)$. Indeed:
+                  $$
+                  EU=(3/10)\\\\times u(W_1)+(7/10)\\\\times u(W_2)=u(W_1)+(7/10)\\\\times(u(W_2)-u(W_1))
+                  =${calcs.EU.toFixed(2)}
+                  $$
+                  `"
+          show: params.p == 0.3
+
+        - html: "` Expected utility lies at $6/10$ of the distance between $u(W_1)$ and $u(W_2)$. Indeed:
+                  $$
+                  EU=(4/10)\\\\times u(W_1)+(6/10)\\\\times u(W_2)=u(W_1)+(6/10)\\\\times(u(W_2)-u(W_1))
+                  =${calcs.EU.toFixed(2)}
+                  $$
+                  `"
+          show: params.p == 0.4
+
+        - html: "` Expected utility lies halfway between $u(W_1)$ and $u(W_2)$. Indeed:
+                  $$
+                  EU=(5/10)\\\\times u(W_1)+(5/10)\\\\times u(W_2)=u(W_1)+(5/10)\\\\times(u(W_2)-u(W_1))
+                  =${calcs.EU.toFixed(2)}
+                  $$
+                  `"
+          show: params.p == 0.5
+
+        - html: "` Expected utility lies at $4/10$ of the distance between $u(W_1)$ and $u(W_2)$. Indeed:
+                  $$
+                  EU=(6/10)\\\\times u(W_1)+(4/10)\\\\times u(W_2)=u(W_1)+(4/10)\\\\times(u(W_2)-u(W_1))
+                  =${calcs.EU.toFixed(2)}
+                  $$
+                  `"
+          show: params.p == 0.6
+
+        - html: "` Expected utility lies at $3/10$ of the distance between $u(W_1)$ and $u(W_2)$. Indeed:
+                  $$
+                  EU=(7/10)\\\\times u(W_1)+(3/10)\\\\times u(W_2)=u(W_1)+(3/10)\\\\times(u(W_2)-u(W_1))
+                  =${calcs.EU.toFixed(2)}
+                  $$
+                  `"
+          show: params.p == 0.7
+
+        - html: "` Expected utility lies at $2/10$ of the distance between $u(W_1)$ and $u(W_2)$. Indeed:
+                  $$
+                  EU=(8/10)\\\\times u(W_1)+(2/10)\\\\times u(W_2)=u(W_1)+(2/10)\\\\times(u(W_2)-u(W_1))
+                  =${calcs.EU.toFixed(2)}
+                  $$
+                  `"
+          show: params.p == 0.8

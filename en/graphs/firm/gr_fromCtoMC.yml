@@ -1,0 +1,345 @@
+params:
+- {name: showEFF, value: true}
+- {name: d, value: 0}
+- {name: p, value: 4, min: 0, max: 12}
+- {name: m, value: 100}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+
+- {name: b11, value: 112}
+- {name: b12, value: 48}
+- {name: b21, value: 36}
+- {name: b22, value: 30}
+- {name: b31, value: 26}
+- {name: b32, value: 24}
+
+- {name: w, value: 64}
+- {name: fc, value: 80}
+
+- {name: x, value: 80, min: 0, max: 140, round: 0.01}
+
+calcs:
+
+  b1: ((params.b11)+(params.b12))/2
+  b2: ((params.b21)+(params.b22))/2
+  b3: ((params.b31)+(params.b32))/2
+
+  t11: (params.b11)/2
+  t12: (params.b11+params.b12)/2
+  t21: (params.b11+params.b12+params.b21)/2
+  t22: (params.b11+params.b12+params.b21+params.b22)/2
+  t31: (params.b11+params.b12+params.b21+params.b22+params.b31)/2
+  t32: (params.b11+params.b12+params.b21+params.b22+params.b31+params.b32)/2
+  t1: calcs.b1
+  t2: calcs.t1+calcs.b2
+  t3: calcs.t2+calcs.b3
+
+  l: ((1)/80^2)*(params.x)^2
+  vc: ((params.w)/80^2)*(params.x)^2
+  tc: (params.fc) + ((params.w)/80^2)*(params.x)^2
+  afc: (params.fc)/(params.x)
+  avc: ((params.w)/80^2)*(params.x)
+  atc: (params.fc)/(params.x) + ((params.w)/80^2)*(params.x)
+  mc: (2*(params.w)/80^2)*(params.x)
+
+  afc11: (params.fc)/(calcs.t11)
+  afc12: (params.fc)/(calcs.t12)
+  afc21: (params.fc)/(calcs.t21)
+  afc22: (params.fc)/(calcs.t22)
+  afc31: (params.fc)/(calcs.t31)
+  afc32: (params.fc)/(calcs.t32)
+
+  avc11: (params.w) * 0.5 / (calcs.t11)
+  avc12: (params.w) * 1 / (calcs.t12)
+  avc21: (params.w) * 1.5 / (calcs.t21)
+  avc22: (params.w) * 2 / (calcs.t22)
+  avc31: (params.w) * 2.5 / (calcs.t31)
+  avc32: (params.w) * 3 / (calcs.t32)
+
+  atc11: (calcs.afc11) + (calcs.avc11)
+  atc12: (calcs.afc12) + (calcs.avc12)
+  atc21: (calcs.afc21) + (calcs.avc21)
+  atc22: (calcs.afc22) + (calcs.avc22)
+  atc31: (calcs.afc31) + (calcs.avc31)
+  atc32: (calcs.afc32) + (calcs.avc32)
+
+  mc11: (params.w) * 0.5 / (calcs.t11)
+  mc12: (params.w) * 0.5 / ((calcs.t12)-(calcs.t11))
+  mc21: (params.w) * 0.5 / ((calcs.t21)-(calcs.t12))
+  mc22: (params.w) * 0.5 / ((calcs.t22)-(calcs.t21))
+  mc31: (params.w) * 0.5 / ((calcs.t31)-(calcs.t22))
+  mc32: (params.w) * 0.5 / ((calcs.t32)-(calcs.t31))
+
+aspectRatio: 1
+
+layout:
+  TwoVerticalGraphsPlusSidebar:
+
+    topGraph:
+      yAxis:
+        max: (params.fc) + (params.w)*3 + 20
+        ticks: none
+      xAxis:
+        max: 160
+        ticks: none
+
+      objects:
+
+        - Label:
+              coordinates: [0, (params.fc) + (params.w)*3 + 20]
+              text: "` \\\\text{Euro} `"
+              xPixelOffset: 0
+        - Label:
+              coordinates: [160, 0]
+              text: "` \\\\text{Output (kg)}  `"
+              xPixelOffset: 0
+
+# FC whole labor units
+        - Point: {coordinates: [0,(params.fc)], color: Gray, opacity: 0.7, show: params.d < 2 && params.showEFF == true, r: 5}
+        - Point: {coordinates: [calcs.b1,(params.fc)], color: Gray, opacity: 0.7, droplines: {vertical: calcs.b1, horizontal: (params.fc)}, show: params.d < 2 && params.showEFF == true, r: 5}
+        - Point: {coordinates: [calcs.b1+calcs.b2,(params.fc)], color: Gray, opacity: 0.7, droplines: {vertical: calcs.b1+calcs.b2, horizontal: }, show: params.d < 2 && params.showEFF == true, r: 5}
+        - Point: {coordinates: [calcs.b1+calcs.b2+calcs.b3,(params.fc)], color: Gray, opacity: 0.7, droplines: {vertical: calcs.b1+calcs.b2+calcs.b3, horizontal: }, show: params.d < 2 && params.showEFF == true, r: 5}
+
+# FC half labor units
+        - Point: {coordinates: [calcs.t11,(params.fc)], color: Gray, opacity: 0.7, droplines: {vertical: calcs.t11, horizontal: }, show: params.d == 1 && params.showEFF == true, r: 5}
+        - Point: {coordinates: [calcs.t21,(params.fc)], color: Gray, opacity: 0.7, droplines: {vertical: calcs.t21, horizontal: }, show: params.d == 1 && params.showEFF == true, r: 5}
+        - Point: {coordinates: [calcs.t31,(params.fc)], color: Gray, opacity: 0.7, droplines: {vertical: calcs.t31, horizontal: }, show: params.d == 1 && params.showEFF == true, r: 5}
+
+
+# VC whole labor units
+        - Point: {coordinates: [0,0], color: Darkorange, show: params.d < 2 && params.showEFF == true, r: 5}
+        - Point: {coordinates: [calcs.b1,(params.w)*1], color: Darkorange, droplines: {vertical: calcs.b1, horizontal: (params.w)*1}, show: params.d < 2 && params.showEFF == true, r: 5}
+        - Point: {coordinates: [calcs.b1+calcs.b2,(params.w)*2], color: Darkorange, droplines: {vertical: calcs.b1+calcs.b2, horizontal: (params.w)*2}, show: params.d < 2 && params.showEFF == true, r: 5}
+        - Point: {coordinates: [calcs.b1+calcs.b2+calcs.b3,(params.w)*3], color: Darkorange, droplines: {vertical: calcs.b1+calcs.b2+calcs.b3, horizontal: (params.w)*3}, show: params.d < 2 && params.showEFF == true, r: 5}
+
+# TC whole labor units
+        - Point: {coordinates: [0,(params.fc)], color: Brown, show: params.d < 2 && params.showEFF == true, r: 5}
+        - Point: {coordinates: [calcs.b1,(params.w)*1+(params.fc)], color: Brown, droplines: {vertical: calcs.b1, horizontal: (params.w)*1+(params.fc)}, show: params.d < 2 && params.showEFF == true, r: 5}
+        - Point: {coordinates: [calcs.b1+calcs.b2,(params.w)*2+(params.fc)], color: Brown, droplines: {vertical: calcs.b1+calcs.b2, horizontal: (params.w)*2+(params.fc)}, show: params.d < 2 && params.showEFF == true, r: 5}
+        - Point: {coordinates: [calcs.b1+calcs.b2+calcs.b3,(params.w)*3+(params.fc)], color: Brown, droplines: {vertical: calcs.b1+calcs.b2+calcs.b3, horizontal: (params.w)*3+(params.fc)}, show: params.d < 2 && params.showEFF == true, r: 5}
+
+# VC half labor units
+        - Point: {coordinates: [calcs.t11,(params.w)*0.5], color: Darkorange, droplines: {vertical: calcs.t11, horizontal: (params.w)*0.5}, show: params.d == 1 && params.showEFF == true, r: 5}
+        - Point: {coordinates: [calcs.t21,(params.w)*1.5], color: Darkorange, droplines: {vertical: calcs.t21, horizontal: (params.w)*1.5}, show: params.d == 1 && params.showEFF == true, r: 5}
+        - Point: {coordinates: [calcs.t31,(params.w)*2.5], color: Darkorange, droplines: {vertical: calcs.t31, horizontal: (params.w)*2.5}, show: params.d == 1 && params.showEFF == true, r: 5}
+
+# TC half labor units
+        - Point: {coordinates: [calcs.t11,(params.w)*0.5+(params.fc)], color: Brown, droplines: {vertical: calcs.t11, horizontal: (params.w)*0.5+(params.fc)}, show: params.d == 1 && params.showEFF == true, r: 5}
+        - Point: {coordinates: [calcs.t21,(params.w)*1.5+(params.fc)], color: Brown, droplines: {vertical: calcs.t21, horizontal: (params.w)*1.5+(params.fc)}, show: params.d == 1 && params.showEFF == true, r: 5}
+        - Point: {coordinates: [calcs.t31,(params.w)*2.5+(params.fc)], color: Brown, droplines: {vertical: calcs.t31, horizontal: (params.w)*2.5+(params.fc)}, show: params.d == 1 && params.showEFF == true, r: 5}
+
+# FC divisible labor
+        - Curve:
+            fn: (params.fc)
+            color: Gray
+            strokeWidth: 2
+            label:
+              text: "` FC = ${params.fc} `"
+              x: 130
+              position: bl
+              bgcolor: none
+            show: params.d == 2 && params.showEFF == true
+
+# VC divisible labor
+        - Curve:
+            fn: ((params.w)/80^2)*(x)^2
+            color: Darkorange
+            strokeWidth: 2
+            max: 150
+            label:
+              text: "` VC(Q) = \\\\dfrac{ ${params.w} }{80^2} Q^2 `"
+              x: 140
+              position: l
+              bgcolor: none
+            show: params.d == 2 && params.showEFF == true
+
+# TC divisible labor
+        - Curve:
+            fn: (params.fc) + ((params.w)/80^2)*(x)^2
+            color: Brown
+            strokeWidth: 2
+            label:
+              text: "` C(Q) = ${params.fc} + \\\\dfrac{ ${params.w} }{80^2} Q^2 `"
+              x: 130
+              position: l
+              bgcolor: none
+            show: params.d == 2 && params.showEFF == true
+
+# # tangent
+#         - Line:
+#             point: [calcs.dem,(12*(calcs.dem))-2*(calcs.dem)^2]
+#             slope: params.p
+#             color: Black
+#             min: calcs.dem-1
+#             max: calcs.dem+1
+#             strokeWidth: 1
+#             show: params.d == 2
+
+        - Point:
+            coordinates: [params.x, params.fc]
+            droplines: {horizontal: params.fc.toFixed(2), vertical: params.x.toFixed(2)}
+            color: Gray
+            r: 5
+            drag:
+            - horizontal: x
+            show: params.d == 2
+
+        - Point:
+            coordinates: [params.x, calcs.vc]
+            droplines: {horizontal: calcs.vc.toFixed(2), vertical: params.x.toFixed(2)}
+            color: Darkorange
+            r: 5
+            drag:
+            - horizontal: x
+            show: params.d == 2
+
+        - Point:
+            coordinates: [params.x, calcs.tc]
+            droplines: {horizontal: calcs.tc.toFixed(2), vertical: params.x.toFixed(2)}
+            color: Brown
+            r: 5
+            drag:
+            - horizontal: x
+            show: params.d == 2
+
+
+
+
+
+
+
+
+
+
+
+
+    bottomGraph: 
+      yAxis:
+        max: 3
+        ticks: none
+      xAxis:
+        max: 160
+        ticks: none
+
+      objects:
+
+        - Label:
+              coordinates: [0, 3]
+              text: "` \\\\text{Euro/kg} `"
+              xPixelOffset: 0
+        - Label:
+              coordinates: [160, 0]
+              text: "` \\\\text{Output (kg)}  `"
+              xPixelOffset: 0
+
+# MC whole labor units
+        - Point: {coordinates: [calcs.t12,calcs.mc12], color: Red, droplines: {vertical: calcs.t12, horizontal: calcs.mc12.toFixed(2)}, show: params.d < 2 && params.showEFF == true, r: 5}
+        - Point: {coordinates: [calcs.t22,calcs.mc22], color: Red, droplines: {vertical: calcs.t22, horizontal: calcs.mc22.toFixed(2)}, show: params.d < 2 && params.showEFF == true, r: 5}
+        - Point: {coordinates: [calcs.t32,calcs.mc32], color: Red, droplines: {vertical: calcs.t32, horizontal: calcs.mc32.toFixed(2)}, show: params.d < 2 && params.showEFF == true, r: 5}
+
+# MC half labor units
+        - Point: {coordinates: [calcs.t11,calcs.mc11], color: Red, droplines: {vertical: calcs.t11, horizontal: calcs.mc11.toFixed(2)}, show: params.d == 1 && params.showEFF == true, r: 5}
+        - Point: {coordinates: [calcs.t21,calcs.mc21], color: Red, droplines: {vertical: calcs.t21, horizontal: calcs.mc21.toFixed(2)}, show: params.d == 1 && params.showEFF == true, r: 5}
+        - Point: {coordinates: [calcs.t31,calcs.mc31], color: Red, droplines: {vertical: calcs.t31, horizontal: calcs.mc31.toFixed(2)}, show: params.d == 1 && params.showEFF == true, r: 5}
+
+
+# MC divisible labor
+        - Curve:
+            fn: (2*(params.w)/80^2)*(x)
+            color: Red
+            strokeWidth: 2
+            max: 150
+            label:
+              text: "` MC(Q) = 2\\\\dfrac{ ${params.w} }{80^2} Q `"
+              x: 140
+              position: l
+            bgcolor: none
+            show: params.d == 2 && params.showEFF == true
+
+# # tangent
+#         - Line:
+#             point: [calcs.dem,(12*(calcs.dem))-2*(calcs.dem)^2]
+#             slope: params.p
+#             color: Black
+#             min: calcs.dem-1
+#             max: calcs.dem+1
+#             strokeWidth: 1
+#             show: params.d == 2
+
+        - Point:
+            coordinates: [params.x, calcs.mc]
+            droplines: {horizontal: calcs.mc.toFixed(2), vertical: params.x.toFixed(2)}
+            color: Red
+            r: 5
+            drag:
+            - horizontal: x
+            show: params.d == 2
+
+
+
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURE 3.10
+        description: The total cost, variable cost and fixed cost functions are drawn in brown, orange and grey,
+                    respectively, in the top graph.
+                    The marginal cost function is drawn in red in the bottom graph.
+        # sliders:
+        # - param: p
+        #   label: P
+        radioGroup:
+          param: d
+          options:
+            - Labor hired by whole days
+            - Labor hired by half days
+            - Labor hired by small fractions of time
+       # checkboxes:
+        # - param: showEFF
+        #   label: "` \\\\textit{Evidenzia frontiera efficiente} `"
+        divs:
+        - html: "`  `"
+        - html: "`  `"
+        - html: "`  `"
+        - html: "`  `"
+        - html: "`  `"
+        - html: "` The bottom graph shows that the marginal cost function is increasing.
+                  This is due to the fact that marginal product is decreasing. Indeed,
+                  saying that $MP_L$ is decreasing in $L$ (the more labor the firm hires, 
+                  the smaller the additional output deriving from the last unit of labor hired)
+                  is equivalent to saying that $MC$ is increasing in $Q$
+                  (the more output the firm produces, the larger the labor cost needed to obtain the last
+                  unit of output produced). `"
+
+    # explanation:
+    #   divs:
+    #     - html: "` I punti nel grafico rappresentano le possibilità produttive dell'impresa quando i lavoratori devono essere assunti 
+    #               a giornata. Non assumendo lavoratori, l'output è zero. Assumendo un lavoratore per una giornata, l'impresa può scegliere se ottenere
+    #               un output pari a zero (per es. chiedendo al lavoratore di non fare nulla), pari a 80 (il massimo output ottenibile con una giornata
+    #               di lavoro) oppure pari a 30 o 56 (sfruttando, ma non al massimo, la produttività del lavoratore). Assumendo un lavoratore per due
+    #               giornate (o due lavoratori per una giornata ciascuno), l'impresa può ottenere un output pari a 0, 30, 56, 80, 98 o 113, e così via. `"
+    #       show: params.d == 0
+    #     - html: "` Fra tutte le possibilità produttive a sua disposizione, l'impresa sarà ovviamente interessata solo a quelle
+    #                <b>efficienti</b>, ovvero quelle possibilità tali per cui, in corrispondenza di un dato livello di impiego di lavoro,
+    #                la quantità di output è massima. Selezionare la casella di controllo <i>Evidenzia frontiera efficiente</i> per visualizzare le possibilità produttive
+    #                efficienti (punti blu nel grafico). `"
+    #       show: params.d == 0
+    #     - html: "` I punti nel grafico rappresentano le possibilità produttive dell'impresa quando i lavoratori devono essere assunti in multipli di
+    #               mezza giornata. In questo caso, oltre alle possibilità produttive già disponibili quando i lavoratori devono essere assunti a giornata,
+    #               l'impresa ha a disposizione nuove possibilità, come per es. produrre 126 unità di output impiegando 2.5 giornate di lavoro. `"
+    #       show: params.d == 1
+    #     - html: "` Fra tutte le possibilità produttive a sua disposizione, l'impresa sarà ovviamente interessata solo a quelle
+    #                <b>efficienti</b>, ovvero quelle possibilità tali per cui, in corrispondenza di un dato livello di impiego di lavoro,
+    #                la quantità di output è massima. Selezionare la casella di controllo <i>Evidenzia frontiera efficiente</i> per visualizzare le possibilità produttive
+    #                efficienti (punti blu nel grafico). `"
+    #       show: params.d == 1
+    #     - html: "` Quando l'input è divisibile, cioè quando l'impresa può assumere il lavoro a frazioni di ora, oltre alle possibilità produttive già disponibili quando i lavoratori devono essere assunti 
+    #               in multipli di mezza giornata, l'impresa ha a disposizione tante altre possibilità (qualunque punto nell'area grigia). `"
+    #       show: params.d == 2
+    #     - html: "` Fra tutte le possibilità produttive a sua disposizione, l'impresa sarà ovviamente interessata solo a quelle
+    #                <b>efficienti</b>, ovvero quelle tali per cui, in corrispondenza di un dato livello di impiego di lavoro,
+    #                la quantità di output è massima. Selezionare la casella di controllo <i>Evidenzia frontiera efficiente</i> per visualizzare le possibilità produttive
+    #                efficienti (in questo caso, l'intera curva blu). `"
+    #       show: params.d == 2

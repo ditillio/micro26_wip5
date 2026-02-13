@@ -1,0 +1,423 @@
+---
+schema: EconSchema
+version: 1
+params:
+
+- {name: cap, value: 7, min: 3, max: 10, round: 0.5}
+
+- {name: dslope, value: 0.01} # abs value of slope of inverse demand
+- {name: dint, value: 10} # intercept of inverse demand
+- {name: mc, value: 2} # marginal cost 
+
+- {name: showCS, value: 0}
+- {name: showPS, value: 0}
+- {name: showDWL, value: 0}
+
+calcs:
+
+  maxQ: (1.1)*(params.dint)/(params.dslope) # max displayed quantity
+  maxP: (1.15)*(params.dint) # max displayed price
+  minP: -(0.15)*(calcs.maxP) # max displayed price
+
+  Q0: ( (params.dint) - (params.cap) ) / (params.dslope) # quantity demanded at price cap
+
+  Qmon: ((params.dint)-(params.mc))/((2)*(params.dslope)) # monopolistic quantity
+  Pmon: (params.dint)-(params.dslope)*(calcs.Qmon) # monopolistic price
+
+  Qcomp: ((params.dint)-(params.mc))/(params.dslope) # competitive quantity
+  Pcomp: 1*(params.mc) # competitive price
+
+  eqP: min((params.cap),(calcs.Pmon)) # equilibrium price
+  eqQ: ((params.dint)-(calcs.eqP))/(params.dslope) # equilibrium quantity
+
+  maxrev: (1.1)*(calcs.Pmon)*(calcs.Qmon)
+
+aspectRatio: 0.75
+
+layout:
+
+  type: TwoVerticalGraphsPlusSidebar
+
+  def:
+
+
+    topGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: calcs.maxQ
+        ticks: 0
+      yAxis:
+        orient: left
+        min: 0
+        max: calcs.maxrev
+        ticks: 0
+
+      objects:
+
+      - Label:
+            coordinates: [calcs.maxQ, 0]
+            text: "` \\\\text{units} `"
+            yPixelOffset: 0
+            position: l
+      - Label:
+            coordinates: [0, calcs.maxrev]
+            text: "` \\\\text{euro}  `"
+            xPixelOffset: -5
+
+# revenue
+      - Segment:
+          a: [0,0]
+          b: [calcs.Q0,(params.cap)*(calcs.Q0)]
+          color: Green
+          strokeWidth: 2.5
+      - Curve:
+          fn: ( (params.dint) - (params.dslope)*(x) ) * (x)
+          min: calcs.Q0
+          color: Green
+          strokeWidth: 2.5
+          position: bl
+          label:
+            text: R
+            x: (0.9)*(calcs.maxQ)
+      - Point:
+          coordinates: [calcs.eqQ, (calcs.eqP)*(calcs.eqQ)]
+          droplines:
+            vertical: calcs.eqQ
+          color: Green
+          r: 0
+      - Point:
+          coordinates: [(params.dint)/(params.dslope),0]
+          droplines:
+            vertical: (params.dint)/(params.dslope)
+          color: Green
+          r: 0
+      - Point:
+          coordinates: [calcs.Q0,(params.cap)*(calcs.Q0)]
+          droplines:
+            vertical: calcs.Q0
+            horizontal: (params.cap)*(calcs.Q0)
+          color: grey
+          r: 0
+          show: params.cap > calcs.Pmon
+
+# shadow revenue
+      - Curve:
+          fn: ( (params.dint) - (params.dslope)*(x) ) * (x)
+          max: calcs.Q0
+          color: Green
+          strokeWidth: 0.75
+          lineStyle: dashed
+
+# cost
+      - Line:
+          yIntercept: 0
+          slope: params.mc
+          color: Red
+          strokeWidth: 2.5
+          position: tl
+          label:
+            text: C
+            x: calcs.maxQ
+
+# tangent to R at monopolistic choice
+      - Segment:
+          a: [(calcs.Qmon)-(5),((calcs.Pmon)*(calcs.Qmon))-((params.dint)-(2)*(params.dslope)*(calcs.Qmon))*5]
+          b: [(calcs.Qmon)+(5),((calcs.Pmon)*(calcs.Qmon))+((params.dint)-(2)*(params.dslope)*(calcs.Qmon))*5]
+          color: grey
+          lineStyle: dotted
+
+# tangent to C at monopolistic choice
+      - Segment:
+          a: [(calcs.Qmon)-(5),((params.mcslope)/2)*((calcs.Qmon)^(2))-((params.mcslope)*(calcs.Qmon))*5]
+          b: [(calcs.Qmon)+(5),((params.mcslope)/2)*((calcs.Qmon)^(2))+((params.mcslope)*(calcs.Qmon))*5]
+          color: grey
+          lineStyle: dotted
+
+# vertical dropline at monopolistic choice
+      - Point:
+          coordinates: [calcs.Qmon, ((params.dint)-(params.dslope)*(calcs.Qmon))*(calcs.Qmon)]
+          droplines:
+            vertical: calcs.Qmon
+          color: grey
+          r: 0
+          show: calcs.eqQ !== calcs.Qmon
+
+
+
+
+
+    bottomGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: calcs.maxQ
+        ticks: 0
+      yAxis:
+        orient: left
+        min: calcs.minP
+        max: calcs.maxP
+        ticks: 0
+      objects:
+      - Label:
+            coordinates: [calcs.maxQ, 0]
+            text: "` \\\\text{units} `"
+            yPixelOffset: 0
+            position: l
+      - Label:
+            coordinates: [0, calcs.maxP]
+            text: "` \\\\text{euro/unit}  `"
+            xPixelOffset: -5
+      - Label:
+            coordinates: [0, 0]
+            text: 0
+            position: r
+
+
+# market demand function
+      - Line:
+          yIntercept: params.dint
+          slope: -params.dslope
+          color: Blue
+          max: (params.dint)/(params.dslope)
+          strokeWidth: 2.5
+          position: bl
+          label:
+            text: D
+            x: (0.9)*(calcs.maxQ)
+      - Point:
+          coordinates: [0,(params.dint)]
+          droplines:
+            horizontal: (params.dint)
+          color: Blue
+          r: 0
+      - Point:
+          coordinates: [(params.dint)/(params.dslope),0]
+          droplines:
+            vertical: (params.dint)/(params.dslope)
+          color: Blue
+          r: 0
+
+# monopolist marginal cost
+      - Line:
+          yIntercept: params.mc
+          slope: 0
+          color: Red
+          strokeWidth: 2.5
+          position: c
+          label:
+            text: MC
+            x: (0.97)*(calcs.maxQ)
+      - Point:
+          coordinates: [0,params.mc]
+          droplines:
+            horizontal: params.mc
+          color: Red
+          r: 0
+
+# marginal revenue
+      - Line:
+          yIntercept: params.dint
+          min: calcs.Q0 
+          slope: -(2)*(params.dslope)
+          color: Green
+          strokeWidth: 2.5
+          position: c
+          label:
+            text: MR
+            y: calcs.minP
+      - Segment:
+          a: [0,params.cap]
+          b: [calcs.Q0,params.cap]
+          color: Green
+          strokeWidth: 2.5
+      - Segment:
+          a: [calcs.Q0,params.cap]
+          b: [calcs.Q0,(params.dint)-(2)*(params.dslope)*(calcs.Q0)]
+          color: Green
+          strokeWidth: 3
+          lineStyle: dashed
+      - Point:
+          coordinates: [calcs.Q0, (params.dint)-(2)*(params.dslope)*(calcs.Q0)]
+          droplines:
+            vertical: calcs.Q0
+          color: grey
+          r: 0
+          show: calcs.Q0 < calcs.Qmon
+      - Point:
+          coordinates: [calcs.Q0, 0]
+          droplines:
+            vertical: calcs.Q0
+          color: grey
+          r: 0
+          show: calcs.Q0 > calcs.Qcomp
+
+# shadow marginal revenue
+      - Line:
+          yIntercept: params.dint
+          slope: -(2)*(params.dslope)
+          color: Green
+          strokeWidth: 0.75
+          lineStyle: dashed
+
+# price cap
+      - Line:
+          yIntercept: params.cap
+          min: calcs.Q0
+          color: Purple
+          label:
+            text: P_\text{max}
+            x: calcs.maxQ
+            position: l
+          strokeWidth: 1
+          bgcolor: none
+          drag:
+            - vertical: cap
+      - Point:
+          coordinates: [0, params.cap]
+          droplines:
+            vertical: 
+            horizontal: params.cap
+          color: Purple
+          r: 0
+
+
+# monopolistic equilibrium with non-binding price cap
+      - Point:
+          coordinates: [calcs.Qmon, calcs.Pmon]
+          droplines:
+            vertical: calcs.Qmon
+            horizontal: calcs.Pmon
+          color: Green
+          r: 4
+          show: params.cap > calcs.Pmon
+
+# monopolistic equilibrium with binding price cap
+      - Point:
+          coordinates: [calcs.Q0, params.cap]
+          droplines:
+            horizontal: params.cap
+          color: Green
+          r: 4
+          show: params.cap <= calcs.Pmon && params.cap >= calcs.Pcomp
+      - Point:
+          coordinates: [calcs.Q0, (params.dint)-2*(params.dslope)*(calcs.Q0)]
+          droplines:
+            vertical: calcs.Q0
+          color: Green
+          r: 0
+          show: params.cap <= calcs.Pmon && params.cap >= calcs.Pcomp && (params.dint)-2*(params.dslope)*(calcs.Q0) >= 0
+      - Point:
+          coordinates: [calcs.Q0, 0]
+          droplines:
+            vertical: calcs.Q0
+          color: Green
+          r: 0
+          show: params.cap <= calcs.Pmon && params.cap >= calcs.Pcomp && (params.dint)-2*(params.dslope)*(calcs.Q0) < 0
+
+
+      - Point:
+          coordinates: [(params.cap)/(params.mcslope), params.cap]
+          droplines:
+            vertical: (params.cap)/(params.mcslope)
+            horizontal: params.cap
+          color: Green
+          r: 4
+          show: params.cap < calcs.Pcomp
+
+
+# consumer surplus
+      - Area:
+          fn1: (params.dint) - (params.dslope) * (x)
+          fn2: (calcs.eqP)
+          fill: blue
+          min: 0
+          max: (calcs.eqQ)
+          show: params.showCS == 1
+
+      - Segment:
+          a: [calcs.eqQ,(params.mcslope)*(calcs.eqQ)]
+          b: [calcs.eqQ,(params.dint)-(params.dslope)*(calcs.eqQ)]
+          color: grey
+          lineStyle: dotted
+          show: (params.showCS)+(params.showDWL) > 0 && params.cap < calcs.Pcomp
+
+# producer surplus
+      - Area:
+          fn1: calcs.eqP
+          fn2: params.mc
+          fill: green
+          min: 0
+          max: calcs.eqQ
+          show: params.showPS == 1
+
+# deadweight loss
+      - Area:
+          fn1: (params.dint)-(params.dslope)*(x)
+          fn2: (params.mc)
+          fill: grey
+          min: calcs.eqQ
+          max: calcs.Qcomp
+          show: params.showDWL == 1
+
+
+
+
+
+
+    sidebar:
+      controls:
+
+
+      - title: FIGURE 7.3
+        sliders:
+        - param: cap
+          label: P_\text{max}
+        checkboxes:
+        - param: showCS
+          label: "` \\\\text{Show consumer surplus} `"
+        - param: showPS
+          label: "` \\\\text{Show monopolist profit} `"
+        - param: showDWL
+          label: "` \\\\text{Show deadweight loss} `"
+
+        divs:
+        - html: "` `"
+        - html: "` As in Figure 5.5, if the monopolist's marginal cost is
+                  $ MC=${params.mc}$
+                  and the market demand function is
+                  $ P=${params.dint}-${params.dslope}Q$
+                  then, in the absence of government intervention, the price is $P^M=${calcs.Pmon}$
+                      and the quantity produced is $Q^M=${calcs.Qmon}$. `"
+        - html: "` Introducing a price ceiling of $P_\\\\text{max}=${params.cap}$ has 
+                  no effect on the market. `"
+          show: params.cap >= calcs.Pmon
+        - html: "` Introducing a price ceiling of $P_\\\\text{max}=${params.cap}$ 
+                  lowers the price (which becomes $P=${params.cap}$), increases the quantity 
+                  (which becomes $Q=${calcs.eqQ}$), and reduces the deadweight loss. `"
+          show: params.cap < calcs.Pmon && params.cap > calcs.Pcomp
+        - html: "` Introducing a price ceiling of $P_\\\\text{max}=${params.cap}$ 
+                  lowers the price (which becomes $P=${params.cap}$) and increases the 
+                  quantity (which becomes $Q=${calcs.eqQ}$). The deadweight loss
+                  is reduced to zero. `"
+          show: params.cap == calcs.Pcomp
+
+    explanation:
+      divs:
+        - html: "` In the presence of a price ceiling $P_\\\\text{max}=${params.cap}$, the marginal revenue curve $MR$ is flat up to the quantity demanded at the ceiling price, that is
+                 $Q=${((params.dint)-(params.cap))/(params.dslope)}$. 
+                 At that quantity, the $MR$ curve has a discontinuity.
+                 Beyond that point, the curve coincides with the $MR$ curve in the absence of intervention. `"
+
+
+
+
+
+
+
+
+
+
+
+
+

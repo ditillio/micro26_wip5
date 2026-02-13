@@ -1,0 +1,138 @@
+params:
+- {name: showCS, value: false}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: x, value: 120, min: 0, max: 200}
+- {name: a, value: 80, min: 60, max: 100, round: 5}
+- {name: alpha, value: 0.5, min: 0.5, max: 1, round: 0.5}
+- {name: w, value: 64, min: 40, max: 80, round: 1}
+- {name: fc, value: 100, min: 10, max: 200, round: 5}
+
+calcs:
+  l: ((params.x)/(params.a))^(1/(params.alpha))
+  vc: params.w * calcs.l
+  tc: params.w * calcs.l + params.fc
+  avc: calcs.vc / params.x
+  atc: calcs.tc / params.x
+  afc: (params.fc) / (params.x)
+  mc: (1/(params.alpha)) * calcs.avc
+  aaa: (params.alpha)^(-1)
+  qeff: params.a * sqrt((params.fc)/(params.w))
+  acmin: params.w * (calcs.qeff) / ((params.a)^2) + params.fc / (calcs.qeff)
+
+aspectRatio: 1.2
+
+layout:
+  OneGraphPlusSidebar:
+
+
+    graph: 
+      xAxis:
+        max: 210
+        ticks: 0
+      yAxis:
+        max: 5
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [210, 0]
+                text: "` \\\\text{Output (kg)}  `"
+                xPixelOffset: 0
+
+        - Label:
+                coordinates: [0, 5]
+                text: "` \\\\text{Euro / kg} `"
+                yPixelOffset: 0
+                xPixelOffset: 0
+                position: c
+
+
+# Qeff & ACmin
+        - Point: {coordinates: [calcs.qeff, calcs.acmin], droplines: {vertical: , horizontal: }, color: Blue, r: 4}
+
+        - Label:
+                coordinates: [calcs.qeff, 0]
+                text: "` Q^{\\\\text{eff}} = ${calcs.qeff.toFixed(2)} `"
+                yPixelOffset: -18
+                xPixelOffset: 
+                position: c
+                color: Blue
+
+        - Label:
+                coordinates: [0, calcs.acmin]
+                text: "` AC_{\\\\text{min}} = ${calcs.acmin.toFixed(2)} `"
+                yPixelOffset: 
+                xPixelOffset: -55
+                position: c
+                color: Blue
+
+
+# MC (quadratic)
+
+        - Curve:
+            fn: 2 * params.w * (x) / ((params.a)^ 2)
+            color: Red
+            label:
+              text: "` MC(Q) = 2 ( ${params.w} / ${params.a}^2 ) Q `"
+              x: 200
+              position: b
+            strokeWidth: 1.7
+            max: 200
+            show: params.alpha == 0.5
+
+# ATC (quadratic)
+
+        - Curve:
+            fn: params.w * (x) / ((params.a)^2) + params.fc / (x)
+            color: brown
+            label:
+              text: "` AC(Q) = ${params.fc}/Q + ( ${params.w} / ${params.a}^2 ) Q  `"
+              x: 200  
+              position: c
+            strokeWidth: 1.7
+            show: params.alpha == 0.5
+
+
+    sidebar:
+      controls:
+      - title: FIGURE 3.12
+        sliders:
+        - param: a
+          label: A
+        - param: fc
+          label: FC
+        - param: w
+          label: W
+        divs:
+        - html: "` `"
+        - html: "` The production function is $Q=A\\\\sqrt{L}$. `"
+        - html: "` The average and marginal cost functions are therefore `"
+        - html: "` 
+                    $$AC(Q)=\\\\frac{FC}{Q}+\\\\frac{W}{A^2}Q \\\\qquad 
+                    MC(Q)=\\\\frac{2W}{A^2}Q$$
+                    Calculating their point of intersection gives `"
+        - html: "` `"
+        - html: "` 
+                    $$Q^\\\\text{eff}=A\\\\sqrt{\\\\frac{FC}{W}}
+                    \\\\qquad 
+                    AC_\\\\text{min}=\\\\frac{2\\\\sqrt{FC}\\\\sqrt{W}}{A}$$ `"
+        - html: "` `"
+        - html: "` Given that $A=${params.a}$, $FC=${params.fc}$ e $W=${params.w}$, we then have `"
+        - html: "` 
+                    $$Q^\\\\text{eff}=${calcs.qeff.toFixed(2)}
+                    \\\\qquad 
+                    AC_\\\\text{min}=${calcs.acmin.toFixed(2)}$$ `"
+    explanation:
+      divs:
+        - html: "` As can be seen from the formulas beside the graph (try moving the sliders), a technological
+                   improvement (a larger value of $A$) increases the efficient scale of production
+                    and decreases the minimum average cost.  `"
+        - html: "` `"
+        - html: "` The opposite happens when labor becomes more expensive. An increase in $W$ makes the
+                  efficient scale of production smaller, and the minimum average cost larger.  `"
+        - html: "` `"
+        - html: "` Finally, an increase in the fixed cost $FC$ increases both the efficient scale of production
+                   and the minimum average cost.  `"

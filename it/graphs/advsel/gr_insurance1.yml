@@ -1,0 +1,250 @@
+---
+schema: EconSchema
+version: 1
+params:
+
+- {name: showTS, value: 0} # show total surplus
+
+
+
+
+
+
+calcs:
+
+  dummy: (1)
+
+
+
+
+
+# aspectRatio: 1
+
+layout:
+
+  type: TwoHorizontalGraphsPlusSidebar
+
+  def:
+
+
+    leftGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 1000
+        ticks: 0
+        title: Gruppo 𝐴
+      yAxis:
+        orient: left
+        min: 0
+        max: 12000
+        ticks: 0
+
+
+      objects:
+
+      # - Label:
+      #       coordinates: [1000, 0]
+      #       text: "` \\\\;\\\\; \\\\text{polizze   } `"
+      #       position: c
+      #       yPixelOffset: 9
+      # - Label:
+      #       coordinates: [1000, 0]
+      #       text: "` \\\\text{(migliaia)} `"
+      #       position: c
+      #       yPixelOffset: -9
+      - Label:
+            coordinates: [1000, 0]
+            text: "` \\\\;\\\\; \\\\text{polizze   } `"
+            position: c
+      - Label:
+            coordinates: [0,12000]
+            text: "` \\\\text{euro/polizza} `"
+
+# demand group A
+      - Line:
+          yIntercept: 10000
+          slope: -(1000)*((0.75)/(50))
+          color: Blue
+          strokeWidth: 1
+      - Point:
+          coordinates: [0, 10000]
+          droplines:
+            horizontal: 10000
+          color: Blue
+          r: 0
+
+# price line group A
+      - Line:
+          yIntercept: (2500)
+          color: Red
+          strokeWidth: 1
+          position: c
+          label:
+            text: "` FP_A `"
+            x: 1000
+
+# equilibrium
+      - Point:
+          coordinates: [500, 2500]
+          droplines:
+            vertical: 500
+            horizontal: 2500
+          color: Green
+          r: 3
+          strokeWidth: 0.5
+
+# surplus
+      - Area:
+          fn1: (10000)-(1000)*((0.75)/(50))*(x)
+          fn2: (2500)
+          fill: blue
+          min: 0
+          max: 500
+          show: params.showTS == 1
+
+
+
+
+
+
+
+
+
+
+
+
+    rightGraph:
+
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 1000
+        ticks: 0
+        title: Gruppo 𝐴
+      yAxis:
+        orient: left
+        min: 0
+        max: 12000
+        ticks: 0
+
+
+      objects:
+
+      # - Label:
+      #       coordinates: [1000, 0]
+      #       text: "` \\\\;\\\\; \\\\text{polizze   } `"
+      #       position: c
+      #       yPixelOffset: 9
+      # - Label:
+      #       coordinates: [1000, 0]
+      #       text: "` \\\\text{(migliaia)} `"
+      #       position: c
+      #       yPixelOffset: -9
+      - Label:
+            coordinates: [1000, 0]
+            text: "` \\\\;\\\\; \\\\text{polizze   } `"
+            position: c
+      - Label:
+            coordinates: [0,12000]
+            text: "` \\\\text{euro/polizza} `"
+
+# demand group B
+      - Line:
+          yIntercept: 10000
+          slope: -(1000)*((0.25)/(50))
+          color: Blue
+          strokeWidth: 1
+      - Point:
+          coordinates: [0, 10000]
+          droplines:
+            horizontal: 10000
+          color: Blue
+          r: 0
+
+# price line group A
+      - Line:
+          yIntercept: (7500)
+          color: Red
+          strokeWidth: 1
+          position: c
+          label:
+            text: "` FP_B `"
+            x: 1000
+
+# equilibrium
+      - Point:
+          coordinates: [500, 7500]
+          droplines:
+            vertical: 500
+            horizontal: 7500
+          color: Green
+          r: 3
+          strokeWidth: 0.5
+
+# surplus
+      - Area:
+          fn1: (10000)-(1000)*((0.25)/(50))*(x)
+          fn2: (7500)
+          fill: blue
+          min: 0
+          max: 500
+          show: params.showTS == 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+    sidebar:
+      controls:
+
+      - title: FIGURA 12.1
+        # sliders:
+        # - param: P1
+        #   label: P_1
+        # - param: P2
+        #   label: P_2
+
+        checkboxes:
+        - param: showTS
+          label: "` \\\\text{Mostra surplus totale} `"
+        # - param: showPS
+        #   label: "` \\\\text{Mostra surplus del monopolista} `"
+        # - param: showDWL
+        #   label: "` \\\\text{Mostra perdita secca} `"
+
+        divs:
+        - html: <br>
+        - html: "` Dato che le compagnie fanno zero profitti, il surplus totale coincide
+                   con il surplus dell'assicurato, ed è pari a 2.5 milioni di euro (somma delle aree azzurre).
+                  `"
+          show: params.showTS == 1
+
+
+    explanation:
+      divs:
+        - html: <br>
+        - html: "` Le compagnie, in concorrenza tra loro, offrono polizze  per
+                    bassi rischi ad un prezzo pari al corrispondente costo marginale, ovvero il premio
+                    equo $FP_A=2500$. Allo stesso modo, offrono polizze per
+                    alti rischi al corrispondente premio equo $FP_B=7500$. 
+                  `"
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,280 @@
+params:
+- {name: T, value: 0, min: 0, max: 5, round: 0.5}
+- {name: SHOW, value: false}
+
+calcs:
+  eqQ: ((10)-(params.T))/(2)
+  eqP: (10)-(calcs.eqQ)
+  EC: (calcs.eqQ)*(calcs.eqQ)/(4)
+  CS: ((10)-(calcs.eqP))*(calcs.eqQ)/(2)
+  PS: ((calcs.eqP)-(params.T))*(calcs.eqQ)/(2)
+  TAXREV: (params.T)*(calcs.eqQ)
+  TS: (calcs.CS)+(calcs.PS)+(calcs.TAXREV)-(calcs.EC)
+
+aspectRatio: 1.6
+
+layout:
+  OneGraphPlusSidebar:
+
+    graph: 
+      xAxis:
+        max: 11
+        ticks: 0
+      yAxis:
+        max: 11
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [11, 0]
+                text: "` \\\\text{bundles}  `"
+                yPixelOffset: 8
+        - Label:
+                coordinates: [11, 0]
+                text: "` \\\\text{(millions)}  `"
+                yPixelOffset: -8
+        - Label:
+                coordinates: [0, 11]
+                text: "` \\\\text{euros/bundle} `"
+
+# demand function
+        - Line:
+            point: [0,10]
+            slope: -(1)
+            color: Blue
+            strokeWidth: 1.5
+            label:
+              text: "` D = MPB = MSB `"
+              x: 1
+              position: bl
+
+# MEC function
+        - Line:
+            point: [0,0]
+            slope: (0.5)
+            color: Violet
+            strokeWidth: 1.5
+            max: 9.5
+            label:
+              text: "` MEC = Q/2 `"
+              x: 9.5
+              position: bl
+
+# MPC function
+        - Line:
+            point: [0,params.T]
+            slope: (1)
+            color: Red
+            strokeWidth: 1.5
+            max: (8.5)-(params.T)/2
+            label:
+              text: "` MPC + T  `"
+              x: (8.5)-(params.T)/2
+              position: l
+
+# shadow market supply and arrow
+        - Line:
+            yIntercept: 0
+            slope: (1)
+            color: Red
+            max: 8.5
+            strokeWidth: 0.75
+            lineStyle: dashed
+            label:
+              text: "` MPC  `"
+              x: (8.5)
+              position: tl
+            show: params.T > 0
+        - Arrow:
+            begin: [6,6]
+            end: [6,(6)+(params.T)]
+  #          double: true
+            color: black
+            strokeWidth: 1
+            trim: 0.1
+            show: params.T > 0
+
+
+
+# MSC function
+        - Line:
+            point: [0,0]
+            slope: (1.5)
+            color: Purple
+            strokeWidth: 1.5
+            label:
+              text: "` MSC = MPC + MEC  `"
+              x: 7
+              position: bl
+
+# points
+        - Point:
+            coordinates: [calcs.eqQ, calcs.eqP]
+            droplines: {vertical: calcs.eqQ.toFixed(2), horizontal: calcs.eqP.toFixed(2)}
+            color: Green
+            r: 3.5
+            strokeWidth: 0.5
+        - Point:
+            coordinates: [0, params.T]
+            droplines: {horizontal: params.T.toFixed(1)}
+            color: Red
+            r: 0
+            show: params.T > 0
+        - Point:
+            coordinates: [4, 6]
+            droplines: {vertical: 4}
+            color: Purple
+            r: 0
+            strokeWidth: 0.5
+            show: params.T !== 2
+        - Point:
+            coordinates: [4, 2]
+            droplines: {horizontal: }
+            color: violet
+            r: 0
+            strokeWidth: 0.5
+            show: params.T == 2
+
+# surplus
+        - Area:
+            fn1: (10)-(x)
+            fn2: (calcs.eqP)
+            fill: blue
+            opacity: 0.25
+            min: 0
+            max: calcs.eqQ
+            show: params.SHOW == 1
+
+        - Area:
+            fn1: (calcs.eqP)
+            fn2: (x)+(params.T)
+            fill: Green
+            opacity: 0.2
+            min: 0
+            max: calcs.eqQ
+            show: params.SHOW == 1
+
+# tax revenue
+        - Area:
+            fn1: (x)+(params.T)
+            fn2: (x)
+            fill: yellow
+            opacity: 0.25
+            min: 0
+            max: calcs.eqQ
+            show: params.SHOW == 1 && params.T !== 2
+
+# tax revenue
+        - Area:
+            fn1: (x)+(params.T)
+            fn2: (1.5)*(x)
+            fill: yellow
+            opacity: 0.2
+            min: 0
+            max: calcs.eqQ
+            show: params.SHOW == 1 && params.T == 2
+        - Area:
+            fn1: (1.5)*(x)
+            fn2: (x)
+            fill: orange
+            opacity: 0.25
+            min: 0
+            max: calcs.eqQ
+            show: params.SHOW == 1 && params.T == 2
+
+# external cost
+        - Area:
+            fn: (x)/(2)
+            fill: violet
+            opacity: 0.25
+            min: 0
+            max: calcs.eqQ
+            show: params.SHOW == 1
+
+
+
+
+
+
+
+    sidebar:
+      controls:
+      - title: FIGURE 8.3
+        description: " Move the slider until you find the Pigouvian tax, i.e. the excise tax
+                      that makes the equilibrium quantity equal to the socially
+                      efficient quantity.  "
+        sliders:
+        - param: T
+          label: T
+
+        checkboxes:
+        - param: SHOW
+          label: "` \\\\text{Show surplus} `"
+
+        divs:
+        - html: <br>
+        - html: "` In the absence of intervention, the equilibrium quantity is $Q=5$. The socially
+                efficient quantity is instead $Q=4$. `"
+          show: params.T == 0
+        - html: "` An excise tax of $ ${params.T} $ euros/bundle brings the equilibrium quantity
+                closer to the socially efficient one, but is not sufficient. `"
+          show: params.T > 0 && params.T < 2
+        - html: "` An excise tax of $ $params.T$ $ euros/bundle reduces the equilibrium quantity
+                below the socially efficient level. `"
+          show: params.T > 2
+        - html: "` $\\\\color{${colors.red}} \\\\LARGE{ \\\\text{BINGO!} } $   `"
+          show: params.T == 2
+        - html: "` The Pigouvian tax is an excise tax with a rate equal to the marginal external
+                  cost calculated at the socially optimal quantity $Q=4$.
+                  Since $MEC(Q)=Q/2$, at $Q=4$ we have $MEC=2$.
+                  The Pigouvian tax is therefore equal to $T=2$ euros per bundle.  `"
+          show: params.T == 2
+
+
+
+
+
+    explanation:
+      divs:
+        - html: <br><br><br><br><br><br><br><br><br><br><br><br>
+          show: params.SHOW == 0
+        - html: "` The total surplus is given by
+                $$
+                CS + PS + \\\\text{Tax revenue} - EC = ${calcs.TS}
+                $$
+                where
+                $$
+                CS = \\\\text{consumer surplus} = \\\\text{blue area} = ${calcs.CS.toFixed(2)}
+                $$
+                $$
+                PS = \\\\text{producer surplus} = \\\\text{green area} = ${calcs.PS.toFixed(2)}
+                $$
+                $$
+                \\\\text{Tax revenue} = \\\\text{yellow area} = ${calcs.TAXREV.toFixed(2)}
+                $$
+                $$
+                EC = \\\\text{external cost} = \\\\text{pink area} = ${calcs.EC.toFixed(2)}
+                $$
+                `"
+          show: params.SHOW == 1 && params.T !== 2
+
+        - html: "` The total surplus is given by
+                $$
+                CS + PS + \\\\text{Tax revenue} - EC = ${calcs.TS}
+                $$
+                where
+                $$
+                CS = \\\\text{consumer surplus} = \\\\text{blue area} = ${calcs.CS.toFixed(2)}
+                $$
+                $$
+                PS = \\\\text{producer surplus} = \\\\text{green area} = ${calcs.PS.toFixed(2)}
+                $$
+                $$
+                \\\\text{Tax revenue} = \\\\text{yellow area $+$ orange area} = ${calcs.TAXREV.toFixed(2)}
+                $$
+                $$
+                EC = \\\\text{external cost} = \\\\text{pink area} = \\\\text{orange area} = ${calcs.EC.toFixed(2)}
+                $$
+                `"
+          show: params.SHOW == 1 && params.T == 2

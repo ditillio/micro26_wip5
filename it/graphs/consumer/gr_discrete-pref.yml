@@ -1,0 +1,246 @@
+---
+schema: EconSchema
+version: 1
+aspectRatio: 2
+params:
+  - {name: x1, value: 2, min: 0, max: 6}
+  - {name: x2, value: 2, min: 0, max: 6}
+  - {name: p1, value: 5, min: 2, max: 8}
+  - {name: p2, value: 5, min: 2, max: 8}
+  - {name: m, value: 35, min: 20, max: 50}
+  - {name: a, value: 2}
+  - {name: b, value: 1}
+  - {name: showMORE, value: false}
+  - {name: showLESS, value: false}
+
+calcs:
+  u: ((params.x1)^(params.a))*((params.x2)^(params.b))
+
+layout:
+  OneGraphPlusSidebar:
+    graph:
+      xAxis:
+        max: 6.9
+        ticks: 5
+      yAxis:
+        max: 6.9
+        ticks: 5
+      objects:
+
+      - Label:
+            coordinates: [6.9, 0]
+            text: "` \\\\text{Pizza} `"
+            yPixelOffset: 0
+            position: l
+      - Label:
+            coordinates: [0, 6.9]
+            text: "` \\\\text{Cinema}  `"
+            yPixelOffset: 0
+
+      # Bundle
+      - Point:
+          coordinates: [params.x1, params.x2]
+          droplines:
+            horizontal: 
+            vertical: 
+          color: Black
+          draggable: true
+      - Label:
+          coordinates: [params.x1, params.x2+0.2]
+          text: "` A `"
+          position: l
+          color: Black
+          bgcolor: none
+
+
+      - Points: {coordinates: [[0,6],[1,6],[2,6],[3,6],[4,6],[5,6],[6,6]], color: grey, opacity: 0.5, r: 2.5}
+      - Points: {coordinates: [[0,5],[1,5],[2,5],[3,5],[4,5],[5,5],[6,5]], color: grey, opacity: 0.5, r: 2.5}
+      - Points: {coordinates: [[0,4],[1,4],[2,4],[3,4],[4,4],[5,4],[6,4]], color: grey, opacity: 0.5, r: 2.5}
+      - Points: {coordinates: [[0,3],[1,3],[2,3],[3,3],[4,3],[5,3],[6,3]], color: grey, opacity: 0.5, r: 2.5}
+      - Points: {coordinates: [[0,2],[1,2],[2,2],[3,2],[4,2],[5,2],[6,2]], color: grey, opacity: 0.5, r: 2.5}
+      - Points: {coordinates: [[0,1],[1,1],[2,1],[3,1],[4,1],[5,1],[6,1]], color: grey, opacity: 0.5, r: 2.5}
+      - Points: {coordinates: [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0]], color: grey, opacity: 0.5, r: 2.5}
+
+# more preferred bundles
+      - Points: {coordinates: [[1,6],[2,6],[3,6],[4,6],[5,6],[6,6]], color: Blue, opacity: 1, r: 4, show: (1)*(1)*(6)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[1,5],[2,5],[3,5],[4,5],[5,5],[6,5]], color: Blue, opacity: 1, r: 4, show: (1)*(1)*(5)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[1,4],[2,4],[3,4],[4,4],[5,4],[6,4]], color: Blue, opacity: 1, r: 4, show: (1)*(1)*(4)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[1,3],[2,3],[3,3],[4,3],[5,3],[6,3]], color: Blue, opacity: 1, r: 4, show: (1)*(1)*(3)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[1,2],[2,2],[3,2],[4,2],[5,2],[6,2]], color: Blue, opacity: 1, r: 4, show: (1)*(1)*(2)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[1,1],[2,1],[3,1],[4,1],[5,1],[6,1]], color: Blue, opacity: 1, r: 4, show: (1)*(1)*(1)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[1,0],[2,0],[3,0],[4,0],[5,0],[6,0]], color: Blue, opacity: 1, r: 4, show: (1)*(1)*(0)*(params.showMORE)>(calcs.u)}
+      
+      - Points: {coordinates: [[2,6],[3,6],[4,6],[5,6],[6,6]], color: Blue, opacity: 1, r: 4, show: (2)*(2)*(6)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[2,5],[3,5],[4,5],[5,5],[6,5]], color: Blue, opacity: 1, r: 4, show: (2)*(2)*(5)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[2,4],[3,4],[4,4],[5,4],[6,4]], color: Blue, opacity: 1, r: 4, show: (2)*(2)*(4)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[2,3],[3,3],[4,3],[5,3],[6,3]], color: Blue, opacity: 1, r: 4, show: (2)*(2)*(3)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[2,2],[3,2],[4,2],[5,2],[6,2]], color: Blue, opacity: 1, r: 4, show: (2)*(2)*(2)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[2,1],[3,1],[4,1],[5,1],[6,1]], color: Blue, opacity: 1, r: 4, show: (2)*(2)*(1)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[2,0],[3,0],[4,0],[5,0],[6,0]], color: Blue, opacity: 1, r: 4, show: (2)*(2)*(0)*(params.showMORE)>(calcs.u)}
+
+      - Points: {coordinates: [[3,6],[4,6],[5,6],[6,6]], color: Blue, opacity: 1, r: 4, show: (3)*(3)*(6)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[3,5],[4,5],[5,5],[6,5]], color: Blue, opacity: 1, r: 4, show: (3)*(3)*(5)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[3,4],[4,4],[5,4],[6,4]], color: Blue, opacity: 1, r: 4, show: (3)*(3)*(4)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[3,3],[4,3],[5,3],[6,3]], color: Blue, opacity: 1, r: 4, show: (3)*(3)*(3)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[3,2],[4,2],[5,2],[6,2]], color: Blue, opacity: 1, r: 4, show: (3)*(3)*(2)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[3,1],[4,1],[5,1],[6,1]], color: Blue, opacity: 1, r: 4, show: (3)*(3)*(1)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[3,0],[4,0],[5,0],[6,0]], color: Blue, opacity: 1, r: 4, show: (3)*(3)*(0)*(params.showMORE)>(calcs.u)}
+
+      - Points: {coordinates: [[4,6],[5,6],[6,6]], color: Blue, opacity: 1, r: 4, show: (4)*(4)*(6)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[4,5],[5,5],[6,5]], color: Blue, opacity: 1, r: 4, show: (4)*(4)*(5)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[4,4],[5,4],[6,4]], color: Blue, opacity: 1, r: 4, show: (4)*(4)*(4)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[4,3],[5,3],[6,3]], color: Blue, opacity: 1, r: 4, show: (4)*(4)*(3)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[4,2],[5,2],[6,2]], color: Blue, opacity: 1, r: 4, show: (4)*(4)*(2)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[4,1],[5,1],[6,1]], color: Blue, opacity: 1, r: 4, show: (4)*(4)*(1)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[4,0],[5,0],[6,0]], color: Blue, opacity: 1, r: 4, show: (4)*(4)*(0)*(params.showMORE)>(calcs.u)}
+
+      - Points: {coordinates: [[5,6],[6,6]], color: Blue, opacity: 1, r: 4, show: (5)*(5)*(6)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[5,5],[6,5]], color: Blue, opacity: 1, r: 4, show: (5)*(5)*(5)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[5,4],[6,4]], color: Blue, opacity: 1, r: 4, show: (5)*(5)*(4)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[5,3],[6,3]], color: Blue, opacity: 1, r: 4, show: (5)*(5)*(3)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[5,2],[6,2]], color: Blue, opacity: 1, r: 4, show: (5)*(5)*(2)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[5,1],[6,1]], color: Blue, opacity: 1, r: 4, show: (5)*(5)*(1)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[5,0],[6,0]], color: Blue, opacity: 1, r: 4, show: (5)*(5)*(0)*(params.showMORE)>(calcs.u)}
+
+      - Points: {coordinates: [[6,6]], color: Blue, opacity: 1, r: 4, show: (6)*(6)*(6)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[6,5]], color: Blue, opacity: 1, r: 4, show: (6)*(6)*(5)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[6,4]], color: Blue, opacity: 1, r: 4, show: (6)*(6)*(4)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[6,3]], color: Blue, opacity: 1, r: 4, show: (6)*(6)*(3)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[6,2]], color: Blue, opacity: 1, r: 4, show: (6)*(6)*(2)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[6,1]], color: Blue, opacity: 1, r: 4, show: (6)*(6)*(1)*(params.showMORE)>(calcs.u)}
+      - Points: {coordinates: [[6,0]], color: Blue, opacity: 1, r: 4, show: (6)*(6)*(0)*(params.showMORE)>(calcs.u)}
+
+# less preferred bundles
+      - Points: {coordinates: [[0,6],[1,6],[2,6],[3,6],[4,6],[5,6],[6,6]], color: red, opacity: 1, r: 4, show: (6)*(6)*(6)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,5],[1,5],[2,5],[3,5],[4,5],[5,5],[6,5]], color: red, opacity: 1, r: 4, show: (6)*(6)*(5)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,4],[1,4],[2,4],[3,4],[4,4],[5,4],[6,4]], color: red, opacity: 1, r: 4, show: (6)*(6)*(4)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,3],[1,3],[2,3],[3,3],[4,3],[5,3],[6,3]], color: red, opacity: 1, r: 4, show: (6)*(6)*(3)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,2],[1,2],[2,2],[3,2],[4,2],[5,2],[6,2]], color: red, opacity: 1, r: 4, show: (6)*(6)*(2)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,1],[1,1],[2,1],[3,1],[4,1],[5,1],[6,1]], color: red, opacity: 1, r: 4, show: (6)*(6)*(1)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0]], color: red, opacity: 1, r: 4, show: (6)*(6)*(0)<(calcs.u)*(params.showLESS)}
+
+      - Points: {coordinates: [[0,6],[1,6],[2,6],[3,6],[4,6],[5,6]], color: red, opacity: 1, r: 4, show: (5)*(5)*(6)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,5],[1,5],[2,5],[3,5],[4,5],[5,5]], color: red, opacity: 1, r: 4, show: (5)*(5)*(5)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,4],[1,4],[2,4],[3,4],[4,4],[5,4]], color: red, opacity: 1, r: 4, show: (5)*(5)*(4)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,3],[1,3],[2,3],[3,3],[4,3],[5,3]], color: red, opacity: 1, r: 4, show: (5)*(5)*(3)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,2],[1,2],[2,2],[3,2],[4,2],[5,2]], color: red, opacity: 1, r: 4, show: (5)*(5)*(2)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,1],[1,1],[2,1],[3,1],[4,1],[5,1]], color: red, opacity: 1, r: 4, show: (5)*(5)*(1)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0]], color: red, opacity: 1, r: 4, show: (5)*(5)*(0)<(calcs.u)*(params.showLESS)}
+
+      - Points: {coordinates: [[0,6],[1,6],[2,6],[3,6],[4,6]], color: red, opacity: 1, r: 4, show: (4)*(4)*(6)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,5],[1,5],[2,5],[3,5],[4,5]], color: red, opacity: 1, r: 4, show: (4)*(4)*(5)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,4],[1,4],[2,4],[3,4],[4,4]], color: red, opacity: 1, r: 4, show: (4)*(4)*(4)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,3],[1,3],[2,3],[3,3],[4,3]], color: red, opacity: 1, r: 4, show: (4)*(4)*(3)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,2],[1,2],[2,2],[3,2],[4,2]], color: red, opacity: 1, r: 4, show: (4)*(4)*(2)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,1],[1,1],[2,1],[3,1],[4,1]], color: red, opacity: 1, r: 4, show: (4)*(4)*(1)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,0],[1,0],[2,0],[3,0],[4,0]], color: red, opacity: 1, r: 4, show: (4)*(4)*(0)<(calcs.u)*(params.showLESS)}
+
+      - Points: {coordinates: [[0,6],[1,6],[2,6],[3,6]], color: red, opacity: 1, r: 4, show: (3)*(3)*(6)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,5],[1,5],[2,5],[3,5]], color: red, opacity: 1, r: 4, show: (3)*(3)*(5)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,4],[1,4],[2,4],[3,4]], color: red, opacity: 1, r: 4, show: (3)*(3)*(4)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,3],[1,3],[2,3],[3,3]], color: red, opacity: 1, r: 4, show: (3)*(3)*(3)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,2],[1,2],[2,2],[3,2]], color: red, opacity: 1, r: 4, show: (3)*(3)*(2)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,1],[1,1],[2,1],[3,1]], color: red, opacity: 1, r: 4, show: (3)*(3)*(1)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,0],[1,0],[2,0],[3,0]], color: red, opacity: 1, r: 4, show: (3)*(3)*(0)<(calcs.u)*(params.showLESS)}
+
+      - Points: {coordinates: [[0,6],[1,6],[2,6]], color: red, opacity: 1, r: 4, show: (2)*(2)*(6)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,5],[1,5],[2,5]], color: red, opacity: 1, r: 4, show: (2)*(2)*(5)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,4],[1,4],[2,4]], color: red, opacity: 1, r: 4, show: (2)*(2)*(4)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,3],[1,3],[2,3]], color: red, opacity: 1, r: 4, show: (2)*(2)*(3)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,2],[1,2],[2,2]], color: red, opacity: 1, r: 4, show: (2)*(2)*(2)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,1],[1,1],[2,1]], color: red, opacity: 1, r: 4, show: (2)*(2)*(1)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,0],[1,0],[2,0]], color: red, opacity: 1, r: 4, show: (2)*(2)*(0)<(calcs.u)*(params.showLESS)}
+
+      - Points: {coordinates: [[0,6],[1,6]], color: red, opacity: 1, r: 4, show: (1)*(1)*(6)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,5],[1,5]], color: red, opacity: 1, r: 4, show: (1)*(1)*(5)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,4],[1,4]], color: red, opacity: 1, r: 4, show: (1)*(1)*(4)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,3],[1,3]], color: red, opacity: 1, r: 4, show: (1)*(1)*(3)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,2],[1,2]], color: red, opacity: 1, r: 4, show: (1)*(1)*(2)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,1],[1,1]], color: red, opacity: 1, r: 4, show: (1)*(1)*(1)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,0],[1,0]], color: red, opacity: 1, r: 4, show: (1)*(1)*(0)<(calcs.u)*(params.showLESS)}
+
+      - Points: {coordinates: [[0,6]], color: red, opacity: 1, r: 4, show: (0)*(0)*(6)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,5]], color: red, opacity: 1, r: 4, show: (0)*(0)*(5)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,4]], color: red, opacity: 1, r: 4, show: (0)*(0)*(4)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,3]], color: red, opacity: 1, r: 4, show: (0)*(0)*(3)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,2]], color: red, opacity: 1, r: 4, show: (0)*(0)*(2)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,1]], color: red, opacity: 1, r: 4, show: (0)*(0)*(1)<(calcs.u)*(params.showLESS)}
+      - Points: {coordinates: [[0,0]], color: red, opacity: 1, r: 4, show: (0)*(0)*(0)<(calcs.u)*(params.showLESS)}
+
+    sidebar:
+      controls:
+      - title: FIGURA 2.1
+        description: Muovere i due cursori (o trascinare il punto <i>A</i>) per selezionare un paniere e poi vedere quali panieri sono preferiti
+                    ad esso e a quali esso è preferito.
+        checkboxes:
+        - param: showMORE
+          label: "\\text{Mostra panieri preferiti al paniere $A$}"
+        - param: showLESS
+          label: "\\text{Mostra panieri a cui $A$ è preferito}"
+        sliders:
+        - param: x1
+          label: "` \\\\text{Pizza} `"
+        - param: x2
+          label: "` \\\\text{Cinema} `"
+        divs:
+          - html: "`
+                  `"
+          - html: "`
+                  `"
+          - html: "`
+                  `"
+          - html: "`
+                  I punti blu rappresentano panieri preferiti al paniere $A$.
+                  `"
+            show: params.showMORE == 1
+          - html: "`
+                  I punti rossi rappresentano panieri a cui il paniere $A$ è preferito.
+                  `"
+            show: params.showLESS == 1
+
+
+    explanation:
+        divs:
+          - html: "`
+                  Non tutti i panieri sono necessariamente peggiori o migliori di $A$. Per esempio,
+                  $A=(3,4)$ non è preferito a $(6,1)$, né quest'ultimo è preferito
+                  ad $A$. Il consumatore è <i>indifferente</i> tra i due panieri, cioè li considera ugualmente desiderabili.
+                  `"
+            show: params.showMORE == 1 && params.showLESS == 1
+          - html: "`
+                  `"
+          - html: "`
+                  `"
+          - html: "`
+                  `"
+          - html: "`
+                  `"
+          - html: "`
+                  `"
+          - html: "`
+                  `"
+          - html: "`
+                  `"
+          - html: "`
+                  `"
+          - html: "`
+                  `"
+
+
+    #       - html: "` 
+    #                  aa = ${ (5)*(5)  }
+    #              `"
+    #       - html: "` 
+    #                  bb = ${ (5)*(5)*(4)*(params.showMORE)}
+    #              `"
+    #       - html: "`
+    #               u = ${calcs.u}
+    #               `"
+
+
+
+
+
+
+
+

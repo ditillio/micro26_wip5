@@ -1,0 +1,69 @@
+{%- assign _sectionIndex = include.sectionIndex | default: sectionIndex -%}
+{%- assign _list         = include.list         | default: list -%}
+
+{%- assign prevIndex = _sectionIndex | minus: 1 -%}
+{%- if _sectionIndex > 0 -%}
+  {%- assign prev = _list[prevIndex] -%}
+  <div class="subtitle">
+    {%- if language == "it" -%}Precedente{%- else -%}Previous{%- endif -%}:
+    <a href="{{ prevIndex | plus: 1 }}">{{ prev.title[language] }}</a>
+  </div>
+{%- endif -%}
+
+{%- assign nextIndex   = _sectionIndex | plus: 1 -%}
+{%- assign numSections = _list.size -%}
+
+{%- if nextIndex == numSections -%}
+  <div class="subtitle">[ {%- if language == "it" -%}Fine del capitolo{%- else -%}End of chapter{%- endif -%} ]</div>
+
+  {%- comment -%} -------- PROSSIMO CAPITOLO (numerico, robusto) -------- {%- endcomment -%}
+  {%- assign parts = site.data.toc.parts -%}
+  {%- assign p = page.path | split:'/' -%}
+  {%- assign lang = p[0] -%}
+  {%- assign part = p[1] -%}
+  {%- assign chap_str = p[2] | split:'.' | first -%}
+  {%- assign chap_num = chap_str | plus: 0 -%}   
+  {%- assign next_chap_num = chap_num | plus: 1 -%}
+  {%- assign next_chap_str = next_chap_num | append: "" -%}
+
+  {%- assign part_obj = parts | where: "folder", part | first -%}
+  {%- assign next_chapter = nil -%}
+  {%- if part_obj and part_obj.chapters -%}
+    {%- assign next_chapter = part_obj.chapters | where: "folder", next_chap_str | first -%}
+  {%- endif -%}
+
+  {%- assign next_chapter_url = nil -%}
+  {%- assign next_chapter_title = nil -%}
+
+  {%- if next_chapter -%}
+    {%- assign next_chapter_url = '/' | append: lang | append: '/' | append: part | append: '/' | append: next_chapter.folder | append: '/' -%}
+    {%- assign next_chapter_title = next_chapter.title[lang] | default: next_chapter.title -%}
+  {%- else -%}
+    {%- comment -%} se non esiste (ultimo cap. della parte) vai alla parte successiva, primo capitolo {%- endcomment -%}
+    {%- assign next_part = nil -%}
+    {%- assign seen = false -%}
+    {%- for pr in parts -%}
+      {%- if seen -%}{%- assign next_part = pr -%}{%- break -%}{%- endif -%}
+      {%- if pr.folder == part -%}{%- assign seen = true -%}{%- endif -%}
+    {%- endfor -%}
+    {%- if next_part and next_part.chapters and next_part.chapters.size > 0 -%}
+      {%- assign first_ch = next_part.chapters[0] -%}
+      {%- assign next_chapter_url = '/' | append: lang | append: '/' | append: next_part.folder | append: '/' | append: first_ch.folder | append: '/' -%}
+      {%- assign next_chapter_title = first_ch.title[lang] | default: first_ch.title -%}
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- if next_chapter_url and next_chapter_title -%}
+    <div class="subtitle">
+      {%- if language == 'en' -%}Next chapter{%- else -%}Prossimo capitolo{%- endif -%}:
+      <a href="{{ next_chapter_url | relative_url }}">{{ next_chapter_title }}</a>
+    </div>
+  {%- endif -%}
+
+{%- else -%}
+  {%- assign next = _list[nextIndex] -%}
+  <div class="subtitle">
+    {%- if language == "it" -%}Seguente{%- else -%}Next{%- endif -%}:
+    <a href="{{ nextIndex | plus: 1 }}">{{ next.title[language] }}</a>
+  </div>
+{%- endif -%}

@@ -1,0 +1,211 @@
+params:
+- {name: showCS, value: false}
+- {name: p, value: 5.5, min: 0.5, max: 10.5, round: 0.5}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: opss, value: 0.3}
+- {name: opps, value: 0.5}
+
+calcs:
+  surplusAlan: max(0,10-params.p)
+  surplusBruno: max(0,8-params.p)
+  surplusChristian: max(0,6-params.p)
+  surplusAlice: max(0,-1+params.p)
+  surplusBarbara: max(0,-3+params.p)
+  surplusCarmen: max(0,-5+params.p)
+  surplustotale3: calcs.surplusAlan + calcs.surplusBruno + calcs.surplusChristian +
+                calcs.surplusAlice + calcs.surplusBarbara + calcs.surplusCarmen
+  surplustotale2: calcs.surplusAlan + calcs.surplusBruno +
+                calcs.surplusAlice + calcs.surplusBarbara 
+  surplustotale1: calcs.surplusAlan + calcs.surplusAlice 
+
+layout:
+  OneGraphPlusSidebar:
+    graph: 
+      xAxis:
+        max: 5.7
+        ticks: 5
+      yAxis:
+        max: 11
+        ticks: 5
+
+      objects:
+
+        - Label:
+                coordinates: [5.7, 0]
+                text: "` \\\\text{units} `"
+                yPixelOffset: 0
+                position: l
+        - Label:
+                coordinates: [0, 11]
+                text: "` \\\\text{euro/unit}  `"
+                xPixelOffset: 0
+
+# price line
+        - Line:
+            yIntercept: params.p
+            color: Green
+            strokeWidth: 1
+            label:
+              text: "` P = ${params.p.toFixed(2)} `"
+              x: 5.5
+              position: l
+            drag:
+              - vertical: p
+
+
+# WTP
+        - Point: {coordinates: [1,10], r: 3, color: Blue, droplines: {horizontal: 10, vertical: }, strokeWidth: 0.5, label: {text: "` \\\\text{Alan} `", position: b}}
+        - Point: {coordinates: [2,8], r: 3, color: Blue, droplines: {horizontal: 8, vertical: }, strokeWidth: 0.5, label: {text: "` \\\\text{Bruno} `", position: b}}
+        - Point: {coordinates: [3,6], r: 3, color: Blue, droplines: {horizontal: 6, vertical: }, strokeWidth: 0.5, label: {text: "` \\\\text{Christian} `", position: b}}
+        - Point: {coordinates: [4,4], r: 3, color: Blue, droplines: {horizontal: 4, vertical: }, strokeWidth: 0.5, label: {text: "` \\\\text{Diego} `", position: b}}
+        - Point: {coordinates: [5,2], r: 3, color: Blue, droplines: {horizontal: 2, vertical: }, strokeWidth: 0.5, label: {text: "` \\\\text{Eduardo} `", position: b}}
+
+# WTS
+        - Point: {coordinates: [1,1], r: 3, color: Red, droplines: {horizontal: 1, vertical: }, strokeWidth: 0.5, label: {text: "` \\\\text{Alice} `", position: t}}
+        - Point: {coordinates: [2,3], r: 3, color: Red, droplines: {horizontal: 3, vertical: }, strokeWidth: 0.5, label: {text: "` \\\\text{Barbara} `", position: t}}
+        - Point: {coordinates: [3,5], r: 3, color: Red, droplines: {horizontal: 5, vertical: }, strokeWidth: 0.5, label: {text: "` \\\\text{Carmen} `", position: t}}
+        - Point: {coordinates: [4,7], r: 3, color: Red, droplines: {horizontal: 7, vertical: }, strokeWidth: 0.5, label: {text: "` \\\\text{Diana} `", position: t}}
+        - Point: {coordinates: [5,9], r: 3, color: Red, droplines: {horizontal: 9, vertical: }, strokeWidth: 0.5, label: {text: "` \\\\text{Erika} `", position: t}}
+
+# buyer surplus blue
+        - Area: {fn1: + 10, fn2: params.p, fill: Blue, opacity: params.op1, min: 0, max: 1, show: params.p >= 1 && params.p < 10 }
+        - Area: {fn1: + 8, fn2: params.p, fill: Blue, opacity: params.op1, min: 1, max: 2, show: params.p >= 3 && params.p < 8 }
+        - Area: {fn1: + 6, fn2: params.p, fill: Blue, opacity: params.op1, min: 2, max: 3, show: params.p >= 5 && params.p < 6 }
+
+# seller surplus green
+        - Area: {fn1: params.p, fn2: + 1, fill: GreenYellow, opacity: params.opps, min: 0, max: 1, show: params.p <= 10 && params.p > 1 }
+        - Area: {fn1: params.p, fn2: + 3, fill: GreenYellow, opacity: params.opps, min: 1, max: 2, show: params.p <= 8 && params.p > 3 }
+        - Area: {fn1: params.p, fn2: + 5, fill: GreenYellow, opacity: params.opps, min: 2, max: 3, show: params.p <= 6 && params.p > 5 }
+
+# deadweight loss gray
+        - Area: {fn1: + 6, fn2: + 5, fill: Gray , opacity: params.ops, min: 2, max: 3, show: params.p > 6 or params.p < 5 }
+        - Area: {fn1: + 8, fn2: + 3, fill: Gray , opacity: params.ops, min: 1, max: 2, show: params.p > 8 or params.p < 3 }
+        - Area: {fn1: + 10, fn2: + 1, fill: Gray , opacity: params.ops, min: 0, max: 1, show: params.p > 10 or params.p < 1 }
+
+    sidebar:
+      controls:
+      - title: FIGURE 1.1
+        description: Move the slider (or drag the horizontal line in the graph) to change the price.
+        sliders:
+        - param: p
+          label: P
+        divs:
+          - html: "` Individual Surplus: `"
+          - html: "` Alan: $ ${calcs.surplusAlan} \\\\quad $   Diego: 0  `"
+            show: params.p >= 1
+          - html: "` Alan: $ 0 \\\\quad $   Diego: 0 `"
+            show: params.p < 1
+          - html: "` Bruno: $ ${ calcs.surplusBruno } \\\\quad $   Eduardo: 0 `"
+            show: params.p >= 3
+          - html: "` Bruno: $ 0 \\\\quad $   Eduardo: 0 `"
+            show: params.p < 3
+          - html: "` Christian: $ ${ calcs.surplusChristian } $ `"
+            show: params.p >= 5
+          - html: "` Christian: $ 0 $ `"
+            show: params.p < 5
+          - html: "` Alice: $ ${ calcs.surplusAlice } \\\\quad $   Diana: 0 `"
+            show: params.p <= 10
+          - html: "` Alice: $ 0 \\\\quad $   Diana: 0 `"
+            show: params.p > 10
+          - html: "` Barbara: $ ${ calcs.surplusBarbara } \\\\quad $   Erika: 0 `"
+            show: params.p <= 8
+          - html: "` Barbara: $ 0 \\\\quad $   Erika: 0 `"
+            show: params.p > 8
+          - html: "` Carmen: $ ${ calcs.surplusCarmen } $ `"
+            show: params.p <= 6
+          - html: "  Carmen: $ 0 $ " 
+            show: params.p > 6
+          - html: "` <b> Total Surplus: $ ${ calcs.surplustotale3 } $ </b> `"
+            show: params.p >= 5 && params.p <= 6
+          - html: "` <b>Total Surplus: $ ${ calcs.surplustotale2 } $ </b> `"
+            show: ( params.p > 6 and params.p <= 8 ) or ( params.p >= 3 and params.p < 5 )
+          - html: "` <b>Total Surplus: $ ${ calcs.surplustotale1 } $ </b> `"
+            show: ( params.p > 8 and params.p <= 10 ) or ( params.p >= 1 and params.p < 3 )
+          - html: "` <b>Total Surplus: $ 0 $ </b> `"
+            show: params.p > 10 or params.p < 1
+
+    explanation:
+
+      divs:
+        - html: "`At this price ($P=${params.p.toFixed(1)}$) no seller is willing to sell, while all five buyers
+            are willing to buy. No trade occurs. The deadweight loss is 15 (grey area).
+            `"
+          show: (params.p < 1)
+
+        - html: "`At this price ($P=${params.p.toFixed(1)}$) only one seller (Alice) is willing to sell, while all five buyers
+            are willing to buy. Four of these five are therefore excluded from trade. Assuming 
+            <i>efficient rationing</i> on the demand side, meaning that those excluded are the ones 
+            willing to pay less (Bruno, Christian, Diego, and Eduardo), the deadweight loss is 6 (grey area).
+            `"
+          show: (params.p >= 1 and params.p <= 2)
+
+        - html: "`At this price ($P=${params.p.toFixed(1)}$) only one seller (Alice) is willing to sell, while four buyers
+            (Alan, Bruno, Christian, and Diego) are willing to buy. Three of these four are therefore excluded from trade. Assuming 
+            <i>efficient rationing</i> on the demand side, meaning that those excluded are the ones 
+            willing to pay less (Bruno, Christian, and Diego), the deadweight loss is 6 (grey area).
+            `"
+          show: (params.p > 2 and params.p < 3)
+
+        - html: "`At this price ($P=${params.p.toFixed(1)}$) only two sellers (Alice and Barbara) are willing to sell, while four buyers
+            (Alan, Bruno, Christian, and Diego) are willing to buy. Two of these four are therefore excluded from trade. Assuming 
+            <i>efficient rationing</i> on the demand side, meaning that those excluded are the ones 
+            willing to pay less (Christian and Diego), the deadweight loss is 1 (grey area).
+            `"
+          show: (params.p >= 3 and params.p <= 4)
+
+        - html: "`At this price ($P=${params.p.toFixed(1)}$) only two sellers (Alice and Barbara) are willing to sell, while three buyers
+            (Alan, Bruno, and Christian) are willing to buy. One of these three is therefore excluded from trade. Assuming 
+            <i>efficient rationing</i> on the demand side, meaning that the excluded one is the one willing to pay less (Christian), the deadweight loss is 1 (grey area).
+            `"
+          show: (params.p > 4 and params.p < 5)
+
+        - html: "`At this price ($P=${params.p.toFixed(1)}$) three sellers (Alice, Barbara, and Carmen) are willing to sell and three buyers
+            (Alan, Bruno, and Christian) are willing to buy. The market is in equilibrium. `"
+          show: (params.p >= 5 and params.p <= 6)
+        - html: "` `"
+          show: (params.p >= 5 and params.p <= 6)
+        - html: "` `"
+          show: (params.p >= 5 and params.p <= 6)
+        - html: "` `"
+          show: (params.p >= 5 and params.p <= 6)
+        - html: "` `"
+          show: (params.p >= 5 and params.p <= 6)
+        - html: "` `"
+          show: (params.p >= 5 and params.p <= 6)
+        - html: "` `"
+          show: (params.p >= 5 and params.p <= 6)
+        - html: "` `"
+          show: (params.p >= 5 and params.p <= 6)
+        - html: "` `"
+          show: (params.p >= 5 and params.p <= 6)
+
+        - html: "`At this price ($P=${params.p.toFixed(1)}$) only two buyers (Alan and Bruno) are willing to buy, while three sellers
+            (Alice, Barbara, and Carmen) are willing to sell. One of these three is therefore excluded from trade. Assuming 
+            that the one excluded is the least willing to sell (Carmen), the deadweight loss is 1 (grey area).
+            `"
+          show: (params.p > 6 and params.p < 7)
+
+        - html: "`At this price ($P=${params.p.toFixed(1)}$) only two buyers (Alan and Bruno) are willing to buy, while four sellers
+            (Alice, Barbara, Carmen, and Diana) are willing to sell. Two of these four are therefore excluded from trade. Assuming 
+            <i>efficient rationing</i> on the supply side, meaning that those excluded are the ones least willing to sell (Carmen and Diana), the deadweight loss is 1 (grey area).
+            `"
+          show: (params.p >= 7 and params.p <= 8)
+
+        - html: "`At this price ($P=${params.p.toFixed(1)}$) only one buyer (Alan) is willing to buy, while four sellers
+            (Alice, Barbara, Carmen, and Diana) are willing to sell. Three of these four are therefore excluded from trade. Assuming 
+            <i>efficient rationing</i> on the supply side, meaning that those excluded are the ones least willing to sell (Barbara, Carmen, and Diana), the deadweight loss is 6 (grey area).
+            `"
+          show: (params.p > 8 and params.p < 9)
+
+        - html: "`At this price ($P=${params.p.toFixed(1)}$) only one buyer (Alan) is willing to buy, while all five sellers
+            are willing to sell. Four of these five are therefore excluded from trade. Assuming 
+            <i>efficient rationing</i> on the supply side, meaning that those excluded are the ones least willing to sell (Barbara, Carmen, Diana, and Erika), the deadweight loss is 6 (grey area).
+            `"
+          show: (params.p >= 9 and params.p <= 10)
+
+        - html: "`At this price ($P=${params.p.toFixed(1)}$) no buyer is willing to buy, while all five sellers
+            are willing to sell. No trade occurs. The deadweight loss is 15 (grey area).
+            `"
+          show: (params.p > 10)
