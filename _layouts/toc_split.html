@@ -9,6 +9,9 @@
 </head>
 
 <body>
+{% assign _lang = page.lang | default: site.lang | default: 'it' %}
+{% if page.url contains '/en/' %}{% assign _lang = 'en' %}{% endif %}
+{% if page.url contains '/it/' %}{% assign _lang = 'it' %}{% endif %}
   <div class="toc-split">
 
     <!-- COLONNA SINISTRA: TOC -->
@@ -22,16 +25,20 @@
       ☰
     </span>
     <span id="go-big-toc" class="go-big-toc" role="button" tabindex="0"
-          aria-label="Vai all'indice" title="Vai all'indice">
+          aria-label="{% if _lang == 'en' %}Go to table of contents{% else %}Vai all'indice{% endif %}"
+          title="{% if _lang == 'en' %}Go to table of contents{% else %}Vai all'indice{% endif %}">
       <svg class="go-big-toc-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path d="M3 11.5L12 4l9 7.5M6.5 10.5V20h11V10.5" />
       </svg>
     </span>
-    <span id="content-reload" class="content-reload" role="button" tabindex="0" aria-label="Ricarica contenuto">
+    <span id="content-reload" class="content-reload" role="button" tabindex="0"
+          aria-label="{% if _lang == 'en' %}Reload content{% else %}Ricarica pagina{% endif %}"
+          title="{% if _lang == 'en' %}Reload content{% else %}Ricarica pagina{% endif %}">
       ↻
     </span>
     <span id="content-print" class="content-print" role="button" tabindex="0"
-          aria-label="Stampa pagina" title="Stampa pagina">
+          aria-label="{% if _lang == 'en' %}Print this section{% else %}Stampa questa sezione{% endif %}"
+          title="{% if _lang == 'en' %}Print this section{% else %}Stampa questa sezione{% endif %}">
       <svg class="content-print-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path d="M7 8V4h10v4M7 17h10v3H7v-3Z" />
         <path d="M6 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-1" />

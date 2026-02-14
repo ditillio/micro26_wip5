@@ -92,7 +92,7 @@ a.no-tufte-underline:link {
   font-size: 16px !important;
   line-height: 1.2 !important;
 
-  color: #959595 !important;
+  color: #555 !important;
   text-transform: none !important;
   letter-spacing: 0 !important;
   font-weight: 600;
@@ -103,7 +103,7 @@ a.no-tufte-underline:link {
 }
 
 .lang-switch a{
-  color: #2a5db0; /* oppure lascia inherit */
+  color: #555; /* oppure lascia inherit */
   text-decoration: underline;
 }
 

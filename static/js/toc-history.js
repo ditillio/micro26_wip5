@@ -301,8 +301,14 @@
     document.body.classList.toggle("sidebar-hidden", hidden);
     if (el.parentElement !== rightCol) rightCol.appendChild(el);
     el.textContent = hidden ? labelWhenHidden() : labelWhenVisible();
-    el.setAttribute("aria-label", hidden ? "Mostra indice" : "Nascondi indice");
-    el.setAttribute("title", hidden ? "Mostra indice" : "Nascondi indice");
+    const m = window.location.pathname.match(/\/(it|en)\//);
+    const lang = m ? m[1] : "it";
+
+    const showLabel = (lang === "it") ? "Mostra indice" : "Show table of contents";
+    const hideLabel = (lang === "it") ? "Nascondi indice" : "Hide table of contents";
+
+    el.setAttribute("aria-label", hidden ? showLabel : hideLabel);
+    el.setAttribute("title", hidden ? showLabel : hideLabel);
   }
 
   // restore state
