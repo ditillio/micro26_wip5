@@ -2,7 +2,7 @@
 layout: page
 foreword: true
 ---
-These notes cover the content of the 2025/26 microeconomics course at Bocconi.
+These notes cover the content of the 2026/27 microeconomics course at Bocconi.
 
 
 I thank

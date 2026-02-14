@@ -3,7 +3,7 @@ layout: page
 foreword: true
 ---
 
-Queste note trattano gli argomenti affrontati nel corso di microeconomia 2025/26 dell'Università Bocconi.
+Queste note trattano gli argomenti affrontati nel corso di microeconomia 2026/27 dell'Università Bocconi.
 
 
 Ringrazio 
