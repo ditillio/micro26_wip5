@@ -451,6 +451,57 @@
     );
   }
 
+  function romanToInt(r) {
+    const s = (r || "").toUpperCase();
+    const map = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+    let total = 0, prev = 0;
+    for (let i = s.length - 1; i >= 0; i--) {
+      const v = map[s[i]] || 0;
+      if (v < prev) total -= v;
+      else { total += v; prev = v; }
+    }
+    return total || 0;
+  }
+
+  // Ritorna la “posizione nel libro” come tuple:
+  // [partIndex, chapterNumber, sectionNumberOr0, isSectionFlag]
+  // così possiamo ordinare stabilmente.
+  function bookOrderKey(url) {
+    const u = (stripBaseFromUrl(url || "") || "").replace(/\/{2,}/g, "/");
+
+    // Prefazione prima di tutto
+    if (u === "/it/pr.html" || u === "/en/pr.html") return [0, 0, 0, 0];
+
+    // atteso: /it/I/5/3.html  oppure /it/I/5/index.html
+    const m = u.match(/^\/(it|en)\/([^\/]+)\/(\d+)\/([^\/]+)$/);
+    if (!m) return [999, 999, 999, 9]; // fuori schema: in fondo
+
+    const partFolder = m[2];                 // "I", "II", ...
+    const chap = parseInt(m[3], 10) || 999;  // "5" -> 5
+    const last = m[4];                       // "3.html" o "index.html"
+
+    const partIdx = romanToInt(partFolder);
+
+    if (last === "index.html") {
+      // pagina indice capitolo: mettila prima delle sezioni del capitolo
+      return [partIdx, chap, 0, 0];
+    }
+
+    const secMatch = last.match(/^(\d+)\.html$/);
+    const sec = secMatch ? (parseInt(secMatch[1], 10) || 999) : 999;
+
+    return [partIdx, chap, sec, 1];
+  }
+
+  function cmpKeys(a, b) {
+    for (let i = 0; i < Math.max(a.length, b.length); i++) {
+      const da = a[i] ?? 0;
+      const db = b[i] ?? 0;
+      if (da !== db) return da - db;
+    }
+    return 0;
+  }
+
   function doSearch(raw) {
     const qRaw = (raw || '').trim();
     if (!qRaw) {
@@ -490,7 +541,24 @@
         scored.push({ s, item });
       }
 
-      scored.sort((a, b) => b.s - a.s);
+      scored.sort((a, b) => {
+        const ka = bookOrderKey(a.item.url);
+        const kb = bookOrderKey(b.item.url);
+
+        // 1) Ordine del libro per (Parte, Capitolo)
+        const byPart = ka[0] - kb[0];
+        if (byPart !== 0) return byPart;
+
+        const byChap = ka[1] - kb[1];
+        if (byChap !== 0) return byChap;
+
+        // 2) Dentro lo stesso capitolo: prima la rilevanza
+        const byScore = b.s - a.s;
+        if (byScore !== 0) return byScore;
+
+        // 3) A parità di score: ordine di sezione
+        return cmpKeys(ka, kb);
+      });
       const top = scored.slice(0, 80).map(x => x.item);
       renderResults(top, qRaw);
     }).catch(() => {});
