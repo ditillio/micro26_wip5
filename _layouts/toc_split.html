@@ -44,6 +44,14 @@
         <path d="M6 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-1" />
       </svg>
     </span>
+    <span id="content-search" class="content-search" role="button" tabindex="0"
+          aria-label="{% if _lang == 'en' %}Search{% else %}Cerca{% endif %}"
+          title="{% if _lang == 'en' %}Search{% else %}Cerca{% endif %}">
+      <svg class="content-search-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <circle cx="11" cy="11" r="6.5"></circle>
+        <line x1="16.2" y1="16.2" x2="21" y2="21"></line>
+      </svg>
+    </span>
       <iframe
         id="toc-split-frame"
         src="./pr.html"
@@ -54,5 +62,17 @@
   <script src="{{ '/static/js/toc-accordion.js' | relative_url }}" defer></script>
   <script src="{{ '/static/js/print-pageno.js' | relative_url }}" defer></script>
   <script src="{{ '/static/js/toc-history.js' | relative_url }}" defer></script>
+  <script src="{{ '/static/js/search.js' | relative_url }}" defer></script>
+  <div id="search-overlay" class="search-overlay screen-only" aria-hidden="true">
+    <div class="search-box" role="dialog" aria-modal="true">
+      <div class="search-top">
+        <input id="search-input" type="text"
+               placeholder="{% if _lang == 'en' %}Search the book…{% else %}Cerca nel libro…{% endif %}">
+        <button id="search-close" type="button"
+                aria-label="{% if _lang == 'en' %}Close{% else %}Chiudi{% endif %}">✕</button>
+      </div>
+      <div id="search-results" class="search-results"></div>
+    </div>
+  </div>
 </body>
 </html>

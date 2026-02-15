@@ -478,7 +478,7 @@ body.sidebar-hidden .toc-split-right{
 .content-reload{
   position: fixed;
   right: 33px !important;
-  top: 50%;
+  top: 40%;
   transform: translateY(-50%);
   z-index: 1000;
 
@@ -512,7 +512,7 @@ body.sidebar-hidden .toc-split-right{
 .go-big-toc{
   position: fixed;
   right: 30px !important;
-  top: 40%;
+  top: 30%;
   z-index: 60;
   cursor: pointer;
   user-select: none;
@@ -551,7 +551,7 @@ body.sidebar-hidden .toc-split-right{
 
 .content-print{
   position: fixed;
-  right: 30px !important;
+  right: 28px !important;
 
   /* sotto al reload (che è circa al 50%) */
   top: 58%;
@@ -579,7 +579,98 @@ body.sidebar-hidden .toc-split-right{
   stroke: #000;
 }
 
+.content-search{
+  position: absolute;
+  right: 32px;          /* usa lo stesso right degli altri */
+  top: 48%;             /* oppure come fai per print/reload */
+  cursor: pointer;
+}
 
 
+
+
+
+
+
+
+/* bottone lente: stesso stile dei bottoni a destra */
+.content-search svg {
+  width: 22px;
+  height: 22px;
+  stroke: #333;      /* come gli altri bottoni */
+  stroke-width: 2.2;
+  fill: none;
+  stroke-linecap: round;
+}
+
+/* overlay */
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,248,0.92);
+  display: none;
+  z-index: 9999;
+}
+
+.search-overlay.open { display: block; }
+
+.search-box {
+  max-width: 800px;
+  margin: 8vh auto 0 auto;
+  background: #fffff8;
+  border: 1px solid #ddd;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  padding: 12px 14px;
+  border-radius: 10px;
+}
+
+.search-top {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+#search-input {
+  flex: 1;
+  font-size: 16px;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+}
+
+#search-close {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+  color: #333;
+}
+
+.search-results {
+  margin-top: 10px;
+  max-height: 65vh;
+  overflow: auto;
+}
+
+.search-hit {
+  padding: 10px 8px;
+  border-top: 1px solid #eee;
+  cursor: pointer;
+}
+
+.search-hit:hover {
+  background: #fff;
+}
+
+.search-hit-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.search-hit-snippet {
+  color: #444;
+  font-size: 14px;
+}
 
 

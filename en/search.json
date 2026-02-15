@@ -1,0 +1,24 @@
+---
+layout: none
+permalink: /en/search.json
+---
+[
+{% assign first = true %}
+{% for p in site.pages %}
+  {% if p.url contains '/en/' %}
+    {% unless p.url contains '/en/graphs/' or p.url contains '/static/' or p.url contains '/assets/' or p.url contains '/en/search.json' %}
+      {% assign text = p.content | strip_html | strip_newlines %}
+      {% assign title = p.title | default: p.url %}
+      {% unless text == "" %}
+        {% unless first %},{% endunless %}
+        {
+          "title": {{ title | jsonify }},
+          "url": {{ p.url | relative_url | jsonify }},
+          "content": {{ text | jsonify }}
+        }
+        {% assign first = false %}
+      {% endunless %}
+    {% endunless %}
+  {% endif %}
+{% endfor %}
+]
