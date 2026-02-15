@@ -386,9 +386,15 @@
       a.href = toAbsoluteBookUrl(item.url);
       a.className = 'search-result';
 
-      const urlEl = document.createElement('div');
-      urlEl.className = 'search-url';
-      urlEl.textContent = stripBaseFromUrl(item.url);
+      const titleEl = document.createElement('div');
+      titleEl.className = 'search-title';
+
+      const strong = document.createElement('strong');
+      strong.textContent = (item.title && String(item.title).trim())
+        ? String(item.title).trim()
+        : stripBaseFromUrl(item.url);
+
+      titleEl.appendChild(strong);
 
       const snippet = makeSnippet(item.content || '', q, 240);
       const snippetEl = document.createElement('div');
@@ -396,7 +402,7 @@
       snippetEl.dataset.rawSnippet = snippet;
       snippetEl.innerHTML = renderLatexInHtml(snippet);
 
-      a.appendChild(urlEl);
+      a.appendChild(titleEl);
       a.appendChild(snippetEl);
 
       a.addEventListener('click', (ev) => {

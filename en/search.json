@@ -7,17 +7,66 @@ permalink: /en/search.json
 {% for p in site.pages %}
   {% if p.url contains '/en/' %}
     {% unless p.url contains '/en/graphs/' or p.url contains '/static/' or p.url contains '/assets/' or p.url contains '/en/search.json' %}
+
       {% assign text = p.content | strip_html | strip_newlines %}
-      {% assign title = p.title | default: p.url %}
+      {% assign clean_url = p.url | replace: '//', '/' %}
+      {% assign title = '' %}
+        {% if clean_url == '/en/pr.html' %}
+          {% assign title = 'Preface' %}
+        {% endif %}
+      {% assign parts = clean_url | split:'/' %}
+      {% assign part_folder = parts[2] | default:'' %}
+      {% assign chap_folder = parts[3] | default:'' %}
+      {% assign last = parts[4] | default:'' %}
+
+      {% if title == '' and part_folder != '' and chap_folder != '' and last != '' %}
+        {% for part in site.data.toc.parts %}
+          {% assign part_folder_toc = part.folder | append:'' %}
+          {% if part_folder_toc == part_folder %}
+
+            {% for ch in part.chapters %}
+              {% assign chap_folder_toc = ch.folder | append:'' %}
+              {% if chap_folder_toc == chap_folder %}
+
+                {% if last == 'index.html' %}
+                  {% assign ch_title = ch.title.en | default:'' %}
+                  {% if ch_title != '' %}
+                    {% assign title = chap_folder | append:' ' | append: ch_title %}
+                  {% endif %}
+
+                {% elsif last contains '.html' %}
+                  {% assign sec_str = last | remove:'.html' %}
+                  {% if sec_str != '' and sec_str != 'index' %}
+                    {% assign idx0 = sec_str | minus: 1 %}
+                    {% assign sec = ch.sections[idx0] %}
+                    {% assign sec_title = sec.title.en | default:'' %}
+                    {% if sec_title != '' %}
+                      {% assign title = chap_folder | append:'.' | append: sec_str | append:' ' | append: sec_title %}
+                    {% endif %}
+                  {% endif %}
+                {% endif %}
+
+              {% endif %}
+            {% endfor %}
+
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+
+      {% if title == '' %}
+        {% assign title = p.title | default: clean_url %}
+      {% endif %}
+
       {% unless text == "" %}
         {% unless first %},{% endunless %}
         {
           "title": {{ title | jsonify }},
-          "url": {{ p.url | relative_url | jsonify }},
+          "url": {{ clean_url | relative_url | jsonify }},
           "content": {{ text | jsonify }}
         }
         {% assign first = false %}
       {% endunless %}
+
     {% endunless %}
   {% endif %}
 {% endfor %}
