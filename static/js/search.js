@@ -181,12 +181,23 @@
       .replace(/'/g, '&#39;');
   }
 
+  function decodeHtmlEntities(s) {
+    if (!s || typeof s !== 'string') return s || '';
+    // Decodifica entità tipo &gt; &#39; &amp; ecc.
+    const t = document.createElement('textarea');
+    t.innerHTML = s;
+    return t.value;
+  }
+
   function renderLatexInHtml(plainText) {
     const katex = pickKatex();
-    const s = escapeHtml(plainText);
+    const decoded = decodeHtmlEntities(plainText);
+
+    // useremo una versione escaped SOLO per il testo non-LaTeX
+    const sEsc = escapeHtml(decoded);
 
     if (!katex || typeof katex.renderToString !== 'function') {
-      return s;
+      return sEsc;
     }
 
     const parts = [];
@@ -196,26 +207,29 @@
       if (t) parts.push(t);
     }
 
-    while (i < s.length) {
-      const next = s.indexOf('$', i);
+    // Per poter estrarre il latex “vero”, lavoriamo sull’originale decoded,
+    // ma quando aggiungiamo testo normale lo escapeiamo.
+    while (i < decoded.length) {
+      const next = decoded.indexOf('$', i);
       if (next === -1) {
-        pushText(s.slice(i));
+        pushText(escapeHtml(decoded.slice(i)));
         break;
       }
-      pushText(s.slice(i, next));
 
-      const isDisplay = s.startsWith('$$', next);
+      pushText(escapeHtml(decoded.slice(i, next)));
+
+      const isDisplay = decoded.startsWith('$$', next);
       const delim = isDisplay ? '$$' : '$';
       const start = next + delim.length;
-      const end = s.indexOf(delim, start);
+      const end = decoded.indexOf(delim, start);
       if (end === -1) {
-        pushText(s.slice(next));
+        pushText(escapeHtml(decoded.slice(next)));
         break;
       }
 
-      const latex = s.slice(start, end).trim();
+      const latex = decoded.slice(start, end).trim();
       if (!latex) {
-        pushText(delim + delim);
+        pushText(escapeHtml(delim + delim));
         i = end + delim.length;
         continue;
       }
@@ -228,7 +242,7 @@
         });
         parts.push(html);
       } catch {
-        pushText(escapeHtml(delim) + escapeHtml(latex) + escapeHtml(delim));
+        pushText(escapeHtml(delim + latex + delim));
       }
 
       i = end + delim.length;
