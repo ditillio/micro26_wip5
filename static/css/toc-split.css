@@ -673,4 +673,24 @@ body.sidebar-hidden .toc-split-right{
   font-size: 14px;
 }
 
+/* Remove Tufte underline completely */
+#search-results a.search-result,
+#search-results a.search-result:link,
+#search-results a.search-result:visited,
+#search-results a.search-result:active {
+  background-image: none !important;
+  background-color: transparent !important;
+  text-shadow: none !important;
+  text-decoration: none !important;
+}
 
+/* Hover highlight */
+#search-results a.search-result:hover {
+  background-image: none !important;
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+#search-results a.search-result {
+  display: block;
+  width: 100%;
+}
